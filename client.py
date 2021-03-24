@@ -18,6 +18,7 @@ import os
 from game import Game
 from network import Network
 from customs import Text, Button, ImageButton, InputBox
+from positions import BOARD_POS, GREEN_FINISH, RED_FINISH, BLUE_FINISH, YELLOW_FINISH
 import user
 
 WHITE = (255, 255, 255)
@@ -85,8 +86,8 @@ class App():
 		click = False
 
 		# Create left part of screen
-		login_name = InputBox(self.screen, (self.width/2-120, self.height - 150), (240, 30), '', BLUE, WHITE)
-		login_pass = InputBox(self.screen, (self.width/2-120, self.height - 100), (240, 30), '', BLUE, WHITE)
+		login_name = InputBox(self.screen, (self.width/2-120, self.height - 150), (240, 30), 'Sule', BLUE, WHITE)
+		login_pass = InputBox(self.screen, (self.width/2-120, self.height - 100), (240, 30), '12345678', BLUE, WHITE)
 		login_button = Button(self.screen, 'LOGIN', (self.width/2-120, self.height - 60), (240, 40), BLUE, text_color=WHITE, border=2, border_color=WHITE)
 
 		# Create right part of screen
@@ -198,7 +199,7 @@ class App():
 		button_settings = ImageButton(self.screen, 'images/main_settings.png', (120, 120), (70, self.height/2 - 70), 'settings')
 		button_play = ImageButton(self.screen, 'images/main_start.png', (120, 120), (self.width/2 - 60, self.height/2 - 50), 'start')
 		button_admin = ImageButton(self.screen, 'images/main_admin.png', (120, 120), (self.width - 200, self.height/2 - 70), 'exit')
-		input_lobby = InputBox(self.screen, (self.width/2 - 100, self.height/2 + 90), (200, 30), '', BLUE, WHITE)
+		input_lobby = InputBox(self.screen, (self.width/2 - 100, self.height/2 + 90), (200, 30), '2', BLUE, WHITE)
 
 		while True:
 			pygame.display.set_caption('Ludo Club (Main Menu)')
@@ -544,7 +545,144 @@ class App():
 		pygame.display.update()
 
 	def start_game(self, lobby_size):
-		pass
+		pygame.display.set_caption('Ludo Club (Game)')
+		run = True
+		click = False
+
+		x, y = 50, 50
+
+		green_pos = 1
+		green_finish = -1
+		green_figure = pygame.image.load('images/green.png')
+		green_figure = pygame.transform.scale(green_figure, (24, 24)) 
+
+		red_pos = 14
+		red_finish = -1
+		red_figure = pygame.image.load('images/red.png')
+		red_figure = pygame.transform.scale(red_figure, (24, 24)) 
+
+		blue_pos = 27
+		blue_finish = -1
+		blue_figure = pygame.image.load('images/blue.png')
+		blue_figure = pygame.transform.scale(blue_figure, (24, 22)) 
+
+		yellow_pos = 40
+		yellow_finish = -1
+		yellow_figure = pygame.image.load('images/yellow.png')
+		yellow_figure = pygame.transform.scale(yellow_figure, (22, 22)) 
+
+		cube_button = ImageButton(self.screen, 'images/cube_1.png', (40, 40), (self.width/2 - 20, self.height/2 - 20), 'cube')
+
+		while run:
+			# Drawing
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+
+			game_map = pygame.image.load('images/game_map.png')
+			game_map = pygame.transform.scale(game_map, (self.width-100, self.height-100))
+			self.screen.blit(game_map, (x, y))
+
+			# for idx, pos in enumerate(BOARD_POS):
+				# Text(self.screen, f'{idx}', (x+pos[0], y+pos[1]), BLACK)
+
+			# if green_finish == -1:
+			# 	if green_pos == 51:
+			# 		green_finish = 0
+			# 	if green_pos == len(BOARD_POS):
+			# 		green_pos = 0
+			# 	self.screen.blit(green_figure, (x+4+BOARD_POS[green_pos][0], y+4+BOARD_POS[green_pos][1]))
+			# 	green_pos += 1
+			# else:
+			# 	self.screen.blit(green_figure, (x+4+GREEN_FINISH[green_finish][0], y+4+GREEN_FINISH[green_finish][1]))
+			# 	green_finish += 1
+
+			# 	if green_finish == len(GREEN_FINISH)-1:
+			# 		green_pos = 1
+			# 		green_finish = -1
+
+			# if red_finish == -1:
+			# 	if red_pos == 12:
+			# 		red_finish = 0
+			# 	if red_pos == len(BOARD_POS):
+			# 		red_pos = 0
+			# 	self.screen.blit(red_figure, (x+4+BOARD_POS[red_pos][0], y+4+BOARD_POS[red_pos][1]))
+			# 	red_pos += 1
+			# else:
+			# 	self.screen.blit(red_figure, (x+4+RED_FINISH[red_finish][0], y+4+RED_FINISH[red_finish][1]))
+			# 	red_finish += 1
+
+			# 	if red_finish == len(RED_FINISH)-1:
+			# 		red_finish = -1
+			# 		red_pos = 14
+
+			# if blue_finish == -1:
+			# 	if blue_pos == 25:
+			# 		blue_finish = 0
+			# 	if blue_pos == len(BOARD_POS):
+			# 		blue_pos = 0
+			# 	self.screen.blit(blue_figure, (x+4+BOARD_POS[blue_pos][0], y+4+BOARD_POS[blue_pos][1]))
+			# 	blue_pos += 1
+			# else:
+			# 	self.screen.blit(blue_figure, (x+4+BLUE_FINISH[blue_finish][0], y+4+BLUE_FINISH[blue_finish][1]))
+			# 	blue_finish += 1
+
+			# 	if blue_finish == len(BLUE_FINISH)-1:
+			# 		blue_pos = 27
+			# 		blue_finish = -1
+
+			# if yellow_finish == -1:
+			# 	if yellow_pos == 38:
+			# 		yellow_finish = 0
+			# 	if yellow_pos == len(BOARD_POS):
+			# 		yellow_pos = 0
+			# 	self.screen.blit(yellow_figure, (x+4+BOARD_POS[yellow_pos][0], y+4+BOARD_POS[yellow_pos][1]))
+			# 	yellow_pos += 1
+			# else:
+			# 	self.screen.blit(yellow_figure, (x+4+YELLOW_FINISH[yellow_finish][0], y+4+YELLOW_FINISH[yellow_finish][1]))
+			# 	yellow_finish += 1
+
+			# 	if yellow_finish == len(YELLOW_FINISH)-1:
+			# 		yellow_pos = 40
+			# 		yellow_finish = -1
+
+			cube_button.draw()
+
+			# Checks
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				if cube_button.click((mx, my)):
+					for i in range(randint(10, 20)):
+						value = randint(1, 6)
+						cube_button.image = f'images/cube_{value}.png'
+						cube_button.draw()
+
+						pygame.display.update()
+						pygame.time.delay(75)
+
+			# Events
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						run = False
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+			pygame.display.update()
+			clock.tick(60)
+
 
 	def chat_screen(self, n, player):
 		pygame.display.set_caption('Ludo Club (Chat)')
