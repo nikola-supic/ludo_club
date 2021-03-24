@@ -10,9 +10,11 @@ Created on Wed Mar 10 14:04:30 2021
 from datetime import datetime
 
 class Game():
-	def __init__(self, id, lobby_size):
+	def __init__(self, id, lobby_name, lobby_size, lobby_pw):
 		self.id = id
+		self.lobby_name = lobby_name
 		self.lobby_size = lobby_size
+		self.lobby_pw = lobby_pw
 		self.joined = 1
 		self.ready = False
 		self.winner = None

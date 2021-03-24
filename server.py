@@ -39,45 +39,42 @@ class Server():
 		self.games = {}
 		self.id_count = 0
 		self.last_data = -1
+		self.waiting = []
 
-		self.waiting = [[] for _ in range(4)]
-		
 		while True:
 			conn, addr = s.accept()
 			print(f'[ + ] Connected to: {addr}')
 			self.id_count += 1
 
-			lobby_size = int(conn.recv(4096).decode())
+			msg = conn.recv(4096).decode().split()
+			if msg[0] == 'create':
+				name = msg[1]
+				size = int(msg[2])
+				pw = msg[3]
+				game_id = len(self.games)
+				p = 0
+				self.games[game_id] = Game(game_id, name, size, pw)
 
-			p = None
-			for size in range(2, 4):
-				if lobby_size == size:
-					if len(self.waiting[size]) == 0:
-						game_id = len(self.games)
-						self.waiting[size].append(game_id)
+				self.waiting.append(self.games[game_id])
+				print(f'[ + ] Creating a new game... (of size {msg[2]})')
 
-						p = 0
-						self.games[game_id] = Game(game_id, lobby_size)
-						print(f'[ + ] Creating a new game... (of size {size})')
-						break
-					else:
-						game_id = self.waiting[size][0]
-						self.games[game_id].joined += 1
-						p = self.games[game_id].joined - 1
+				start_new_thread(self.threaded_clinet, (conn, p, game_id))
 
-						if self.games[game_id].joined == lobby_size:
-							self.games[game_id].ready = True
-							self.games[game_id].give_cards()
-							self.waiting[size].pop(0)
+			elif msg[0] == 'join':
+				game_id = int(msg[1])
+				pw = msg[2]
+				self.games[game_id].joined += 1
+				p = self.games[game_id].joined - 1
 
-							print(f'[ + ] Starting a new game... (of size {size})')
+				if self.games[game_id].joined == lobby_size:
+					self.games[game_id].ready = True
+					print(f'[ + ] Starting a new game... (of size {self.games[game_id].lobby_size})')
+					self.waiting.remove(self.games[game_id])
 
-
-			start_new_thread(self.threaded_clinet, (conn, p, game_id))
+				start_new_thread(self.threaded_clinet, (conn, p, game_id))
 
 	def threaded_clinet(self, conn, p, game_id):
 		conn.send(str.encode(str(p)))
-
 		while True:
 			try:
 				data = conn.recv(4096).decode()

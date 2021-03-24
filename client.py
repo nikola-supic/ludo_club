@@ -23,11 +23,10 @@ import user
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREEN = (34, 177, 76)
+RED = (237, 28, 36)
 BLUE = (15, 39, 99)
-RED = (244, 0, 38)
-GREEN = (74, 145, 35)
-YELLOW = (242, 209, 17)
-ORANGE = (242, 118, 9)
+YELLOW = (255, 242, 0)
 
 CARD_WIDTH = 80
 CARD_HEIGHT = 140
@@ -70,6 +69,8 @@ class App():
 
 		self.user = None
 		self.show_info = False
+		self.network = None
+		self.player = None
 
 
 	def background_music(self):
@@ -106,14 +107,14 @@ class App():
 			Text(self.screen, 'PLEASE ENTER YOUR INFORMATION', (self.width/2, 50), BLUE, text_size=20, center=True)
 			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
-			# Draw left part of screen
+			# Draw bottom part of screen
 			Text(self.screen, 'ENTER USERNAME:', (self.width/2-120, self.height-160), WHITE, text_size=18)
 			login_name.draw()
 			Text(self.screen, 'ENTER PASSWORD:', (self.width/2-120, self.height-110), WHITE, text_size=18)
 			login_pass.draw()
 			login_button.draw()
 
-			# Draw right part of screen
+			# Draw top part of screen
 			Text(self.screen, 'ENTER USERNAME:', (self.width/2-120, 70), WHITE, text_size=18)
 			register_name.draw()
 			Text(self.screen, 'ENTER E-MAIL:', (self.width/2-120, 120), WHITE, text_size=18)
@@ -129,7 +130,7 @@ class App():
 					if self.user != None:
 						self.main_menu()
 					else:
-						Text(self.screen, 'WRONG USERNAME OR PASSWORD.', (self.width - 40, 320), RED, text_size=22, right=True)
+						Text(self.screen, 'WRONG USERNAME OR PASSWORD.', (self.width/2,  self.height-180), BLUE, text_size=28, center=True)
 						login_name.clear()
 						login_pass.clear()
 
@@ -145,7 +146,7 @@ class App():
 						register_mail.clear()
 						register_pass.clear()
 						
-						Text(self.screen, 'SUCCESSFULY REGISTERED, USE THAT INFO TO LOGIN.', (self.width - 40, 320), RED, text_size=22, right=True)
+						Text(self.screen, 'SUCCESSFULY REGISTERED, USE THAT INFO TO LOGIN.', (self.width/2, self.height-180), BLUE, text_size=28, center=True)
 						pygame.display.update()
 						pygame.time.delay(1500)
 					else:
@@ -153,7 +154,7 @@ class App():
 						register_mail.clear()
 						register_pass.clear()
 						
-						Text(self.screen, 'YOU ENTERED SOME WRONG INFO. TRY AGAIN.', (self.width - 40, 320), RED, text_size=22, right=True)
+						Text(self.screen, 'YOU ENTERED SOME WRONG INFO. TRY AGAIN.', (self.width/2, self.height-180), BLUE, text_size=28, center=True)
 						pygame.display.update()
 						pygame.time.delay(1500)
 
@@ -197,9 +198,9 @@ class App():
 		click = False
 
 		button_settings = ImageButton(self.screen, 'images/main_settings.png', (120, 120), (70, self.height/2 - 70), 'settings')
-		button_play = ImageButton(self.screen, 'images/main_start.png', (120, 120), (self.width/2 - 60, self.height/2 - 50), 'start')
+		button_lobby = ImageButton(self.screen, 'images/main_start_grey.png', (160, 160), (self.width/2 - 80, self.height/2 - 120), 'start')
+		button_create = ImageButton(self.screen, 'images/main_start_red.png', (160, 160), (self.width/2 - 80, self.height/2 + 10), 'start')
 		button_admin = ImageButton(self.screen, 'images/main_admin.png', (120, 120), (self.width - 200, self.height/2 - 70), 'exit')
-		input_lobby = InputBox(self.screen, (self.width/2 - 100, self.height/2 + 90), (200, 30), '2', BLUE, WHITE)
 
 		while True:
 			pygame.display.set_caption('Ludo Club (Main Menu)')
@@ -215,32 +216,20 @@ class App():
 
 			button_settings.draw()
 			Text(self.screen, 'SETTINGS', (70 + 60, self.height/2 + 60), WHITE, text_size=24, center=True)
-			button_play.draw()
-			Text(self.screen, 'PLAY', (self.width/2, self.height/2 - 60), WHITE, text_size=24, center=True)
+			button_lobby.draw()
+			Text(self.screen, 'PICK LOBBY', (self.width/2, self.height/2 - 105), WHITE, text_size=24, center=True)
+			button_create.draw()
+			Text(self.screen, 'NEW LOBBY', (self.width/2, self.height/2 + 155), WHITE, text_size=24, center=True)
 			button_admin.draw()
 			Text(self.screen, 'ADMIN PANEL', (self.width - 210 + 70, self.height/2 + 60), WHITE, text_size=24, center=True)
-			input_lobby.draw()
-			Text(self.screen, 'ENTER LOBBY SIZE: (2-4)', (self.width/2, self.height/2 + 80), WHITE, text_size=18, center=True)
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
-				if button_play.click((mx, my)):
-					try:
-						lobby_size = int(input_lobby.text)
-						input_lobby.clear()
+				if button_lobby.click((mx, my)):
+					self.pick_lobby()
 
-						if lobby_size < 2 or lobby_size > 4:
-							Text(self.screen, 'You need to enter number between 2 and 4.', (self.width/2, self.height-40), ORANGE, text_size=24, center=True)
-							pygame.display.update()
-							pygame.time.delay(1000)
-
-						else:
-							self.start_game(lobby_size)
-					except ValueError:
-						Text(self.screen, 'You need to enter number between 2 and 4.', (self.width/2, self.height-40), ORANGE, text_size=24, center=True)
-						input_lobby.clear()
-						pygame.display.update()
-						pygame.time.delay(1000)
+				elif button_create.click((mx, my)):
+					self.create_lobby()
 
 				elif button_settings.click((mx, my)):	
 					self.settings()
@@ -249,7 +238,7 @@ class App():
 					if self.user.admin:
 						self.admin_panel()
 					else:
-						Text(self.screen, 'You do not have admin permissions.', (self.width/2, self.height-40), ORANGE, text_size=24, center=True)
+						Text(self.screen, 'You do not have admin permissions.', (self.width/2, self.height-40), BLUE, text_size=24, center=True)
 						pygame.display.update()
 						pygame.time.delay(1000)
 
@@ -275,9 +264,6 @@ class App():
 
 				if event.type == MUSIC_END:
 					self.background_music()
-
-				input_lobby.handle_event(event)
-			input_lobby.update()
 
 			pygame.display.update()
 			clock.tick(60)
@@ -312,12 +298,11 @@ class App():
 			Text(self.screen, f'Current volume: {self.user.volume}', (self.width/2, 330), WHITE, text_size=18, center=True)
 			volume.draw()
 
-			save.draw()
-
 			Text(self.screen, f'Your wins: {self.user.wins}', (self.width/2, self.height-90), WHITE, text_size=18, center=True)
 			Text(self.screen, f'Your defeats: {self.user.defeats}', (self.width/2, self.height-75), WHITE, text_size=18, center=True)
 			Text(self.screen, f'REGISTRATION DATE: {self.user.register_date}', (self.width/2, self.height-60), WHITE, text_size=18, center=True)
 
+			save.draw()
 			exit_btn.draw()
 
 			mx, my = pygame.mouse.get_pos()
@@ -509,6 +494,119 @@ class App():
 
 			pygame.display.update()
 			clock.tick(60)
+
+
+
+	def create_lobby(self):
+		pygame.display.set_caption('Ludo Club (Admin Panel)')
+		run = True
+		click = False
+
+		lobby_name = InputBox(self.screen, (self.width/2 - 150, 190), (300, 30), '', BLUE, WHITE)
+		lobby_size = InputBox(self.screen, (self.width/2 - 150, 240), (300, 30), '', BLUE, WHITE)
+		lobby_pw = InputBox(self.screen, (self.width/2 - 150, 290), (300, 30), '', BLUE, WHITE)
+
+		create = Button(self.screen, 'CREATE', (self.width/2 - 150, self.height-50), (300, 30), BLUE, text_color=WHITE, border=2, border_color=WHITE)
+		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
+		while run:
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/main_bg.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
+			Text(self.screen, 'CREATING NEW LOBBY', (self.width/2, 130), WHITE, text_size=24, center=True)
+			Text(self.screen, 'ENTER INFORMATION ABOUT LOBBY YOU WANT TO CREATE', (self.width/2, 145), BLUE, text_size=20, center=True)
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+
+			Text(self.screen, 'Enter lobby name:', (self.width/2, 180), WHITE, text_size=18, center=True)
+			lobby_name.draw()
+			Text(self.screen, 'Enter lobby size:', (self.width/2, 230), WHITE, text_size=18, center=True)
+			lobby_size.draw()
+			Text(self.screen, 'Enter lobby password:', (self.width/2, 280), WHITE, text_size=18, center=True)
+			lobby_pw.draw()
+
+			create.draw()
+			exit_btn.draw()
+
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				if create.rect.collidepoint((mx, my)):
+					try:
+						size = int(lobby_size.text)
+
+						if lobby_name.text == '' or len(lobby_name.text) > 24:
+							Text(self.screen, 'You need to enter valid name for lobby.', (self.width/2, self.height-60), BLUE, text_size=24, center=True)
+							lobby_name.clear()
+							pygame.display.update()
+							pygame.time.delay(1000)
+						elif size < 2 or size > 4:
+							lobby_size.clear()
+							
+							Text(self.screen, 'You need to enter number between 2 and 4.', (self.width/2, self.height-60), BLUE, text_size=24, center=True)
+							lobby_size.clear()
+							pygame.display.update()
+							pygame.time.delay(1000)
+						else:
+							try:
+								lobby_name.text.replace(' ', '_')
+								if lobby_pw.text == '':
+									pw = None
+								else:
+									lobby_pw.text.replace(' ', '_')
+									pw = lobby_pw.text
+
+								self.network = Network(f'create {lobby_name.text} {size} {pw}')
+								self.player = int(self.network.get_p())
+
+							except:
+								Text(self.screen, 'Error while trying to connect to server.', (self.width/2, self.height-60), BLUE, text_size=24, center=True)
+								pygame.display.update()
+								pygame.time.delay(1000)
+
+					except ValueError:
+						Text(self.screen, 'You need to enter number between 2 and 4.', (self.width/2, self.height-60), BLUE, text_size=24, center=True)
+						lobby_size.clear()
+						pygame.display.update()
+						pygame.time.delay(1000)
+
+				if exit_btn.click((mx, my)):
+					run = False
+
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						run = False
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+				lobby_name.handle_event(event)
+				lobby_size.handle_event(event)
+				lobby_pw.handle_event(event)
+
+			lobby_name.update()
+			lobby_size.update()
+			lobby_pw.update()
+
+			pygame.display.update()
+			clock.tick(60)
+
+	def pick_lobby(self):
+		pass
+
+
+
+
 
 
 	def draw_lobby(self, game):
