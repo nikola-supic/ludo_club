@@ -242,7 +242,7 @@ class App():
 						pygame.time.delay(1000)
 
 				elif button_settings.click((mx, my)):	
-					self.options()
+					self.settings()
 
 				elif button_admin.click((mx, my)):
 					if self.user.admin:
@@ -281,8 +281,8 @@ class App():
 			pygame.display.update()
 			clock.tick(60)
 
-	def options(self):
-		pygame.display.set_caption('Ludo Club (Options)')
+	def settings(self):
+		pygame.display.set_caption('Ludo Club (Settings)')
 		run = True
 		click = False
 		
@@ -298,7 +298,7 @@ class App():
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
-			Text(self.screen, 'OPTIONS', (self.width/2, 130), WHITE, text_size=24, center=True)
+			Text(self.screen, 'SETTINGS', (self.width/2, 130), WHITE, text_size=24, center=True)
 			Text(self.screen, 'TO CHANGE INFO, ENTER NEW INFO AND PRESS SAVE', (self.width/2, 145), BLUE, text_size=20, center=True)
 			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
