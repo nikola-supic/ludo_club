@@ -62,16 +62,35 @@ class Server():
 
 			elif msg[0] == 'join':
 				game_id = int(msg[1])
-				pw = msg[2]
 				self.games[game_id].joined += 1
 				p = self.games[game_id].joined - 1
 
-				if self.games[game_id].joined == lobby_size:
+				if self.games[game_id].joined == self.games[game_id].lobby_size:
 					self.games[game_id].ready = True
 					print(f'[ + ] Starting a new game... (of size {self.games[game_id].lobby_size})')
 					self.waiting.remove(self.games[game_id])
 
 				start_new_thread(self.threaded_clinet, (conn, p, game_id))
+
+			elif msg[0] == 'get':
+				start_new_thread(self.get_lobbies, (conn, ))
+
+	def get_lobbies(self, conn):
+		conn.sendall(str.encode(str('getting lobbies')))
+		while True:
+			try:
+				data = conn.recv(4096).decode()
+				
+				if not data:
+					break
+				else:
+					data_list = data.split()
+					if data_list[0] == 'get':
+						conn.sendall(pickle.dumps(self.waiting))
+			except:
+				break
+
+		print('[ - ] Lost connection (picking lobby)')
 
 	def threaded_clinet(self, conn, p, game_id):
 		conn.send(str.encode(str(p)))
@@ -85,8 +104,9 @@ class Server():
 					if not data:
 						break
 					else:
-						# commands
-						pass
+						data_list = data.split()
+						if data_list[0] == 'get':
+							conn.sendall(pickle.dumps(game))						
 				else:
 					break
 			except:

@@ -496,21 +496,20 @@ class App():
 			clock.tick(60)
 
 
-
 	def create_lobby(self):
 		pygame.display.set_caption('Ludo Club (Admin Panel)')
 		run = True
 		click = False
 
-		lobby_name = InputBox(self.screen, (self.width/2 - 150, 190), (300, 30), '', BLUE, WHITE)
-		lobby_size = InputBox(self.screen, (self.width/2 - 150, 240), (300, 30), '', BLUE, WHITE)
+		lobby_name = InputBox(self.screen, (self.width/2 - 150, 190), (300, 30), 'lobby', BLUE, WHITE)
+		lobby_size = InputBox(self.screen, (self.width/2 - 150, 240), (300, 30), '2', BLUE, WHITE)
 		lobby_pw = InputBox(self.screen, (self.width/2 - 150, 290), (300, 30), '', BLUE, WHITE)
 
 		create = Button(self.screen, 'CREATE', (self.width/2 - 150, self.height-50), (300, 30), BLUE, text_color=WHITE, border=2, border_color=WHITE)
 		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/main_bg.jpg")
+			bg = pygame.image.load("images/game_bg.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
@@ -556,7 +555,10 @@ class App():
 									pw = lobby_pw.text
 
 								self.network = Network(f'create {lobby_name.text} {size} {pw}')
-								self.player = int(self.network.get_p())
+								self.player = int(self.network.get_first_data())
+								run = False
+
+								self.game_screen()
 
 							except:
 								Text(self.screen, 'Error while trying to connect to server.', (self.width/2, self.height-60), BLUE, text_size=24, center=True)
@@ -602,35 +604,134 @@ class App():
 			clock.tick(60)
 
 	def pick_lobby(self):
-		pass
+		self.network = Network(f'get')
+		self.network.get_first_data()
+
+		pygame.display.set_caption('Ludo Club (Pick lobby)')
+		run = True
+		click = False
+
+		input_pw = InputBox(self.screen, (90, self.height-45), (250, 30), '', RED, WHITE)
+		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
+		while run:
+			try:
+				waiting = self.network.send('get')
+
+				if not waiting:
+					self.draw_error('There is no games waiting for player.')
+					pygame.time.delay(2500)
+					run = False
+					break
+			except:
+				self.draw_error('Could not get games.')
+				pygame.time.delay(2500)
+				run = False
+				break
+
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+
+			join_btn_dict = {}
+			for idx, game in enumerate(waiting):
+				join_btn = self.draw_lobby(idx, game)
+				join_btn_dict[game.id] = join_btn
+
+			input_pw.draw()
+			Text(self.screen, 'Enter lobby password:', (90, self.height-55), WHITE, text_size=18)
+			exit_btn.draw()
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				if exit_btn.click((mx, my)):
+					run = False
+
+				for idx, game in enumerate(waiting):
+					if join_btn_dict[game.id].rect.collidepoint((mx, my)):
+						if game.lobby_pw == 'None':
+							self.network = Network(f'join {game.id}')
+							self.player = int(self.network.get_first_data())
+							run = False
+
+							self.game_screen()
+						else:
+							if game.lobby_pw == input_pw.text:
+								self.network = Network(f'join {game.id}')
+								self.player = int(self.network.get_first_data())
+								run = False
+
+								self.game_screen()
+							else:
+								self.draw_error('Wrong password.')
+								pygame.time.delay(2500)
 
 
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
 
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						run = False
 
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
 
+				if event.type == MUSIC_END:
+					self.background_music()
 
-	def draw_lobby(self, game):
-		self.screen.fill(BLACK)
-		bg = pygame.image.load("images/main/lobby.jpg")
-		bg = pygame.transform.scale(bg, (self.width, self.height))
-		self.screen.blit(bg, (0, 0))
-		duration = int((datetime.now() - game.lobby_started).total_seconds())
+				input_pw.handle_event(event)
+			input_pw.update()
 
-		Text(self.screen, 'Waiting for players to join...', (self.width/2, 40), WHITE, text_size=64, center=True)
-		Text(self.screen, f'Waiting time: {timedelta(seconds=duration)}', (self.width/2, 70), WHITE, text_size=24, center=True)
-		Text(self.screen, f'Players joined: {game.joined} / {game.lobby_size}', (self.width/2, 90), WHITE, text_size=24, center=True)
+			pygame.display.update()
+			clock.tick(60)
 
-		pygame.display.update()
 
 	def draw_error(self, msg):
 		self.screen.fill(BLACK)
-		bg = pygame.image.load("images/main/error.jpg")
+		bg = pygame.image.load("images/game_error.png")
 		bg = pygame.transform.scale(bg, (self.width, self.height))
 		self.screen.blit(bg, (0, 0))
-		Text(self.screen, 'ERROR', (self.width/2, 25), BLACK, text_size=40, center=True)
-		Text(self.screen, f'{msg}', (self.width/2, 60), BLACK, text_size=40, center=True)
-
+		Text(self.screen, f'{msg}', (self.width/2, self.height-60), WHITE, text_size=40, center=True)
 		pygame.display.update()
+
+
+	def draw_lobby(self, idx, game):
+		row = idx // 2
+		col = idx % 2
+		x = 90 + col * 270
+		y = 50 + row * 160
+
+		join_btn = Button(self.screen, 'JOIN', (x+131, y+100), (105, 28), BLUE, text_color=WHITE)
+		join_btn.draw()
+
+		lobby_bg = pygame.image.load("images/lobby.png")
+		lobby_bg = pygame.transform.scale(lobby_bg, (250, 140))
+		self.screen.blit(lobby_bg, (x, y))
+
+		Text(self.screen, f'ID #{idx}', (x+60, y+13), WHITE, text_size=20)
+		Text(self.screen, f'NAME: {game.lobby_name}', (x+18, y+40), RED, text_size=20)
+		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+18, y+60), RED, text_size=20)
+
+		if game.lobby_pw != 'None':
+			locked = pygame.image.load("images/locked.png")
+			locked = pygame.transform.scale(locked, (32, 32))
+			self.screen.blit(locked, (x+210, y+30))
+
+		else:
+			unlocked = pygame.image.load("images/unlocked.png")
+			unlocked = pygame.transform.scale(unlocked, (32, 32))
+			self.screen.blit(unlocked, (x+210, y+30))
+
+		return join_btn
+
+
 
 	def draw_winner(self, winner):
 		self.screen.fill(BLACK)
@@ -641,6 +742,65 @@ class App():
 		Text(self.screen, f'{winner}', (self.width/2, 60), BLACK, text_size=40, center=True)
 
 		pygame.display.update()
+
+	def game_screen(self):
+		pygame.display.set_caption('Ludo Club (Game)')
+		run = True
+		click = False
+
+		x, y = 50, 50
+
+		while run:
+			try:
+				game = self.network.send('get')
+			except:
+				self.draw_error('Could not get game. (player left)')
+				pygame.time.delay(2500)
+				run = False
+				break
+
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+
+			game_map = pygame.image.load('images/game_map.png')
+			game_map = pygame.transform.scale(game_map, (self.width-100, self.height-100))
+			self.screen.blit(game_map, (x, y))
+
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				pass
+
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						run = False
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+			pygame.display.update()
+			clock.tick(60)
+
+
+
+
+
+
+
+
+
 
 	def start_game(self, lobby_size):
 		pygame.display.set_caption('Ludo Club (Game)')

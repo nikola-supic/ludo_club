@@ -18,10 +18,10 @@ class Network():
 		self.server = 'localhost'
 		self.port = 5555
 		self.addr = (self.server, self.port)
-		self.p = self.connect(msg)
+		self.first_data = self.connect(msg)
 
-	def get_p(self):
-		return self.p
+	def get_first_data(self):
+		return self.first_data
 
 	def connect(self, msg):
 		try:
