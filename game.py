@@ -17,6 +17,7 @@ class Game():
 		self.lobby_pw = lobby_pw
 		self.joined = 1
 		self.ready = False
+		self.quit = False
 		self.winner = None
 		self.player_on_move = None
 		self.time_started = 0
@@ -34,6 +35,9 @@ class Game():
 
 	def connected(self):
 		return self.ready
+
+	def player_left(self):
+		return self.quit
 
 	def get_player_move(self):
 		return self.player_on_move

@@ -13,21 +13,20 @@ import pickle
 import json
 
 class Network():
-	def __init__(self, msg):
+	def __init__(self):
 		self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.server = 'localhost'
 		self.port = 5555
 		self.addr = (self.server, self.port)
-		self.first_data = self.connect(msg)
+		self.first_data = self.connect()
 
 	def get_first_data(self):
 		return self.first_data
 
-	def connect(self, msg):
+	def connect(self):
 		try:
 			print(f'[ > ] Trying to connect to: {self.server}:{self.port}')
 			self.client.connect(self.addr)
-			self.client.send(str.encode(msg))
 			return self.client.recv(2048).decode()
 		except:
 			print(f'[ > ] Error while trying connection to: {self.server}:{self.port}')
