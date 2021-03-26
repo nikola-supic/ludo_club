@@ -1,8 +1,10 @@
-my_dict = {
-	0: 'btn1',
-	1: 'btn2',
-	2: 'btn3'
-}
+x, y = 244, 16
 
-for item in my_dict:
-	print(item, my_dict[item])
+with open('tmp.txt', 'w') as file:
+	for i in range(3):
+		for j in range(15):
+			file.write(f'({x}, {y})\n')
+			y += 38
+		x += 38
+		y = 16
+
