@@ -45,15 +45,15 @@ MUSIC_END = pygame.USEREVENT+1
 pygame.mixer.music.set_endevent(MUSIC_END)
 
 def get_music():
-    songs_list = []
-    os.chdir('music')
-    files = [f for f in os.listdir('.') if os.path.isfile(f)]
-    for mp3 in files:
-        if mp3.endswith('.mp3'):
-            songs_list.append(mp3)
+	songs_list = []
+	os.chdir('music')
+	files = [f for f in os.listdir('.') if os.path.isfile(f)]
+	for mp3 in files:
+		if mp3.endswith('.mp3'):
+			songs_list.append(mp3)
 
-    os.chdir('..')
-    return songs_list
+	os.chdir('..')
+	return songs_list
 
 class App():
 	"""
@@ -928,6 +928,13 @@ class App():
 		Text(self.screen, f'Game duration: {timedelta(seconds=game_duration)}', (70, 36), WHITE)
 		Text(self.screen, f'Lobby duration: {timedelta(seconds=lobby_duration)}', (70, 54), WHITE)
 
+		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (60, self.height-45), 'exit')
+		exit_btn.draw()
+		chat_btn = ImageButton(self.screen, 'images/game_chat.png', (25, 25), (105, self.height-45), 'info')
+		chat_btn.draw()
+
+		return exit_btn, chat_btn
+
 	def color_from_player(self):
 		colors = {
 			0 : 'Green',
@@ -1000,7 +1007,7 @@ class App():
 				your_pawns = self.draw_pawns(game)
 				dice_button = self.draw_dice(game)
 				self.draw_players(game)
-				self.draw_game_screen(game)
+				exit_btn, chat_btn = self.draw_game_screen(game)
 
 				mx, my = pygame.mouse.get_pos()
 				if click:
@@ -1046,6 +1053,12 @@ class App():
 							else:
 								pass
 
+					if chat_btn.click((mx, my)):
+						self.chat_screen(game_id)
+
+					if exit_btn.click((mx, my)):
+						pass
+
 
 			click = False
 			for event in pygame.event.get():
@@ -1071,20 +1084,20 @@ class App():
 			clock.tick(60)
 
 
-	def chat_screen(self, n, player):
+	def chat_screen(self, game_id):
 		pygame.display.set_caption('Ludo Club (Chat)')
 		run = True
 		click = False
 
-		input_text = InputBox(self.screen, (20, self.height - 45), (self.width - 90, 30), '', GREEN, WHITE)
-		input_send = ImageButton(self.screen, 'images/main/send.png', (30, 30), (self.width - 45, self.height - 48), 'info')
-		exit_btn = ImageButton(self.screen, 'images/main/exit.png', (25, 25), (self.width - 45, 20), 'exit')
+		input_text = InputBox(self.screen, (20, self.height - 45), (self.width - 90, 30), '', RED, WHITE)
+		input_send = ImageButton(self.screen, 'images/chat_send.png', (30, 30), (self.width - 45, self.height - 48), 'info')
+		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (self.width - 45, 20), 'exit')
 
 		while run:
 			try:
-				game = n.send('get')
+				game = self.network.send(f'get {game_id}')
 			except:
-				self.draw_error('Could not get game... (player left)')
+				self.draw_error('Could not get game.')
 				pygame.time.delay(2000)
 				run = False
 				break
@@ -1100,20 +1113,18 @@ class App():
 			Text(self.screen, f'TYPING AS USER: {self.user.username}',(self.width - 65, 32), WHITE, right=True)
 
 			y = self.height - 60
-			for idx, msg in enumerate(game.messages[:21]):
+			for idx, msg in enumerate(game.messages[:32]):
 				Text(self.screen, f'# {msg[2]} // {msg[0]} // {msg[1]}', (20, y), WHITE, text_size=20)
 				y -= 20
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
 				if input_send.click((mx, my)):
-					send_packet = f'msg {self.user.username} {input_text.text}'
-					input_text.clear()
-
 					try:
-						game = n.send(send_packet)
+						game = self.network.send(f'msg {self.user.username} {input_text.text}')
+						input_text.clear()
 					except:
-						self.draw_error('Could not get game... (after sending message)')
+						self.draw_error('Could not set message.')
 						pygame.time.delay(2000)
 						run = False
 						break
@@ -1125,6 +1136,7 @@ class App():
 			click = False
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
+					game = self.network.send(f'quit')
 					self.user.user_quit()
 					pygame.quit()
 					sys.exit()

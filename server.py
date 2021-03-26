@@ -128,6 +128,14 @@ class Server():
 						game.move_pawn(player, pawn_idx)
 						conn.sendall(pickle.dumps(game))
 
+					elif data_list[0] == 'msg':
+						game = self.games[game_id]
+						username = data_list[1]
+						msg = ' '.join(data_list[2:])
+
+						game.send_msg(username, msg)
+						conn.sendall(pickle.dumps(game))
+
 					elif data_list[0] == 'quit':
 						game = self.games[game_id]
 
@@ -137,6 +145,16 @@ class Server():
 						conn.sendall(pickle.dumps(game))
 						
 						if game.players_left == game.joined:
+							# Save message history
+							if len(game.messages) > 8:
+								time = datetime.now()
+								time_str = f'{time.day:02d}_{time.month:02d}_{time.year} {time.hour:02d}_{time.minute:02d}_{time.second:02d}'
+								filename = f'chat_history/chat_{time_str}.txt'
+								with open(filename, 'w') as file:
+									game.messages.reverse()
+									for msg in game.messages:
+										file.write(f'# {msg[2]} // Player {msg[0]} // {msg[1]}\n')
+
 							# Check if game in lobby phase
 							if game in self.waiting:
 								self.waiting.remove(self.games[game_id])
