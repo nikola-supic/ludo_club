@@ -249,8 +249,7 @@ class App():
 					if self.user.admin:
 						self.admin_panel()
 					else:
-						Text(self.screen, 'You do not have admin permissions.', (self.width/2, self.height-40), BLUE, text_size=24, center=True)
-						pygame.display.update()
+						self.draw_error('You do not have admin permissions.')
 						pygame.time.delay(1000)
 
 			click = False
@@ -336,8 +335,7 @@ class App():
 					if volume.text != '':
 						value = int(volume.text)
 						if value < 0 or value > 100:
-							Text(self.screen, 'Volume can not be lower then 0 or bigger then 100.', (self.width/2, self.height-105), BLUE, text_size=24, center=True)
-							pygame.display.update()
+							self.draw_error('Volume value must be between 0 and 100.')
 							pygame.time.delay(1000)
 						else:
 							self.user.change_volume(value)
@@ -547,18 +545,12 @@ class App():
 						size = int(lobby_size.text)
 
 						if lobby_name.text == '' or len(lobby_name.text) > 24:
-							Text(self.screen, 'You need to enter valid name for lobby.', (self.width/2, self.height-60), WHITE, text_size=24, center=True)
-							lobby_name.clear()
-							pygame.display.update()
-							pygame.time.delay(1000)
+							self.draw_error('You need to enter valid name for lobby.')
+							pygame.time.delay(1500)
 						
 						elif size < 2 or size > 4:
-							lobby_size.clear()
-							
-							Text(self.screen, 'You need to enter number between 2 and 4.', (self.width/2, self.height-60), WHITE, text_size=24, center=True)
-							lobby_size.clear()
-							pygame.display.update()
-							pygame.time.delay(1000)
+							self.draw_error('You need to enter number between 2 and 4.')
+							pygame.time.delay(1500)
 						
 						else:
 							lobby_name.text.replace(' ', '_')
@@ -573,15 +565,14 @@ class App():
 								game = self.network.send(f'create {lobby_name.text} {size} {pw}')
 								self.game_screen(game.id)
 							except:
-								Text(self.screen, 'Error while trying to connect to server.', (self.width/2, self.height-60), WHITE, text_size=24, center=True)
-								pygame.display.update()
-								pygame.time.delay(1000)
+								self.draw_error('Game error #404.')
+								pygame.time.delay(1500)
+								run = False
 
 					except ValueError:
-						Text(self.screen, 'You need to enter number between 2 and 4.', (self.width/2, self.height-60), WHITE, text_size=24, center=True)
-						lobby_size.clear()
-						pygame.display.update()
-						pygame.time.delay(1000)
+						self.draw_error('You need to enter number between 2 and 4.')
+						pygame.time.delay(1500)
+						run = False
 
 				if exit_btn.click((mx, my)):
 					run = False
@@ -729,30 +720,106 @@ class App():
 
 			pygame.display.update()
 			clock.tick(60)
-
-	def draw_quitting(self, game):
-		pass
+		
 
 	def draw_waiting(self, game):
+		duration = int((datetime.now() - game.lobby_started).total_seconds())
+		x = self.width/2 - 190
+		y = self.height/2 - 100
+
 		self.screen.fill(BLACK)
-		bg = pygame.image.load("images/waiting.jpg")
+		bg = pygame.image.load("images/game_bg.jpg")
 		bg = pygame.transform.scale(bg, (self.width, self.height))
 		self.screen.blit(bg, (0, 0))
-		duration = int((datetime.now() - game.lobby_started).total_seconds())
 
-		Text(self.screen, 'Waiting for players to join...', (self.width/2, 40), WHITE, text_size=64, center=True)
-		Text(self.screen, f'Waiting time: {timedelta(seconds=duration)}', (self.width/2, 70), WHITE, text_size=24, center=True)
-		Text(self.screen, f'Players joined: {game.joined} / {game.lobby_size}', (self.width/2, 90), WHITE, text_size=24, center=True)
+
+		window = pygame.image.load("images/lobby.png")
+		window = pygame.transform.scale(window, (380, 200))
+		self.screen.blit(window, (x, y))
+
+		Text(self.screen, 'Waiting for players to join...', (x+90, y+19), WHITE, text_size=20)
+		Text(self.screen, f'WAITING TIME: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
+		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+25, y+70), RED, text_size=24)
+		Text(self.screen, f'PASSWORD: {game.lobby_pw}', (x+25, y+90), RED, text_size=24)
+		Button(self.screen, 'WAITING...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
+		Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
 		pygame.display.update()
 
-	def draw_winner(self, winner):
+
+	def draw_quitting(self, game):
+		pygame.display.set_caption('Ludo Club (Player Left)')
+
+		run = True
+		click = False
+		duration = int((datetime.now() - game.time_started).total_seconds())
+		while run:
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+
+			x = self.width/2 - 190
+			y = self.height/2 - 100
+
+			window = pygame.image.load("images/lobby.png")
+			window = pygame.transform.scale(window, (380, 200))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'One of the player left', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
+			Text(self.screen, f'WINS: {game.wins[self.player]}', (x+25, y+70), RED, text_size=24)
+			Text(self.screen, f'DEFEATS: {game.defeats[self.player]}', (x+25, y+90), RED, text_size=24)
+			Button(self.screen, 'QUIT...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				pass
+
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					game = self.network.send(f'quit')
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						game = self.network.send(f'quit')
+						run = False
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+			pygame.display.update()
+			clock.tick(60)
+
+
+	def draw_winner(self, game):
+		duration = int((datetime.now() - game.time_started).total_seconds())
+		x = self.width/2 - 190
+		y = 25
+
 		self.screen.fill(BLACK)
-		bg = pygame.image.load("images/main/winner.jpg")
+		bg = pygame.image.load("images/game_winner.jpg")
 		bg = pygame.transform.scale(bg, (self.width, self.height))
 		self.screen.blit(bg, (0, 0))
-		Text(self.screen, 'WE HAVE A WINNER !', (self.width/2, 25), BLACK, text_size=40, center=True)
-		Text(self.screen, f'{winner}', (self.width/2, 60), BLACK, text_size=40, center=True)
+
+		window = pygame.image.load("images/lobby.png")
+		window = pygame.transform.scale(window, (380, 200))
+		self.screen.blit(window, (x, y))
+
+		Text(self.screen, 'We have a winner!', (x+90, y+19), WHITE, text_size=20)
+		Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
+		Text(self.screen, f'WINNER: {game.winner}', (x+25, y+70), RED, text_size=24)
+		Button(self.screen, 'WINNER...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
+		Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
 		pygame.display.update()
 
@@ -760,8 +827,8 @@ class App():
 		pygame.display.set_caption('Ludo Club (Game)')
 		run = True
 		click = False
-
 		x, y = 50, 50
+
 		try:
 			self.player = self.network.send('get_player')
 			print('[ > ] You are player:', self.player)
@@ -781,11 +848,12 @@ class App():
 
 			if game.player_left():
 				self.draw_quitting(game)
+				break
 
 			elif not game.connected():
 				self.draw_waiting(game)
 
-			elif game.winner is not None:
+			elif game.winner is None:
 				self.draw_winner(game)
 
 			else:
@@ -805,12 +873,14 @@ class App():
 			click = False
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
+					game = self.network.send(f'quit')
 					self.user.user_quit()
 					pygame.quit()
 					sys.exit()
 
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_ESCAPE:
+						game = self.network.send('quit')
 						run = False
 
 				if event.type == pygame.MOUSEBUTTONUP:

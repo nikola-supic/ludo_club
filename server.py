@@ -57,6 +57,7 @@ class Server():
 				data = conn.recv(4096).decode()
 
 				if not data:
+					print('[ - ] DATA BREAK')
 					break
 				else:
 					data_list = data.split()
@@ -70,7 +71,7 @@ class Server():
 
 						self.waiting.append(self.games[game_id])
 						print(f'[ + ] Creating a new game... (of size {data_list[2]})')
-						
+
 						conn.sendall(pickle.dumps(self.games[game_id]))
 
 					elif data_list[0] == 'get_lobby':
@@ -83,6 +84,7 @@ class Server():
 
 						if self.games[game_id].joined == self.games[game_id].lobby_size:
 							self.games[game_id].ready = True
+							self.games[game_id].time_started = datetime.now()
 							self.waiting.remove(self.games[game_id])
 							print(f'[ + ] Starting a new game... (of size {self.games[game_id].lobby_size})')
 
@@ -97,28 +99,25 @@ class Server():
 						conn.sendall(pickle.dumps(p))
 
 					elif data_list[0] == 'quit':
-						game.quit = True
+						self.games[game_id].quit = True
+						self.games[game_id].players_left += 1
 
 						conn.sendall(pickle.dumps(self.games[game_id]))
+						
+						if self.games[game_id].players_left == self.games[game_id].joined:
+							# Check if game in lobby phase
+							if self.games[game_id] in self.waiting:
+								self.waiting.remove(self.games[game_id])
+
+							del self.games[game_id]
+							print(f'[ - ] Closing game.. (ID: {game_id})')
+
 
 			except:
+				print('[ - ] ERROR BREAK')
 				break
 
 		print('[ - ] Lost connection')
-		try:
-			if game_id in self.games:
-				game = self.games[game_id]
-
-				# Check if game in lobby phase
-				for size in range(2, 4):
-					if game_id in self.waiting[size]:
-						self.waiting[size].remove(game_id)
-
-				del self.games[game_id]
-				print(f'[ - ] Closing game.. (ID: {game_id})')
-		except:
-			pass
-
 		self.id_count -= 1
 		conn.close()
 

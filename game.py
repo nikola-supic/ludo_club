@@ -18,6 +18,7 @@ class Game():
 		self.joined = 1
 		self.ready = False
 		self.quit = False
+		self.players_left = 0
 		self.winner = None
 		self.player_on_move = None
 		self.time_started = 0
@@ -25,6 +26,7 @@ class Game():
 		self.user_names = ['' for _ in range(lobby_size)]
 		self.user_ids = [0 for _ in range(lobby_size)]
 		self.wins = [0 for _ in range(lobby_size)]
+		self.defeats = [0 for _ in range(lobby_size)]
 		self.lobby_started = datetime.now()
 		self.messages = []
 
@@ -47,13 +49,6 @@ class Game():
 
 	def give_win(self, player):
 		self.wins[player] += 1
-
-	def get_defeats(self, player):
-		defeats = 0
-		for idx, wins in enumerate(self.wins):
-			if player != idx:
-				defeats += wins
-		return defeats
 
 	def update_users(self, player, username, id):
 		self.user_names[player] = username
