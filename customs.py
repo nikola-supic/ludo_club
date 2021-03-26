@@ -103,7 +103,7 @@ class ImageButton():
         return False
 
 class InputBox():
-    def __init__(self, screen, pos, size, text='', color_active=(0, 255, 0), color_inactive=(255, 0,0 )):
+    def __init__(self, screen, pos, size, text='', color_active=(0, 255, 0), color_inactive=(255, 0, 0)):
         font = pygame.font.Font(None, 24)
         self.screen = screen
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
