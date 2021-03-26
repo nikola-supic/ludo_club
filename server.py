@@ -117,7 +117,15 @@ class Server():
 						game = self.games[game_id]
 						dice = int(data_list[1])
 
+						# game.rolled_dice = True
 						game.dice = dice
+						conn.sendall(pickle.dumps(game))
+
+					elif data_list[0] == 'move':
+						game = self.games[game_id]
+						player = int(data_list[1])
+						pawn_idx = int(data_list[2])
+						game.move_pawn(player, pawn_idx)
 						conn.sendall(pickle.dumps(game))
 
 					elif data_list[0] == 'quit':

@@ -9,6 +9,7 @@ Created on Wed Mar 10 14:04:30 2021
 #!/usr/bin/env python3
 from datetime import datetime
 from random import randint
+from positions import BOARD_POS
 
 class Game():
 	def __init__(self, id, lobby_name, lobby_size, lobby_pw):
@@ -23,7 +24,9 @@ class Game():
 
 		self.time_started = 0
 		self.winner = None
+		self.pawn = []
 		self.player_on_move = None
+		self.rolled_dice = False
 		self.dice = 1
 
 		self.user_names = ['' for _ in range(lobby_size)]
@@ -32,6 +35,7 @@ class Game():
 		self.defeats = [0 for _ in range(lobby_size)]
 		self.lobby_started = datetime.now()
 		self.messages = []
+
 
 	def start(self):
 		self.pawn = []
@@ -51,24 +55,75 @@ class Game():
 		self.winner = None
 		self.player_on_move = None
 
+
 	def connected(self):
 		return self.ready
+
 
 	def player_left(self):
 		return self.quit
 
-	def get_player_move(self):
-		return self.player_on_move
+	def start_from_color(self, player):
+		pos = {
+			0 : 1,
+			1 : 27,
+			2 : 40,
+			3 : 14
+		}
+		return pos[player]
 
-	def check_is_winner(self, player):
-		pass
+	def last_from_color(self, player):
+		pos = {
+			0 : 51,
+			1 : 25,
+			2 : 38,
+			3 : 12
+		}
+		return pos[player]
+
+	def move_pawn(self, player, move_idx):
+		for player_idx, color in enumerate(self.pawn):
+			if player_idx == player:
+				for pawn_idx, pawn in enumerate(color):
+					if pawn_idx == move_idx:
+						if pawn.finish:
+							if pawn.pos+1 == 5:
+								del self.pawn[player_idx][pawn_idx]
+								break
+							else:
+								pawn.pos += 1
+						else:
+							if pawn.pos < 0:
+								pawn.pos = self.start_from_color(player_idx)
+							else:
+								if pawn.pos == self.last_from_color(player_idx):
+									pawn.pos = 0
+									pawn.finish = True
+								else:
+									if pawn.pos+1 == len(BOARD_POS):
+										pawn.pos = 0
+									else:
+										pawn.pos += 1
+
+		self.rolled_dice = False
+
+	def get_next(self):
+		next_player = None
+		if self.player_on_move == self.lobby_size-1:
+			next_player = 0
+		else:
+			next_player = self.player_on_move + 1
+		return next_player 
+
 
 	def give_win(self, player):
 		self.wins[player] += 1
 
+
 	def update_users(self, player, username, id):
 		self.user_names[player] = username
 		self.user_ids[player] = id
+
 
 	def send_msg(self, username, message):
 		time = datetime.now()
@@ -84,6 +139,8 @@ class Pawn():
 		self.color = color
 		self.pos = pos
 		self.img = img
+		self.finish = False
+		self.button = None
 		
 	def __str__(self):
 		return f'{self.color}-{self.pos}-{self.img}'

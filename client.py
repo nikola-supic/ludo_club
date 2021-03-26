@@ -832,42 +832,51 @@ class App():
 				if pawn.pos < 0:
 					pos = pawn.pos * (-1) - 1
 					if pawn.color == 'green':
-						x = 50 + GREEN_START[pos][0] + 4
-						y = 50 + GREEN_START[pos][1] + 4
-
-						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+						x = 50 + GREEN_START[pos][0] + 5
+						y = 50 + GREEN_START[pos][1] + 5
 
 					if pawn.color == 'red':
-						x = 50 + RED_START[pos][0] + 4
-						y = 50 + RED_START[pos][1] + 4
-
-						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+						x = 50 + RED_START[pos][0] + 5
+						y = 50 + RED_START[pos][1] + 5
 
 					if pawn.color == 'blue':
-						x = 50 + BLUE_START[pos][0] + 4
-						y = 50 + BLUE_START[pos][1] + 4
-
-						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+						x = 50 + BLUE_START[pos][0] + 5
+						y = 50 + BLUE_START[pos][1] + 5
 
 					if pawn.color == 'yellow':
-						x = 50 + YELLOW_START[pos][0] + 4
-						y = 50 + YELLOW_START[pos][1] + 4
+						x = 50 + YELLOW_START[pos][0] + 5
+						y = 50 + YELLOW_START[pos][1] + 5
 
-						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+					pawn.button = ImageButton(self.screen, pawn.img, (30, 30), (x, y), 'pawn')
+					pawn.button.draw()
 
 				else:
-					if pawn.color == 'green':
-						pass
-					if pawn.color == 'red':
-						pass
-					if pawn.color == 'blue':
-						pass
-					if pawn.color == 'yellow':
-						pass
+					if pawn.finish:
+						if pawn.color == 'green':
+							x = 50 + GREEN_FINISH[pawn.pos][0] + 5
+							y = 50 + GREEN_FINISH[pawn.pos][1] + 5
 
-				pawn_btn.draw()
+						if pawn.color == 'red':
+							x = 50 + RED_FINISH[pawn.pos][0] + 5
+							y = 50 + RED_FINISH[pawn.pos][1] + 5
+
+						if pawn.color == 'blue':
+							x = 50 + BLUE_FINISH[pawn.pos][0] + 5
+							y = 50 + BLUE_FINISH[pawn.pos][1] + 5
+
+						if pawn.color == 'yellow':
+							x = 50 + YELLOW_FINISH[pawn.pos][0] + 5
+							y = 50 + YELLOW_FINISH[pawn.pos][1] + 5
+
+					else:
+						x = 50 + BOARD_POS[pawn.pos][0] + 5
+						y = 50 + BOARD_POS[pawn.pos][1] + 5
+
+					pawn.button = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+					pawn.button.draw()
+
 				if self.player == player:
-					your_pawns.append(pawn_btn)
+					your_pawns.append(pawn)
 
 		return your_pawns
 
@@ -895,7 +904,7 @@ class App():
 				Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16, right=True)
 				Text(self.screen, f'{wins}W / {defeats}D', (x, y), BLACK, text_size=16, right=True)
 				if game.player_on_move == idx:
-					Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16)
+					Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16, right=True)
 
 			if idx == 2:
 				x, y = 75, 620
@@ -909,8 +918,34 @@ class App():
 				Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16, right=True)
 				Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16, right=True)
 				if game.player_on_move == idx:
-					Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16)
+					Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16, right=True)
 
+	def draw_game_screen(self, game):
+		game_duration = int((datetime.now() - game.time_started).total_seconds())
+		lobby_duration = int((datetime.now() - game.lobby_started).total_seconds())
+
+		Text(self.screen, f'Your color: {self.color_from_player()}', (70, 18), WHITE)
+		Text(self.screen, f'Game duration: {timedelta(seconds=game_duration)}', (70, 36), WHITE)
+		Text(self.screen, f'Lobby duration: {timedelta(seconds=lobby_duration)}', (70, 54), WHITE)
+
+	def color_from_player(self):
+		colors = {
+			0 : 'Green',
+			1 : 'Blue',
+			2 : 'Yellow',
+			3 : 'Red'
+		}
+		return colors[self.player]
+
+	def send_move(self, pawn_idx):
+		try:
+			game = self.network.send(f'move {self.player} {pawn_idx}')
+		except:
+			self.draw_error('Could not move pawn.')
+			pygame.time.delay(1500)
+			pygame.display.update()
+			run = False
+		return game, run
 
 	def game_screen(self, game_id):
 		pygame.display.set_caption('Ludo Club (Game)')
@@ -965,33 +1000,51 @@ class App():
 				your_pawns = self.draw_pawns(game)
 				dice_button = self.draw_dice(game)
 				self.draw_players(game)
-
-				Text(self.screen, f'You: {self.player}', (20, 20), WHITE)
-				Text(self.screen, f'Move: {game.player_on_move}', (80, 20), WHITE)
+				self.draw_game_screen(game)
 
 				mx, my = pygame.mouse.get_pos()
 				if click:
 					if game.player_on_move == self.player:
-						for pawn in your_pawns:
-							if pawn.click((mx, my)):
-								print('pawn clicked')
+						for pawn_idx, pawn in enumerate(your_pawns):
+							if pawn.button.click((mx, my)):
+								if game.rolled_dice:
+									if pawn.pos < 0:
+										if game.dice == 6:
+											game, run = self.send_move(pawn_idx)
+										else:
+											pass
+									else:
+										if pawn.finish:
+											if game.dice+pawn.pos >= 5:
+												pass
+											else:
+												game, run = self.send_move(pawn_idx)
+
+										else:
+											for _ in range(game.dice):
+												game, run = self.send_move(pawn_idx)
+								else:
+									pass
 
 						if dice_button.click((mx, my)):
-							for i in range(randint(10, 20)):
-								value = randint(1, 6)
-								dice_button.image = f'images/cube/cube_{value}.png'
-								dice_button.draw()
+							if not game.rolled_dice:
+								for i in range(randint(10, 20)):
+									value = randint(1, 6)
+									dice_button.image = f'images/cube/cube_{value}.png'
+									dice_button.draw()
 
-								pygame.display.update()
-								pygame.time.delay(75)
+									pygame.display.update()
+									pygame.time.delay(75)
 
-							try:
-								game = self.network.send(f'dice {value}')
-							except:
-								self.draw_error('Could not send dice value.')
-								pygame.time.delay(1500)
-								run = False
-								break
+								try:
+									game = self.network.send(f'dice {value}')
+								except:
+									self.draw_error('Could not send dice value.')
+									pygame.time.delay(1500)
+									run = False
+									break
+							else:
+								pass
 
 
 			click = False
@@ -1005,154 +1058,6 @@ class App():
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_ESCAPE:
 						game = self.network.send('quit')
-						run = False
-
-				if event.type == pygame.MOUSEBUTTONUP:
-					if event.button == 1:
-						click = True
-
-				if event.type == MUSIC_END:
-					self.background_music()
-
-			pygame.display.update()
-			clock.tick(60)
-
-
-
-
-
-
-
-
-
-
-	def start_game(self, lobby_size):
-		pygame.display.set_caption('Ludo Club (Game)')
-		run = True
-		click = False
-
-		x, y = 50, 50
-
-		green_pos = 1
-		green_finish = -1
-		green_figure = pygame.image.load('images/green.png')
-		green_figure = pygame.transform.scale(green_figure, (24, 24)) 
-
-		red_pos = 14
-		red_finish = -1
-		red_figure = pygame.image.load('images/red.png')
-		red_figure = pygame.transform.scale(red_figure, (24, 24)) 
-
-		blue_pos = 27
-		blue_finish = -1
-		blue_figure = pygame.image.load('images/blue.png')
-		blue_figure = pygame.transform.scale(blue_figure, (24, 22)) 
-
-		yellow_pos = 40
-		yellow_finish = -1
-		yellow_figure = pygame.image.load('images/yellow.png')
-		yellow_figure = pygame.transform.scale(yellow_figure, (22, 22)) 
-
-		cube_button = ImageButton(self.screen, 'images/cube_1.png', (40, 40), (self.width/2 - 20, self.height/2 - 20), 'cube')
-
-		while run:
-			# Drawing
-			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/background.jpg")
-			bg = pygame.transform.scale(bg, (self.width, self.height))
-			self.screen.blit(bg, (0, 0))
-
-			game_map = pygame.image.load('images/game_map.png')
-			game_map = pygame.transform.scale(game_map, (self.width-100, self.height-100))
-			self.screen.blit(game_map, (x, y))
-
-			# for idx, pos in enumerate(BOARD_POS):
-				# Text(self.screen, f'{idx}', (x+pos[0], y+pos[1]), BLACK)
-
-			# if green_finish == -1:
-			# 	if green_pos == 51:
-			# 		green_finish = 0
-			# 	if green_pos == len(BOARD_POS):
-			# 		green_pos = 0
-			# 	self.screen.blit(green_figure, (x+4+BOARD_POS[green_pos][0], y+4+BOARD_POS[green_pos][1]))
-			# 	green_pos += 1
-			# else:
-			# 	self.screen.blit(green_figure, (x+4+GREEN_FINISH[green_finish][0], y+4+GREEN_FINISH[green_finish][1]))
-			# 	green_finish += 1
-
-			# 	if green_finish == len(GREEN_FINISH)-1:
-			# 		green_pos = 1
-			# 		green_finish = -1
-
-			# if red_finish == -1:
-			# 	if red_pos == 12:
-			# 		red_finish = 0
-			# 	if red_pos == len(BOARD_POS):
-			# 		red_pos = 0
-			# 	self.screen.blit(red_figure, (x+4+BOARD_POS[red_pos][0], y+4+BOARD_POS[red_pos][1]))
-			# 	red_pos += 1
-			# else:
-			# 	self.screen.blit(red_figure, (x+4+RED_FINISH[red_finish][0], y+4+RED_FINISH[red_finish][1]))
-			# 	red_finish += 1
-
-			# 	if red_finish == len(RED_FINISH)-1:
-			# 		red_finish = -1
-			# 		red_pos = 14
-
-			# if blue_finish == -1:
-			# 	if blue_pos == 25:
-			# 		blue_finish = 0
-			# 	if blue_pos == len(BOARD_POS):
-			# 		blue_pos = 0
-			# 	self.screen.blit(blue_figure, (x+4+BOARD_POS[blue_pos][0], y+4+BOARD_POS[blue_pos][1]))
-			# 	blue_pos += 1
-			# else:
-			# 	self.screen.blit(blue_figure, (x+4+BLUE_FINISH[blue_finish][0], y+4+BLUE_FINISH[blue_finish][1]))
-			# 	blue_finish += 1
-
-			# 	if blue_finish == len(BLUE_FINISH)-1:
-			# 		blue_pos = 27
-			# 		blue_finish = -1
-
-			# if yellow_finish == -1:
-			# 	if yellow_pos == 38:
-			# 		yellow_finish = 0
-			# 	if yellow_pos == len(BOARD_POS):
-			# 		yellow_pos = 0
-			# 	self.screen.blit(yellow_figure, (x+4+BOARD_POS[yellow_pos][0], y+4+BOARD_POS[yellow_pos][1]))
-			# 	yellow_pos += 1
-			# else:
-			# 	self.screen.blit(yellow_figure, (x+4+YELLOW_FINISH[yellow_finish][0], y+4+YELLOW_FINISH[yellow_finish][1]))
-			# 	yellow_finish += 1
-
-			# 	if yellow_finish == len(YELLOW_FINISH)-1:
-			# 		yellow_pos = 40
-			# 		yellow_finish = -1
-
-			cube_button.draw()
-
-			# Checks
-			mx, my = pygame.mouse.get_pos()
-			if click:
-				if cube_button.click((mx, my)):
-					for i in range(randint(10, 20)):
-						value = randint(1, 6)
-						cube_button.image = f'images/cube_{value}.png'
-						cube_button.draw()
-
-						pygame.display.update()
-						pygame.time.delay(75)
-
-			# Events
-			click = False
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					self.user.user_quit()
-					pygame.quit()
-					sys.exit()
-
-				if event.type == pygame.KEYDOWN:
-					if event.key == pygame.K_ESCAPE:
 						run = False
 
 				if event.type == pygame.MOUSEBUTTONUP:
