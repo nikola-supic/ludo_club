@@ -136,16 +136,15 @@ class InputBox():
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
-                
-                font = pygame.font.Font(None, 24)
-                self.txt_surface = font.render(self.text, True, self.color)
-
 
     def update(self):
         width = max(self.rect.w, self.txt_surface.get_width()+10)
         self.rect.w = width
 
     def draw(self):
+        font = pygame.font.Font(None, 24)
+        self.txt_surface = font.render(self.text, True, self.color)
+
         self.screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         pygame.draw.rect(self.screen, self.color, self.rect, 2)
 

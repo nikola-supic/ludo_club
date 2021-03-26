@@ -25,6 +25,7 @@ import user
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GREY = (55, 72, 80)
 GREEN = (34, 177, 76)
 RED = (237, 28, 36)
 BLUE = (15, 39, 99)
@@ -510,32 +511,37 @@ class App():
 
 
 	def create_lobby(self):
-		pygame.display.set_caption('Ludo Club (Admin Panel)')
+		pygame.display.set_caption('Ludo Club (Create Lobby)')
 		run = True
 		click = False
 
-		lobby_name = InputBox(self.screen, (self.width/2 - 150, 190), (300, 30), 'lobby', BLUE, WHITE)
-		lobby_size = InputBox(self.screen, (self.width/2 - 150, 240), (300, 30), '2', BLUE, WHITE)
-		lobby_pw = InputBox(self.screen, (self.width/2 - 150, 290), (300, 30), '', BLUE, WHITE)
+		x = self.width/2 - 190
+		y = self.height/2 - 100
 
-		create = Button(self.screen, 'CREATE', (self.width/2 - 150, self.height-50), (300, 30), BLUE, text_color=WHITE, border=2, border_color=WHITE)
+		lobby_name = InputBox(self.screen, (x+25, y+60), (332, 25), 'lobby', RED, GREY)
+		lobby_pw = InputBox(self.screen, (x+25, y+110), (332, 25), '', RED, GREY)
+		lobby_size = InputBox(self.screen, (x+25, y+157), (160, 25), '2', RED, GREY)
+
+		create = Button(self.screen, 'CREATE', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE)
 		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
-			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
-			Text(self.screen, 'CREATING NEW LOBBY', (self.width/2, 130), WHITE, text_size=24, center=True)
-			Text(self.screen, 'ENTER INFORMATION ABOUT LOBBY YOU WANT TO CREATE', (self.width/2, 145), BLUE, text_size=20, center=True)
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
-			Text(self.screen, 'Enter lobby name:', (self.width/2, 180), WHITE, text_size=18, center=True)
+			window = pygame.image.load("images/lobby.png")
+			window = pygame.transform.scale(window, (380, 200))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'Creating new lobby', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, 'Enter lobby name:', (x+25, y+50), GREY, text_size=18)
 			lobby_name.draw()
-			Text(self.screen, 'Enter lobby size:', (self.width/2, 230), WHITE, text_size=18, center=True)
-			lobby_size.draw()
-			Text(self.screen, 'Enter lobby password:', (self.width/2, 280), WHITE, text_size=18, center=True)
+			Text(self.screen, 'Enter lobby password:', (x+25, y+100), GREY, text_size=18)
 			lobby_pw.draw()
+			Text(self.screen, 'Enter lobby size:', (x+25, y+147), GREY, text_size=18)
+			lobby_size.draw()
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
 			create.draw()
 			exit_btn.draw()
