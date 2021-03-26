@@ -18,7 +18,9 @@ import os
 from game import Game
 from network import Network
 from customs import Text, Button, ImageButton, InputBox
-from positions import BOARD_POS, GREEN_FINISH, RED_FINISH, BLUE_FINISH, YELLOW_FINISH
+from positions import BOARD_POS
+from positions import GREEN_FINISH, RED_FINISH, BLUE_FINISH, YELLOW_FINISH
+from positions import GREEN_START, RED_START, BLUE_START, YELLOW_START
 import user
 
 WHITE = (255, 255, 255)
@@ -26,7 +28,7 @@ BLACK = (0, 0, 0)
 GREEN = (34, 177, 76)
 RED = (237, 28, 36)
 BLUE = (15, 39, 99)
-YELLOW = (255, 242, 0)
+YELLOW = (255, 214, 7)
 
 CARD_WIDTH = 80
 CARD_HEIGHT = 140
@@ -217,7 +219,7 @@ class App():
 			pygame.display.set_caption('Ludo Club (Main Menu)')
 
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/main_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
@@ -292,7 +294,7 @@ class App():
 		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/main_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
@@ -395,7 +397,7 @@ class App():
 		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/main_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
@@ -520,7 +522,7 @@ class App():
 		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
@@ -660,7 +662,7 @@ class App():
 				break
 
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
@@ -728,10 +730,9 @@ class App():
 		y = self.height/2 - 100
 
 		self.screen.fill(BLACK)
-		bg = pygame.image.load("images/game_bg.jpg")
+		bg = pygame.image.load("images/background.jpg")
 		bg = pygame.transform.scale(bg, (self.width, self.height))
 		self.screen.blit(bg, (0, 0))
-
 
 		window = pygame.image.load("images/lobby.png")
 		window = pygame.transform.scale(window, (380, 200))
@@ -755,7 +756,7 @@ class App():
 		duration = int((datetime.now() - game.time_started).total_seconds())
 		while run:
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
@@ -823,6 +824,94 @@ class App():
 
 		pygame.display.update()
 
+
+	def draw_pawns(self, game):
+		your_pawns = []
+		for player, player_pawn in enumerate(game.pawn):
+			for idx, pawn in enumerate(player_pawn):
+				if pawn.pos < 0:
+					pos = pawn.pos * (-1) - 1
+					if pawn.color == 'green':
+						x = 50 + GREEN_START[pos][0] + 4
+						y = 50 + GREEN_START[pos][1] + 4
+
+						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+
+					if pawn.color == 'red':
+						x = 50 + RED_START[pos][0] + 4
+						y = 50 + RED_START[pos][1] + 4
+
+						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+
+					if pawn.color == 'blue':
+						x = 50 + BLUE_START[pos][0] + 4
+						y = 50 + BLUE_START[pos][1] + 4
+
+						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+
+					if pawn.color == 'yellow':
+						x = 50 + YELLOW_START[pos][0] + 4
+						y = 50 + YELLOW_START[pos][1] + 4
+
+						pawn_btn = ImageButton(self.screen, pawn.img, (24, 24), (x, y), 'pawn')
+
+				else:
+					if pawn.color == 'green':
+						pass
+					if pawn.color == 'red':
+						pass
+					if pawn.color == 'blue':
+						pass
+					if pawn.color == 'yellow':
+						pass
+
+				pawn_btn.draw()
+				if self.player == player:
+					your_pawns.append(pawn_btn)
+
+		return your_pawns
+
+	def draw_dice(self, game):
+		dice_button = ImageButton(self.screen, f'images/cube/cube_{game.dice}.png', (40, 40), (self.width/2 - 20, self.height/2 - 20), 'cube')
+		dice_button.draw()
+		return dice_button
+
+	def draw_players(self, game):
+		for idx, user_name in enumerate(game.user_names):
+			user_id = game.user_ids[idx]
+			wins = game.wins[idx]
+			defeats = game.defeats[idx]
+
+			if idx == 0:
+				x, y = 75, 80
+				Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16)
+				Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16)
+				if game.player_on_move == idx:
+					Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16)
+
+
+			if idx == 1:
+				x, y = 625, 620
+				Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16, right=True)
+				Text(self.screen, f'{wins}W / {defeats}D', (x, y), BLACK, text_size=16, right=True)
+				if game.player_on_move == idx:
+					Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16)
+
+			if idx == 2:
+				x, y = 75, 620
+				Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16)
+				Text(self.screen, f'{wins}W / {defeats}D', (x, y), BLACK, text_size=16)
+				if game.player_on_move == idx:
+					Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16)
+
+			if idx == 3:
+				x, y = 625, 80
+				Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16, right=True)
+				Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16, right=True)
+				if game.player_on_move == idx:
+					Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16)
+
+
 	def game_screen(self, game_id):
 		pygame.display.set_caption('Ludo Club (Game)')
 		run = True
@@ -837,11 +926,18 @@ class App():
 			pygame.time.delay(2500)
 			run = False
 
+		try:
+			game = self.network.send(f'username {self.player} {self.user.username} {self.user.id}')
+		except:
+			self.draw_error('Could not send username.')
+			pygame.time.delay(2500)
+			run = False
+
 		while run:
 			try:
 				game = self.network.send(f'get {game_id}')
 			except:
-				self.draw_error('Could not get game. (player left)')
+				self.draw_error('Could not get game.')
 				pygame.time.delay(2500)
 				run = False
 				break
@@ -853,12 +949,12 @@ class App():
 			elif not game.connected():
 				self.draw_waiting(game)
 
-			elif game.winner is None:
+			elif game.winner is not None:
 				self.draw_winner(game)
 
 			else:
 				self.screen.fill(BLACK)
-				bg = pygame.image.load("images/game_bg.jpg")
+				bg = pygame.image.load("images/background.jpg")
 				bg = pygame.transform.scale(bg, (self.width, self.height))
 				self.screen.blit(bg, (0, 0))
 
@@ -866,9 +962,37 @@ class App():
 				game_map = pygame.transform.scale(game_map, (self.width-100, self.height-100))
 				self.screen.blit(game_map, (x, y))
 
+				your_pawns = self.draw_pawns(game)
+				dice_button = self.draw_dice(game)
+				self.draw_players(game)
+
+				Text(self.screen, f'You: {self.player}', (20, 20), WHITE)
+				Text(self.screen, f'Move: {game.player_on_move}', (80, 20), WHITE)
+
 				mx, my = pygame.mouse.get_pos()
 				if click:
-					pass
+					if game.player_on_move == self.player:
+						for pawn in your_pawns:
+							if pawn.click((mx, my)):
+								print('pawn clicked')
+
+						if dice_button.click((mx, my)):
+							for i in range(randint(10, 20)):
+								value = randint(1, 6)
+								dice_button.image = f'images/cube/cube_{value}.png'
+								dice_button.draw()
+
+								pygame.display.update()
+								pygame.time.delay(75)
+
+							try:
+								game = self.network.send(f'dice {value}')
+							except:
+								self.draw_error('Could not send dice value.')
+								pygame.time.delay(1500)
+								run = False
+								break
+
 
 			click = False
 			for event in pygame.event.get():
@@ -934,7 +1058,7 @@ class App():
 		while run:
 			# Drawing
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/game_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
@@ -1061,7 +1185,7 @@ class App():
 				break
 
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/main/game_bg.jpg")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 

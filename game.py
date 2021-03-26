@@ -8,6 +8,7 @@ Created on Wed Mar 10 14:04:30 2021
 """
 #!/usr/bin/env python3
 from datetime import datetime
+from random import randint
 
 class Game():
 	def __init__(self, id, lobby_name, lobby_size, lobby_pw):
@@ -19,9 +20,11 @@ class Game():
 		self.ready = False
 		self.quit = False
 		self.players_left = 0
+
+		self.time_started = 0
 		self.winner = None
 		self.player_on_move = None
-		self.time_started = 0
+		self.dice = 1
 
 		self.user_names = ['' for _ in range(lobby_size)]
 		self.user_ids = [0 for _ in range(lobby_size)]
@@ -30,10 +33,23 @@ class Game():
 		self.lobby_started = datetime.now()
 		self.messages = []
 
+	def start(self):
+		self.pawn = []
+		for idx, color in enumerate(['green', 'blue', 'yellow', 'red']):
+			self.pawn.append([])
+			for i in range(1, 5):
+				self.pawn[idx].append( Pawn(color, i*-1, f'images/pawn/{color}.png') )
+
+			if idx == self.lobby_size-1:
+				break
+
+		self.player_on_move = randint(0, self.lobby_size-1)
+
+
 	def reset(self):
+		self.time_started = 0
 		self.winner = None
 		self.player_on_move = None
-		self.time_started = 0
 
 	def connected(self):
 		return self.ready
@@ -58,3 +74,19 @@ class Game():
 		time = datetime.now()
 		time_str = f'{time.hour:02d}:{time.minute:02d}:{time.second:02d}'
 		self.messages.insert(0, [username, message, time_str])
+
+class Pawn():
+	"""
+	DOCSTRING:
+
+	"""
+	def __init__(self, color, pos, img):
+		self.color = color
+		self.pos = pos
+		self.img = img
+		
+	def __str__(self):
+		return f'{self.color}-{self.pos}-{self.img}'
+		
+	def __repr__(self):
+		return f'{self.color}-{self.pos}-{self.img}'

@@ -70,7 +70,7 @@ class Server():
 						self.games[game_id] = Game(game_id, name, size, pw)
 
 						self.waiting.append(self.games[game_id])
-						print(f'[ + ] Creating a new game... (of size {data_list[2]})')
+						print(f'[ + ] Creating a new game... (of size {size})')
 
 						conn.sendall(pickle.dumps(self.games[game_id]))
 
@@ -79,34 +79,58 @@ class Server():
 
 					elif data_list[0] == 'join':
 						game_id = int(data_list[1])
-						self.games[game_id].joined += 1
-						p = self.games[game_id].joined - 1
+						game = self.games[game_id]
 
-						if self.games[game_id].joined == self.games[game_id].lobby_size:
-							self.games[game_id].ready = True
-							self.games[game_id].time_started = datetime.now()
-							self.waiting.remove(self.games[game_id])
-							print(f'[ + ] Starting a new game... (of size {self.games[game_id].lobby_size})')
+						game.joined += 1
+						p = game.joined - 1
 
-						conn.sendall(pickle.dumps(self.games[game_id]))
+						if game.joined == game.lobby_size:
+							game.ready = True
+							game.time_started = datetime.now()
+							game.start()
+
+							self.waiting.remove(game)
+							print(f'[ + ] Starting a new game... (of size {game.lobby_size})')
+
+						conn.sendall(pickle.dumps(game))
 
 					elif data_list[0] == 'get':
+						game = self.games[game_id]
 						game_id = int(data_list[1])
 
-						conn.sendall(pickle.dumps(self.games[game_id]))
+						conn.sendall(pickle.dumps(game))
 
 					elif data_list[0] == 'get_player':
 						conn.sendall(pickle.dumps(p))
 
-					elif data_list[0] == 'quit':
-						self.games[game_id].quit = True
-						self.games[game_id].players_left += 1
+					elif data_list[0] == 'username':
+						game = self.games[game_id]
 
-						conn.sendall(pickle.dumps(self.games[game_id]))
+						player = int(data_list[1])
+						user_name = data_list[2]
+						user_id = int(data_list[3])
+
+						game.update_users(player, user_name, user_id)
+						conn.sendall(pickle.dumps(game))
+
+					elif data_list[0] == 'dice':
+						game = self.games[game_id]
+						dice = int(data_list[1])
+
+						game.dice = dice
+						conn.sendall(pickle.dumps(game))
+
+					elif data_list[0] == 'quit':
+						game = self.games[game_id]
+
+						game.quit = True
+						game.players_left += 1
+
+						conn.sendall(pickle.dumps(game))
 						
-						if self.games[game_id].players_left == self.games[game_id].joined:
+						if game.players_left == game.joined:
 							# Check if game in lobby phase
-							if self.games[game_id] in self.waiting:
+							if game in self.waiting:
 								self.waiting.remove(self.games[game_id])
 
 							del self.games[game_id]
