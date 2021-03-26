@@ -25,6 +25,8 @@ class Game():
 		self.time_started = 0
 		self.winner = None
 		self.pawn = []
+		self.pawns_finish = [0 for _ in range(lobby_size)]
+		self.pawns_free = [0 for _ in range(lobby_size)]
 		self.player_on_move = None
 		self.rolled_dice = False
 		self.dice = 1
@@ -63,6 +65,7 @@ class Game():
 	def player_left(self):
 		return self.quit
 
+
 	def start_from_color(self, player):
 		pos = {
 			0 : 1,
@@ -71,6 +74,7 @@ class Game():
 			3 : 14
 		}
 		return pos[player]
+
 
 	def last_from_color(self, player):
 		pos = {
@@ -81,6 +85,7 @@ class Game():
 		}
 		return pos[player]
 
+
 	def move_pawn(self, player, move_idx):
 		for player_idx, color in enumerate(self.pawn):
 			if player_idx == player:
@@ -89,12 +94,15 @@ class Game():
 						if pawn.finish:
 							if pawn.pos+1 == 5:
 								del self.pawn[player_idx][pawn_idx]
+								self.pawns_finish[player] += 1
+								self.pawns_free[player] -= 1
 								break
 							else:
 								pawn.pos += 1
 						else:
 							if pawn.pos < 0:
 								pawn.pos = self.start_from_color(player_idx)
+								self.pawns_free[player] += 1
 							else:
 								if pawn.pos == self.last_from_color(player_idx):
 									pawn.pos = 0
@@ -104,8 +112,6 @@ class Game():
 										pawn.pos = 0
 									else:
 										pawn.pos += 1
-
-		self.rolled_dice = False
 
 	def get_next(self):
 		next_player = None
@@ -129,6 +135,7 @@ class Game():
 		time = datetime.now()
 		time_str = f'{time.hour:02d}:{time.minute:02d}:{time.second:02d}'
 		self.messages.insert(0, [username, message, time_str])
+
 
 class Pawn():
 	"""

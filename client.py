@@ -881,6 +881,20 @@ class App():
 		return your_pawns
 
 	def draw_dice(self, game):
+		if not game.rolled_dice:
+			colors = {
+				0 : GREEN,
+				1 : BLUE,
+				2 : YELLOW,
+				3 : RED
+			}
+			color = colors[game.player_on_move]
+		else:
+			color = WHITE
+
+		rect = pygame.Rect(self.width/2-25, self.height/2-25, 50, 50)
+		pygame.draw.rect(self.screen, color, rect)
+
 		dice_button = ImageButton(self.screen, f'images/cube/cube_{game.dice}.png', (40, 40), (self.width/2 - 20, self.height/2 - 20), 'cube')
 		dice_button.draw()
 		return dice_button
@@ -890,6 +904,7 @@ class App():
 			user_id = game.user_ids[idx]
 			wins = game.wins[idx]
 			defeats = game.defeats[idx]
+			finished = game.pawns_finish[idx]
 
 			if idx == 0:
 				x, y = 75, 80
@@ -898,6 +913,7 @@ class App():
 				if game.player_on_move == idx:
 					Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16)
 
+				Text(self.screen, f'{finished}', (self.width/2-30, self.height/2), BLACK, text_size=16, right=True)
 
 			if idx == 1:
 				x, y = 625, 620
@@ -906,6 +922,8 @@ class App():
 				if game.player_on_move == idx:
 					Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16, right=True)
 
+				Text(self.screen, f'{finished}', (self.width/2+30, self.height/2), BLACK, text_size=16)
+
 			if idx == 2:
 				x, y = 75, 620
 				Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16)
@@ -913,12 +931,16 @@ class App():
 				if game.player_on_move == idx:
 					Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16)
 
+				Text(self.screen, f'{finished}', (self.width/2, self.height/2+30), BLACK, text_size=16, center=True)
+
 			if idx == 3:
 				x, y = 625, 80
 				Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16, right=True)
 				Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16, right=True)
 				if game.player_on_move == idx:
 					Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16, right=True)
+
+				Text(self.screen, f'{finished}', (self.width/2, self.height/-30), BLACK, text_size=16, center=True)
 
 	def draw_game_screen(self, game):
 		game_duration = int((datetime.now() - game.time_started).total_seconds())
@@ -932,8 +954,11 @@ class App():
 		exit_btn.draw()
 		chat_btn = ImageButton(self.screen, 'images/game_chat.png', (25, 25), (105, self.height-45), 'info')
 		chat_btn.draw()
+		next_btn = ImageButton(self.screen, 'images/game_next.png', (25, 25), (150, self.height-45), 'info')
+		next_btn.draw()
 
-		return exit_btn, chat_btn
+		return exit_btn, chat_btn, next_btn
+
 
 	def color_from_player(self):
 		colors = {
@@ -944,7 +969,9 @@ class App():
 		}
 		return colors[self.player]
 
+
 	def send_move(self, pawn_idx):
+		run = True
 		try:
 			game = self.network.send(f'move {self.player} {pawn_idx}')
 		except:
@@ -953,6 +980,18 @@ class App():
 			pygame.display.update()
 			run = False
 		return game, run
+
+
+	def next_player(self):
+		run = True
+		try:
+			game = self.network.send('next_move')
+		except:
+			self.draw_error('Could not get to next player.')
+			pygame.time.delay(1500)
+			run = False
+		return game, run
+
 
 	def game_screen(self, game_id):
 		pygame.display.set_caption('Ludo Club (Game)')
@@ -1007,7 +1046,7 @@ class App():
 				your_pawns = self.draw_pawns(game)
 				dice_button = self.draw_dice(game)
 				self.draw_players(game)
-				exit_btn, chat_btn = self.draw_game_screen(game)
+				exit_btn, chat_btn, next_btn = self.draw_game_screen(game)
 
 				mx, my = pygame.mouse.get_pos()
 				if click:
@@ -1018,18 +1057,22 @@ class App():
 									if pawn.pos < 0:
 										if game.dice == 6:
 											game, run = self.send_move(pawn_idx)
+											self.next_player()
 										else:
 											pass
 									else:
 										if pawn.finish:
-											if game.dice+pawn.pos >= 5:
+											if game.dice+pawn.pos > 5:
 												pass
 											else:
-												game, run = self.send_move(pawn_idx)
+												for _ in range(game.dice):
+													game, run = self.send_move(pawn_idx)
+												self.next_player()
 
 										else:
 											for _ in range(game.dice):
 												game, run = self.send_move(pawn_idx)
+											self.next_player()
 								else:
 									pass
 
@@ -1050,8 +1093,25 @@ class App():
 									pygame.time.delay(1500)
 									run = False
 									break
+
+								if game.dice != 6 and game.pawns_free[self.player] == 0:
+									self.next_player()
+								elif game.pawns_finish[self.player] == 3:
+									if game.pawn[self.player][0].finish:
+										if game.dice + pawn.pos > 5:
+											self.next_player()
+
+								else:
+									pass
 							else:
 								pass
+
+						if next_btn.click((mx, my)):
+							if game.rolled_dice:
+								self.next_player()
+							else:
+								pass
+
 
 					if chat_btn.click((mx, my)):
 						self.chat_screen(game_id)
@@ -1111,9 +1171,10 @@ class App():
 			input_send.draw()
 			exit_btn.draw()
 			Text(self.screen, f'TYPING AS USER: {self.user.username}',(self.width - 65, 32), WHITE, right=True)
+			Text(self.screen, f'LUDO CLUB (Chat)',(20, 32), WHITE)
 
 			y = self.height - 60
-			for idx, msg in enumerate(game.messages[:32]):
+			for idx, msg in enumerate(game.messages[:30]):
 				Text(self.screen, f'# {msg[2]} // {msg[0]} // {msg[1]}', (20, y), WHITE, text_size=20)
 				y -= 20
 
