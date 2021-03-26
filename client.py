@@ -802,27 +802,88 @@ class App():
 			clock.tick(60)
 
 
-	def draw_winner(self, game):
-		duration = int((datetime.now() - game.time_started).total_seconds())
+	def draw_winner(self, game_id, time_finished):
+		pygame.display.set_caption('Ludo Club (Winner)')
+		run = True
+		click = False
+		ready = False
+
 		x = self.width/2 - 190
 		y = 25
+		ready_btn = Button(self.screen, 'READY', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE)
+		while run:
+			try:
+				game = self.network.send(f'get {game_id}')
+			except:
+				self.draw_error('Could not get game.')
+				pygame.time.delay(2500)
+				run = False
+				break
 
-		self.screen.fill(BLACK)
-		bg = pygame.image.load("images/game_winner.jpg")
-		bg = pygame.transform.scale(bg, (self.width, self.height))
-		self.screen.blit(bg, (0, 0))
+			if game.player_left():
+				self.draw_quitting(game)
+				break
+			elif game.ready:
+				break
+			else:
+				self.screen.fill(BLACK)
+				bg = pygame.image.load("images/game_winner.jpg")
+				bg = pygame.transform.scale(bg, (self.width, self.height))
+				self.screen.blit(bg, (0, 0))
 
-		window = pygame.image.load("images/lobby.png")
-		window = pygame.transform.scale(window, (380, 200))
-		self.screen.blit(window, (x, y))
+				game_duration = int((time_finished - game.time_started).total_seconds())
+				lobby_duration = int((game.lobby_started - game.time_started).total_seconds())
 
-		Text(self.screen, 'We have a winner!', (x+90, y+19), WHITE, text_size=20)
-		Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
-		Text(self.screen, f'WINNER: {game.winner}', (x+25, y+70), RED, text_size=24)
-		Button(self.screen, 'WINNER...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
-		Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+				window = pygame.image.load("images/lobby.png")
+				window = pygame.transform.scale(window, (380, 200))
+				self.screen.blit(window, (x, y))
 
-		pygame.display.update()
+				Text(self.screen, 'We have a winner!', (x+90, y+19), WHITE, text_size=20)
+				Text(self.screen, f'GAME DURATION: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
+				Text(self.screen, f'LOBBY DURATION: {timedelta(seconds=duration)}', (x+25, y+70), RED, text_size=24)
+				Text(self.screen, f'WINNER: {game.winner}', (x+25, y+90), RED, text_size=24)
+				Text(self.screen, f'READY: {game.players_ready} / {game.joined}', (x+25, y+110), RED, text_size=24)
+				Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+				ready_btn.draw()
+
+				mx, my = pygame.mouse.get_pos()
+				if click:
+					if ready_btn.rect.collidepoint((mx, my)):
+						if not ready:
+							try:
+								game = self.network.send(f'ready')
+								ready = True
+							except:
+								self.draw_error('Could not set you to status ready.')
+								pygame.time.delay(1500)
+								pygame.display.update()
+								run = False
+
+
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					game = self.network.send(f'quit')
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						game = self.network.send(f'quit')
+						run = False
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+			pygame.display.update()
+			clock.tick(60)
+
+		return run
 
 
 	def draw_pawns(self, game):
@@ -998,6 +1059,7 @@ class App():
 		run = True
 		click = False
 		x, y = 50, 50
+		fix_value = 0
 
 		try:
 			self.player = self.network.send('get_player')
@@ -1031,7 +1093,7 @@ class App():
 				self.draw_waiting(game)
 
 			elif game.winner is not None:
-				self.draw_winner(game)
+				run = self.draw_winner(game_id, datetime.now())
 
 			else:
 				self.screen.fill(BLACK)
@@ -1086,6 +1148,9 @@ class App():
 									pygame.display.update()
 									pygame.time.delay(75)
 
+								if fix_value != 0:
+									value = fix_value
+
 								try:
 									game = self.network.send(f'dice {value}')
 								except:
@@ -1133,12 +1198,26 @@ class App():
 						game = self.network.send('quit')
 						run = False
 
+					if event.key == pygame.K_1:
+						fix_value = 1
+					if event.key == pygame.K_2:
+						fix_value = 2
+					if event.key == pygame.K_3:
+						fix_value = 3
+					if event.key == pygame.K_4:
+						fix_value = 4
+					if event.key == pygame.K_5:
+						fix_value = 5
+					if event.key == pygame.K_6:
+						fix_value = 6
+
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
 						click = True
 
 				if event.type == MUSIC_END:
 					self.background_music()
+
 
 			pygame.display.update()
 			clock.tick(60)

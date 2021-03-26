@@ -85,8 +85,7 @@ class Server():
 						p = game.joined - 1
 
 						if game.joined == game.lobby_size:
-							game.ready = True
-							game.time_started = datetime.now()
+							game.all_connected = True
 							game.start()
 
 							self.waiting.remove(game)
@@ -133,7 +132,8 @@ class Server():
 						game.rolled_dice = False
 						game.player_on_move = game.get_next()
 
-						if game.pawns_finish[player] == 4:
+						if game.pawns_finish[player] == 1:
+							game.ready = False
 							game.winner = game.user_names[player]
 
 						conn.sendall(pickle.dumps(game))
@@ -171,6 +171,16 @@ class Server():
 
 							del self.games[game_id]
 							print(f'[ - ] Closing game.. (ID: {game_id})')
+
+					elif data_list[0] == 'ready':
+						game = self.games[game_id]
+						game.players_ready += 1
+
+						if game.players_ready == game.lobby_size:
+							game.start()
+
+						conn.sendall(pickle.dumps(game))
+
 
 
 			except:

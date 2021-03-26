@@ -18,10 +18,12 @@ class Game():
 		self.lobby_size = lobby_size
 		self.lobby_pw = lobby_pw
 		self.joined = 1
-		self.ready = False
+		self.all_connected = False
 		self.quit = False
 		self.players_left = 0
 
+		self.ready = False
+		self.players_ready = 0
 		self.time_started = 0
 		self.winner = None
 		self.pawn = []
@@ -40,7 +42,7 @@ class Game():
 
 
 	def start(self):
-		self.pawn = []
+		self.reset()
 		for idx, color in enumerate(['green', 'blue', 'yellow', 'red']):
 			self.pawn.append([])
 			for i in range(1, 5):
@@ -53,13 +55,20 @@ class Game():
 
 
 	def reset(self):
-		self.time_started = 0
+		self.ready = True
+		self.players_ready = 0
+		self.time_started = datetime.now()
 		self.winner = None
+		self.pawn = []
+		self.pawns_finish = [0 for _ in range(self.lobby_size)]
+		self.pawns_free = [0 for _ in range(self.lobby_size)]
 		self.player_on_move = None
+		self.rolled_dice = False
+		self.dice = 1
 
 
 	def connected(self):
-		return self.ready
+		return self.all_connected
 
 
 	def player_left(self):
