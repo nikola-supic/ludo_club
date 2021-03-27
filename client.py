@@ -1287,6 +1287,17 @@ class App():
 		return game, run
 
 
+	def check_eat(self, move_idx):
+		run = True
+		try:
+			game = self.network.send(f'check_eat {self.player} {move_idx}')
+		except:
+			self.draw_error('Could not check for eating.')
+			pygame.time.delay(1500)
+			run = False
+		return game, run
+
+
 	def game_screen(self, game_id):
 		pygame.display.set_caption('Ludo Club (Game)')
 		run = True
@@ -1352,7 +1363,6 @@ class App():
 									if pawn.pos < 0:
 										if game.dice == 6:
 											game, run = self.send_move(pawn_idx)
-											self.next_player()
 										else:
 											pass
 									else:
@@ -1362,12 +1372,19 @@ class App():
 											else:
 												for _ in range(game.dice):
 													game, run = self.send_move(pawn_idx)
-												self.next_player()
+
+												if game.dice < 6:
+													self.next_player()
+												break
 
 										else:
 											for _ in range(game.dice):
 												game, run = self.send_move(pawn_idx)
-											self.next_player()
+
+											if game.dice < 6:
+												self.next_player()
+											game, run = self.check_eat(pawn_idx)
+											break
 								else:
 									pass
 

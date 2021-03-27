@@ -122,6 +122,19 @@ class Game():
 									else:
 										pawn.pos += 1
 
+
+	def check_eat(self, player, move_idx):
+		for player_idx, color in enumerate(self.pawn):
+			if player_idx != player:
+				for pawn_idx, pawn in enumerate(color):
+					if pawn.pos == self.pawn[player][move_idx].pos:
+
+						self.pawn[player_idx][pawn_idx].pos = (pawn_idx+1) * (-1)
+						# pawn.pos = (pawn_idx+1) * (-1)
+						self.pawns_free[player_idx] -= 1
+						break
+
+
 	def get_next(self):
 		next_player = None
 		if self.player_on_move == self.lobby_size-1:

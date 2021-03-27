@@ -124,6 +124,8 @@ class Server():
 						game = self.games[game_id]
 						player = int(data_list[1])
 						pawn_idx = int(data_list[2])
+						
+						game.rolled_dice = False
 						game.move_pawn(player, pawn_idx)
 						conn.sendall(pickle.dumps(game))
 
@@ -136,6 +138,15 @@ class Server():
 							game.ready = False
 							game.winner = game.user_names[player]
 
+						conn.sendall(pickle.dumps(game))
+
+					elif data_list[0] == 'check_eat':
+						game = self.games[game_id]
+
+						player = int(data_list[1])
+						move_idx = int(data_list[2])
+
+						game.check_eat(player, move_idx)
 						conn.sendall(pickle.dumps(game))
 
 					elif data_list[0] == 'msg':
