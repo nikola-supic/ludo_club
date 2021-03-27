@@ -226,6 +226,10 @@ class App():
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width/2-80, -10))
+
 			button_play.draw()
 			button_search.draw()
 			button_champions.draw()
@@ -302,6 +306,10 @@ class App():
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width/2-80, -10))
+
 			# Winner
 			x = 40
 			y = self.height/2 - 200
@@ -377,6 +385,10 @@ class App():
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width/2-80, -10))
+
 			# Winner
 			window = pygame.image.load("images/panel_large.png")
 			window = pygame.transform.scale(window, (300, 400))
@@ -447,6 +459,10 @@ class App():
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
+
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width-170, -10))
 
 			# Account info
 			x = self.width/2 - 160
@@ -577,6 +593,10 @@ class App():
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
+
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width/2-80, -10))
 
 			x = 40
 			y = self.height/2 - 200
@@ -724,6 +744,10 @@ class App():
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
+
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width/2-80, -10))
 
 			window = pygame.image.load("images/panel.png")
 			window = pygame.transform.scale(window, (380, 200))
@@ -935,6 +959,10 @@ class App():
 		bg = pygame.transform.scale(bg, (self.width, self.height))
 		self.screen.blit(bg, (0, 0))
 
+		logo = pygame.image.load("images/logo.png")
+		logo = pygame.transform.scale(logo, (160, 160))
+		self.screen.blit(logo, (self.width/2-80, -10))
+
 		window = pygame.image.load("images/panel.png")
 		window = pygame.transform.scale(window, (380, 200))
 		self.screen.blit(window, (x, y))
@@ -960,6 +988,10 @@ class App():
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
+
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width/2-80, -10))
 
 			x = self.width/2 - 190
 			y = self.height/2 - 100
