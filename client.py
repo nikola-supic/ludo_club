@@ -869,7 +869,7 @@ class App():
 		run = True
 		click = False
 
-		input_pw = InputBox(self.screen, (90, self.height-45), (250, 30), '', RED, WHITE)
+		input_pw = InputBox(self.screen, (90, self.height-50), (250, 30), '', RED, GREY)
 		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			try:
@@ -897,7 +897,7 @@ class App():
 				join_btn_dict[game.id] = join_btn
 
 			input_pw.draw()
-			Text(self.screen, 'Enter lobby password:', (90, self.height-55), WHITE, text_size=18)
+			Text(self.screen, 'Enter lobby password:', (90, self.height-60), GREY, text_size=18)
 			exit_btn.draw()
 			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
@@ -1240,11 +1240,11 @@ class App():
 		game_duration = int((datetime.now() - game.time_started).total_seconds())
 		lobby_duration = int((datetime.now() - game.lobby_started).total_seconds())
 
-		Text(self.screen, f'Your color: {self.color_from_player()}', (60, 18), GREY)
-		Text(self.screen, f'Game duration: {timedelta(seconds=game_duration)}', (60, 36), GREY)
-		Text(self.screen, f'Lobby duration: {timedelta(seconds=lobby_duration)}', (60, 54), GREY)
+		Text(self.screen, f'Your color: {self.color_from_player()}', (65, 18), GREY)
+		Text(self.screen, f'Game duration: {timedelta(seconds=game_duration)}', (65, 36), GREY)
+		Text(self.screen, f'Lobby duration: {timedelta(seconds=lobby_duration)}', (65, 54), GREY)
 
-		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (60, self.height-45), 'exit')
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (62, self.height-45), 'exit')
 		exit_btn.draw()
 		chat_btn = ImageButton(self.screen, 'images/game/chat.png', (25, 25), (105, self.height-45), 'info')
 		chat_btn.draw()
