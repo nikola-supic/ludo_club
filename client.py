@@ -287,41 +287,79 @@ class App():
 		run = True
 		click = False
 		
-		username = InputBox(self.screen, (self.width/2 - 150, 190), (300, 30), '', BLUE, WHITE)
-		email = InputBox(self.screen, (self.width/2 - 150, 240), (300, 30), '', BLUE, WHITE)
-		password = InputBox(self.screen, (self.width/2 - 150, 290), (300, 30), '', BLUE, WHITE)
-		volume = InputBox(self.screen, (self.width/2 - 150, 340), (300, 30), '', BLUE, WHITE)
-		save = Button(self.screen, 'SAVE INFO', (self.width/2 - 150, self.height-50), (300, 30), BLUE, text_color=WHITE, border=2, border_color=WHITE)
+		# Account info
+		x = self.width/2 - 160
+		y = 40
+		username = InputBox(self.screen, (x+25, y+60), (270, 25), '', RED, GREY)
+		email = InputBox(self.screen, (x+25, y+110), (270, 25), '', RED, GREY)
+		password = InputBox(self.screen, (x+25, y+157), (270, 25), '', RED, GREY)
+		save_acc = Button(self.screen, 'SAVE ACC', (x+195, y+5), (102, 25), RED, text_color=WHITE)
+
+		# Game info
+		x = self.width/2 - 160
+		y = 260
+		volume = InputBox(self.screen, (x+25, y+60), (270, 25), '', RED, GREY)
+		save_game = Button(self.screen, 'SAVE GAME', (x+195, y+5), (102, 25), RED, text_color=WHITE)
+
+		# Stats
+		x = self.width/2 - 160
+		y = 480
+		refresh = Button(self.screen, 'REFRESH', (x+195, y+5), (102, 25), RED, text_color=WHITE)
+
 		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
-			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
-			Text(self.screen, 'SETTINGS', (self.width/2, 130), WHITE, text_size=24, center=True)
-			Text(self.screen, 'TO CHANGE INFO, ENTER NEW INFO AND PRESS SAVE', (self.width/2, 145), BLUE, text_size=20, center=True)
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
-			Text(self.screen, f'Current username: {self.user.username}', (self.width/2, 180), WHITE, text_size=18, center=True)
+			# Account info
+			x = self.width/2 - 160
+			y = 40
+			window = pygame.image.load("images/window.png")
+			window = pygame.transform.scale(window, (320, 210))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'Account info', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, f'Current username: {self.user.username}', (x+25, y+50), GREY, text_size=18)
 			username.draw()
-			Text(self.screen, f'Current e-mail: {self.user.email}', (self.width/2, 230), WHITE, text_size=18, center=True)
+			Text(self.screen, f'Current e-mail: {self.user.email}', (x+25, y+100), GREY, text_size=18)
 			email.draw()
-			Text(self.screen, f'Current password: {self.user.password}', (self.width/2, 280), WHITE, text_size=18, center=True)
+			Text(self.screen, f'Current password: {self.user.password}', (x+25, y+147), GREY, text_size=18)
 			password.draw()
-			Text(self.screen, f'Current volume: {self.user.volume}', (self.width/2, 330), WHITE, text_size=18, center=True)
+			save_acc.draw()
+
+			# Game info
+			x = self.width/2 - 160
+			y = 260
+			window = pygame.image.load("images/window.png")
+			window = pygame.transform.scale(window, (320, 210))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'Game info', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, f'Current volume: {self.user.volume}', (x+25, y+50), GREY, text_size=18)
 			volume.draw()
+			save_game.draw()
 
-			Text(self.screen, f'Your wins: {self.user.wins}', (self.width/2, self.height-90), WHITE, text_size=18, center=True)
-			Text(self.screen, f'Your defeats: {self.user.defeats}', (self.width/2, self.height-75), WHITE, text_size=18, center=True)
-			Text(self.screen, f'REGISTRATION DATE: {self.user.register_date}', (self.width/2, self.height-60), WHITE, text_size=18, center=True)
+			# Stats
+			x = self.width/2 - 160
+			y = 480
+			window = pygame.image.load("images/window.png")
+			window = pygame.transform.scale(window, (320, 210))
+			self.screen.blit(window, (x, y))
 
-			save.draw()
+			Text(self.screen, 'Stats', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, f'Your wins: {self.user.wins}', (x+25, y+50), GREY, text_size=22)
+			Text(self.screen, f'Your defeats: {self.user.defeats}', (x+25, y+70), GREY, text_size=22)
+			Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+90), GREY, text_size=22)
+			refresh.draw()
+
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 			exit_btn.draw()
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
-				if save.rect.collidepoint((mx, my)):
+				if save_acc.rect.collidepoint((mx, my)):
 					if username.text != '':
 						username.text.replace(' ', '_')
 						self.user.change_username(username.text)
@@ -335,6 +373,7 @@ class App():
 						self.user.change_password(password.text)
 						password.clear()
 
+				if save_game.rect.collidepoint((mx, my)):
 					if volume.text != '':
 						value = int(volume.text)
 						if value < 0 or value > 100:
@@ -345,6 +384,9 @@ class App():
 							pygame.mixer.music.set_volume(value / 100)
 						
 						volume.clear()
+
+				if refresh.rect.collidepoint((mx, my)):
+					pass
 
 				if exit_btn.click((mx, my)):
 					run = False
