@@ -429,45 +429,60 @@ class App():
 		click = False
 		see_online = False
 
-		admin_permission = InputBox(self.screen, (self.width/2 - 150, 190), (300, 30), '', BLUE, WHITE)
-		ban_player = InputBox(self.screen, (self.width/2 - 150, 240), (300, 30), '', BLUE, WHITE)
-		reset_stats = InputBox(self.screen, (self.width/2 - 150, 290), (300, 30), '', BLUE, WHITE)
-		see_pw = InputBox(self.screen, (self.width/2 - 150, 340), (300, 30), '', BLUE, WHITE)
-		last_online = InputBox(self.screen, (self.width/2 - 150, 390), (300, 30), '', BLUE, WHITE)
+		x = 40
+		y = self.height/2 - 200
+		admin_permission = InputBox(self.screen, (x+25, y+60), (250, 25), '', RED, GREY)
+		ban_player = InputBox(self.screen, (x+25, y+110), (250, 25), '', RED, GREY)
+		reset_stats = InputBox(self.screen, (x+25, y+160), (250, 25), '', RED, GREY)
+		see_pw = InputBox(self.screen, (x+25, y+210), (250, 25), '', RED, GREY)
+		last_online = InputBox(self.screen, (x+25, y+260), (250, 25), '', RED, GREY)
 		
-		online_players = Button(self.screen, 'SEE ONLINE PLAYERS', (self.width/2 - 150, self.height-90), (300, 30), BLUE, text_color=WHITE, border=2, border_color=WHITE)
-		refresh = Button(self.screen, 'REFRESH', (self.width/2 - 150, self.height-50), (300, 30), BLUE, text_color=WHITE, border=2, border_color=WHITE)
-		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
+		online_players = Button(self.screen, 'SEE ONLINE PLAYERS', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
+		refresh = Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), RED, text_color=WHITE)
+		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (40, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
-			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
-			Text(self.screen, 'ADMIN PANEL', (self.width/2, 130), WHITE, text_size=24, center=True)
-			Text(self.screen, 'PLEASE BE CAREFUL WHILE USING THIS ADMIN PANEL', (self.width/2, 145), BLUE, text_size=20, center=True)
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
 
-			Text(self.screen, 'Give admin permissions: (User ID)', (self.width/2, 180), WHITE, text_size=18, center=True)
+			x = 40
+			y = self.height/2 - 200
+			window = pygame.image.load("images/settings.png")
+			window = pygame.transform.scale(window, (300, 400))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'Admin panel', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, 'Give admin permissions: (User ID)', (x+25, y+50), GREY, text_size=18)
 			admin_permission.draw()
-			Text(self.screen, 'Ban user from game: (User ID)', (self.width/2, 230), WHITE, text_size=18, center=True)
+			Text(self.screen, 'Ban user from game: (User ID)', (x+25, y+100), GREY, text_size=18)
 			ban_player.draw()
-			Text(self.screen, 'Reset wins & defeats: (User ID)', (self.width/2, 280), WHITE, text_size=18, center=True)
+			Text(self.screen, 'Reset wins & defeats: (User ID)', (x+25, y+150), GREY, text_size=18)
 			reset_stats.draw()
-			Text(self.screen, 'See password: (User ID)', (self.width/2, 330), WHITE, text_size=18, center=True)
+			Text(self.screen, 'See password: (User ID)', (x+25, y+200), GREY, text_size=18)
 			see_pw.draw()
-			Text(self.screen, 'Last online: (User ID)', (self.width/2, 380), WHITE, text_size=18, center=True)
+			Text(self.screen, 'Last online: (User ID)', (x+25, y+250), GREY, text_size=18)
 			last_online.draw()
-
 			online_players.draw()
 			refresh.draw()
+
+			Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), WHITE, text_size=14, right=True)
 			exit_btn.draw()
 
 			if see_online:
+				x = self.width - 340
+				y = self.height/2 - 200
+
+				window = pygame.image.load("images/settings.png")
+				window = pygame.transform.scale(window, (300, 400))
+				self.screen.blit(window, (x, y))
+
+				Button(self.screen, 'ONLINE', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+
 				result = user.online_players()
-				y = 180
+				y += 50
 				for row in result:
-					Text(self.screen, f'#{row[0]} // {row[1]}', (20, y), WHITE, text_size=16)
+					Text(self.screen, f'#{row[0]} // {row[1]}', (x+20, y), GREY, text_size=16)
 					y += 15
 
 			mx, my = pygame.mouse.get_pos()
