@@ -87,7 +87,7 @@ class App():
 
 	def draw_error(self, msg):
 		self.screen.fill(BLACK)
-		bg = pygame.image.load("images/game_error.png")
+		bg = pygame.image.load("images/error.png")
 		bg = pygame.transform.scale(bg, (self.width, self.height))
 		self.screen.blit(bg, (0, 0))
 		Text(self.screen, f'{msg}', (self.width/2, self.height-60), WHITE, text_size=40, center=True)
@@ -117,7 +117,7 @@ class App():
 
 			Text(self.screen, 'LUDO CLUB', (self.width/2, 30), WHITE, text_size=44, center=True)
 			Text(self.screen, 'PLEASE ENTER YOUR INFORMATION', (self.width/2, 50), BLUE, text_size=20, center=True)
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
 			# Draw bottom part of screen
 			Text(self.screen, 'ENTER USERNAME:', (self.width/2-120, self.height-160), WHITE, text_size=18)
@@ -129,7 +129,7 @@ class App():
 			# Draw top part of screen
 			Text(self.screen, 'ENTER USERNAME:', (self.width/2-120, 70), WHITE, text_size=18)
 			register_name.draw()
-			Text(self.screen, 'ENTER E-MAIL:', (self.width/2-120, 120), WHITE, text_size=18)
+			Text(self.screen, 'ENTER E-MAIL:', (self.width/2-100, 100), WHITE, text_size=18)
 			register_mail.draw()
 			Text(self.screen, 'ENTER PASSWORD:', (self.width/2-120, 170), WHITE, text_size=18)
 			register_pass.draw()
@@ -211,10 +211,14 @@ class App():
 
 		click = False
 
-		button_settings = ImageButton(self.screen, 'images/main_settings.png', (120, 120), (70, self.height/2 - 70), 'settings')
-		button_lobby = ImageButton(self.screen, 'images/main_start_grey.png', (160, 160), (self.width/2 - 80, self.height/2 - 120), 'start')
-		button_create = ImageButton(self.screen, 'images/main_start_red.png', (160, 160), (self.width/2 - 80, self.height/2 + 10), 'start')
-		button_admin = ImageButton(self.screen, 'images/main_admin.png', (120, 120), (self.width - 200, self.height/2 - 70), 'exit')
+		button_play = ImageButton(self.screen, 'images/menu/play.png', (100, 100), 				(self.width/2-275, self.height/2-150), 'settings')
+		button_search = ImageButton(self.screen, 'images/menu/search.png', (100, 100), 			(self.width/2-125, self.height/2-130), 'settings')
+		button_champions = ImageButton(self.screen, 'images/menu/champions.png', (100, 100), 	(self.width/2+25, self.height/2-130), 'settings')
+		button_info = ImageButton(self.screen, 'images/menu/info.png', (100, 100), 				(self.width/2+175, self.height/2-150), 'settings')
+
+		button_settings = ImageButton(self.screen, 'images/menu/settings.png', (100, 100), 		(self.width/2-200, self.height/2+50), 'settings')
+		button_admin = ImageButton(self.screen, 'images/menu/admin.png', (100, 100), 			(self.width/2-50, self.height/2+80), 'settings')
+		button_exit = ImageButton(self.screen, 'images/menu/exit.png', (100, 100), 				(self.width/2+100, self.height/2+50), 'settings')
 
 		while True:
 			pygame.display.set_caption('Ludo Club (Main Menu)')
@@ -224,26 +228,27 @@ class App():
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
-			Text(self.screen, 'LUDO CLUB', (self.width/2, 100), BLUE, text_size=72, center=True)
-			Text(self.screen, 'MAIN MENU', (self.width/2, 130), WHITE, text_size=24, center=True)
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
-
+			button_play.draw()
+			button_search.draw()
+			button_champions.draw()
+			button_info.draw()
 			button_settings.draw()
-			Text(self.screen, 'SETTINGS', (70 + 60, self.height/2 + 60), WHITE, text_size=24, center=True)
-			button_lobby.draw()
-			Text(self.screen, 'PICK LOBBY', (self.width/2, self.height/2 - 105), WHITE, text_size=24, center=True)
-			button_create.draw()
-			Text(self.screen, 'NEW LOBBY', (self.width/2, self.height/2 + 155), WHITE, text_size=24, center=True)
 			button_admin.draw()
-			Text(self.screen, 'ADMIN PANEL', (self.width - 210 + 70, self.height/2 + 60), WHITE, text_size=24, center=True)
+			button_exit.draw()
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
-				if button_lobby.click((mx, my)):
+				if button_play.click((mx, my)):
+					self.create_lobby()
+
+				elif button_search.click((mx, my)):
 					self.pick_lobby()
 
-				elif button_create.click((mx, my)):
-					self.create_lobby()
+				elif button_champions.click((mx, my)):
+					pass
+
+				elif button_info.click((mx, my)):
+					pass
 
 				elif button_settings.click((mx, my)):	
 					self.settings()
@@ -254,6 +259,11 @@ class App():
 					else:
 						self.draw_error('You do not have admin permissions.')
 						pygame.time.delay(1000)
+
+				elif button_exit.click((mx, my)):
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
 
 			click = False
 			for event in pygame.event.get():
@@ -306,7 +316,7 @@ class App():
 		y = 480
 		refresh = Button(self.screen, 'REFRESH', (x+195, y+5), (102, 25), RED, text_color=WHITE)
 
-		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
 			bg = pygame.image.load("images/background.jpg")
@@ -316,7 +326,7 @@ class App():
 			# Account info
 			x = self.width/2 - 160
 			y = 40
-			window = pygame.image.load("images/window.png")
+			window = pygame.image.load("images/panel_small.png")
 			window = pygame.transform.scale(window, (320, 210))
 			self.screen.blit(window, (x, y))
 
@@ -332,7 +342,7 @@ class App():
 			# Game info
 			x = self.width/2 - 160
 			y = 260
-			window = pygame.image.load("images/window.png")
+			window = pygame.image.load("images/panel_small.png")
 			window = pygame.transform.scale(window, (320, 210))
 			self.screen.blit(window, (x, y))
 
@@ -344,7 +354,7 @@ class App():
 			# Stats
 			x = self.width/2 - 160
 			y = 480
-			window = pygame.image.load("images/window.png")
+			window = pygame.image.load("images/panel_small.png")
 			window = pygame.transform.scale(window, (320, 210))
 			self.screen.blit(window, (x, y))
 
@@ -354,7 +364,7 @@ class App():
 			Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+90), GREY, text_size=22)
 			refresh.draw()
 
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 			exit_btn.draw()
 
 			mx, my = pygame.mouse.get_pos()
@@ -439,7 +449,7 @@ class App():
 		
 		online_players = Button(self.screen, 'SEE ONLINE PLAYERS', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
 		refresh = Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), RED, text_color=WHITE)
-		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (40, self.height - 45), 'exit')
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
 			bg = pygame.image.load("images/background.jpg")
@@ -448,7 +458,7 @@ class App():
 
 			x = 40
 			y = self.height/2 - 200
-			window = pygame.image.load("images/settings.png")
+			window = pygame.image.load("images/panel_large.png")
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
 
@@ -466,14 +476,14 @@ class App():
 			online_players.draw()
 			refresh.draw()
 
-			Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), WHITE, text_size=14, right=True)
+			Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
 			exit_btn.draw()
 
 			if see_online:
 				x = self.width - 340
 				y = self.height/2 - 200
 
-				window = pygame.image.load("images/settings.png")
+				window = pygame.image.load("images/panel_large.png")
 				window = pygame.transform.scale(window, (300, 400))
 				self.screen.blit(window, (x, y))
 
@@ -511,7 +521,10 @@ class App():
 						pw = user.see_pw(see_pw.text)
 						see_pw.clear()
 
-						Text(self.screen, f'User ID: {user_id} // PW: {pw}', (self.width/2, self.height-100), WHITE, text_size=20, center=True)
+						x = 40
+						y = self.height/2 - 200
+
+						Text(self.screen, f'User ID: {user_id} // PW: {pw}', (x+25, y+305), GREY, text_size=20)
 						pygame.display.update()
 						pygame.time.delay(2000)
 
@@ -520,7 +533,10 @@ class App():
 						online = user.last_online(last_online.text)
 						last_online.clear()
 
-						Text(self.screen, f'User ID: {user_id} // Last Online: {online}', (self.width/2, self.height-115), WHITE, text_size=20, center=True)
+						x = 40
+						y = self.height/2 - 200
+
+						Text(self.screen, f'User ID: {user_id} // Last Online: {online}', (x+25, y+320), GREY, text_size=20)
 						pygame.display.update()
 						pygame.time.delay(2000)
 
@@ -580,14 +596,14 @@ class App():
 		lobby_size = InputBox(self.screen, (x+25, y+157), (160, 25), '2', RED, GREY)
 
 		create = Button(self.screen, 'CREATE', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE)
-		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
 			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
-			window = pygame.image.load("images/lobby.png")
+			window = pygame.image.load("images/panel.png")
 			window = pygame.transform.scale(window, (380, 200))
 			self.screen.blit(window, (x, y))
 
@@ -598,7 +614,7 @@ class App():
 			lobby_pw.draw()
 			Text(self.screen, 'Enter lobby size:', (x+25, y+147), GREY, text_size=18)
 			lobby_size.draw()
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
 			create.draw()
 			exit_btn.draw()
@@ -681,7 +697,7 @@ class App():
 		join_btn = Button(self.screen, 'JOIN', (x+131, y+100), (105, 28), BLUE, text_color=WHITE)
 		join_btn.draw()
 
-		lobby_bg = pygame.image.load("images/lobby.png")
+		lobby_bg = pygame.image.load("images/panel.png")
 		lobby_bg = pygame.transform.scale(lobby_bg, (250, 140))
 		self.screen.blit(lobby_bg, (x, y))
 
@@ -708,7 +724,7 @@ class App():
 		click = False
 
 		input_pw = InputBox(self.screen, (90, self.height-45), (250, 30), '', RED, WHITE)
-		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (20, self.height - 45), 'exit')
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			try:
 				waiting = self.network.send('get_lobby')
@@ -737,7 +753,7 @@ class App():
 			input_pw.draw()
 			Text(self.screen, 'Enter lobby password:', (90, self.height-55), WHITE, text_size=18)
 			exit_btn.draw()
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
@@ -797,7 +813,7 @@ class App():
 		bg = pygame.transform.scale(bg, (self.width, self.height))
 		self.screen.blit(bg, (0, 0))
 
-		window = pygame.image.load("images/lobby.png")
+		window = pygame.image.load("images/panel.png")
 		window = pygame.transform.scale(window, (380, 200))
 		self.screen.blit(window, (x, y))
 
@@ -806,7 +822,7 @@ class App():
 		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+25, y+70), RED, text_size=24)
 		Text(self.screen, f'PASSWORD: {game.lobby_pw}', (x+25, y+90), RED, text_size=24)
 		Button(self.screen, 'WAITING...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
-		Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+		Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
 		pygame.display.update()
 
@@ -826,7 +842,7 @@ class App():
 			x = self.width/2 - 190
 			y = self.height/2 - 100
 
-			window = pygame.image.load("images/lobby.png")
+			window = pygame.image.load("images/panel.png")
 			window = pygame.transform.scale(window, (380, 200))
 			self.screen.blit(window, (x, y))
 
@@ -835,7 +851,7 @@ class App():
 			Text(self.screen, f'WINS: {game.wins[self.player]}', (x+25, y+70), RED, text_size=24)
 			Text(self.screen, f'DEFEATS: {game.defeats[self.player]}', (x+25, y+90), RED, text_size=24)
 			Button(self.screen, 'QUIT...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
@@ -890,14 +906,14 @@ class App():
 				break
 			else:
 				self.screen.fill(BLACK)
-				bg = pygame.image.load("images/game_winner.jpg")
+				bg = pygame.image.load("images/game/winner.jpg")
 				bg = pygame.transform.scale(bg, (self.width, self.height))
 				self.screen.blit(bg, (0, 0))
 
 				game_duration = int((time_finished - game.time_started).total_seconds())
 				lobby_duration = int((game.lobby_started - game.time_started).total_seconds())
 
-				window = pygame.image.load("images/lobby.png")
+				window = pygame.image.load("images/panel.png")
 				window = pygame.transform.scale(window, (380, 200))
 				self.screen.blit(window, (x, y))
 
@@ -906,7 +922,7 @@ class App():
 				Text(self.screen, f'LOBBY DURATION: {timedelta(seconds=duration)}', (x+25, y+70), RED, text_size=24)
 				Text(self.screen, f'WINNER: {game.winner}', (x+25, y+90), RED, text_size=24)
 				Text(self.screen, f'READY: {game.players_ready} / {game.joined}', (x+25, y+110), RED, text_size=24)
-				Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), WHITE, text_size=14, right=True)
+				Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 				ready_btn.draw()
 
 				mx, my = pygame.mouse.get_pos()
@@ -1070,15 +1086,15 @@ class App():
 		game_duration = int((datetime.now() - game.time_started).total_seconds())
 		lobby_duration = int((datetime.now() - game.lobby_started).total_seconds())
 
-		Text(self.screen, f'Your color: {self.color_from_player()}', (70, 18), WHITE)
-		Text(self.screen, f'Game duration: {timedelta(seconds=game_duration)}', (70, 36), WHITE)
-		Text(self.screen, f'Lobby duration: {timedelta(seconds=lobby_duration)}', (70, 54), WHITE)
+		Text(self.screen, f'Your color: {self.color_from_player()}', (60, 18), GREY)
+		Text(self.screen, f'Game duration: {timedelta(seconds=game_duration)}', (60, 36), GREY)
+		Text(self.screen, f'Lobby duration: {timedelta(seconds=lobby_duration)}', (60, 54), GREY)
 
-		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (60, self.height-45), 'exit')
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (60, self.height-45), 'exit')
 		exit_btn.draw()
-		chat_btn = ImageButton(self.screen, 'images/game_chat.png', (25, 25), (105, self.height-45), 'info')
+		chat_btn = ImageButton(self.screen, 'images/game/chat.png', (25, 25), (105, self.height-45), 'info')
 		chat_btn.draw()
-		next_btn = ImageButton(self.screen, 'images/game_next.png', (25, 25), (150, self.height-45), 'info')
+		next_btn = ImageButton(self.screen, 'images/game/next.png', (25, 25), (150, self.height-45), 'info')
 		next_btn.draw()
 
 		return exit_btn, chat_btn, next_btn
@@ -1164,7 +1180,7 @@ class App():
 				bg = pygame.transform.scale(bg, (self.width, self.height))
 				self.screen.blit(bg, (0, 0))
 
-				game_map = pygame.image.load('images/game_map.png')
+				game_map = pygame.image.load('images/game/map.png')
 				game_map = pygame.transform.scale(game_map, (self.width-100, self.height-100))
 				self.screen.blit(game_map, (x, y))
 
@@ -1292,8 +1308,8 @@ class App():
 		click = False
 
 		input_text = InputBox(self.screen, (20, self.height - 45), (self.width - 90, 30), '', RED, WHITE)
-		input_send = ImageButton(self.screen, 'images/chat_send.png', (30, 30), (self.width - 45, self.height - 48), 'info')
-		exit_btn = ImageButton(self.screen, 'images/main_exit.png', (25, 25), (self.width - 45, 20), 'exit')
+		input_send = ImageButton(self.screen, 'images/game/chat_send.png', (30, 30), (self.width - 45, self.height - 48), 'info')
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (self.width - 45, 20), 'exit')
 
 		while run:
 			try:
