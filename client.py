@@ -31,11 +31,9 @@ RED = (237, 28, 36)
 BLUE = (15, 39, 99)
 YELLOW = (255, 214, 7)
 
-CARD_WIDTH = 80
-CARD_HEIGHT = 140
-
-DECK_WIDTH = 60
-DECK_HEIGHT = 100
+VERSION = 'v0.1'
+STARTED = '23.03.2021'
+LAST_UPDATE = '27.03.2021'
 
 pygame.font.init()
 pygame.mixer.init()
@@ -211,14 +209,14 @@ class App():
 
 		click = False
 
-		button_play = ImageButton(self.screen, 'images/menu/play.png', (100, 100), 				(self.width/2-275, self.height/2-150), 'settings')
-		button_search = ImageButton(self.screen, 'images/menu/search.png', (100, 100), 			(self.width/2-125, self.height/2-130), 'settings')
-		button_champions = ImageButton(self.screen, 'images/menu/champions.png', (100, 100), 	(self.width/2+25, self.height/2-130), 'settings')
-		button_info = ImageButton(self.screen, 'images/menu/info.png', (100, 100), 				(self.width/2+175, self.height/2-150), 'settings')
+		button_play = ImageButton(self.screen, 'images/menu/play.png', (100, 100), 				(self.width/2-275, self.height/2-150), 'play')
+		button_search = ImageButton(self.screen, 'images/menu/search.png', (100, 100), 			(self.width/2-125, self.height/2-130), 'search')
+		button_champions = ImageButton(self.screen, 'images/menu/champions.png', (100, 100), 	(self.width/2+25, self.height/2-130), 'champions')
+		button_info = ImageButton(self.screen, 'images/menu/info.png', (100, 100), 				(self.width/2+175, self.height/2-150), 'info')
 
 		button_settings = ImageButton(self.screen, 'images/menu/settings.png', (100, 100), 		(self.width/2-200, self.height/2+50), 'settings')
-		button_admin = ImageButton(self.screen, 'images/menu/admin.png', (100, 100), 			(self.width/2-50, self.height/2+80), 'settings')
-		button_exit = ImageButton(self.screen, 'images/menu/exit.png', (100, 100), 				(self.width/2+100, self.height/2+50), 'settings')
+		button_admin = ImageButton(self.screen, 'images/menu/admin.png', (100, 100), 			(self.width/2-50, self.height/2+80), 'admin')
+		button_exit = ImageButton(self.screen, 'images/menu/exit.png', (100, 100), 				(self.width/2+100, self.height/2+50), 'exit')
 
 		while True:
 			pygame.display.set_caption('Ludo Club (Main Menu)')
@@ -245,10 +243,10 @@ class App():
 					self.pick_lobby()
 
 				elif button_champions.click((mx, my)):
-					pass
+					self.champions()
 
 				elif button_info.click((mx, my)):
-					pass
+					self.information()
 
 				elif button_settings.click((mx, my)):	
 					self.settings()
@@ -284,6 +282,133 @@ class App():
 
 				if event.type == MUSIC_END:
 					self.background_music()
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+			pygame.display.update()
+			clock.tick(60)
+
+
+	def champions(self):
+		pygame.display.set_caption('Ludo Club (Champions)')
+		run = True
+		click = False
+		
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
+		while run:
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/background.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+
+			# Winner
+			x = 40
+			y = self.height/2 - 200
+			window = pygame.image.load("images/panel_large.png")
+			window = pygame.transform.scale(window, (300, 400))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'Top winner', (x+80, y+18), WHITE, text_size=20)
+			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+
+			result = user.get_winners()
+			res_y = y + 50
+			for idx, row in enumerate(result):
+				Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+20, res_y), GREY, text_size=16)
+				res_y += 15
+
+			# Loser
+			x = self.width - 340
+			y = self.height/2 - 200
+			window = pygame.image.load("images/panel_large.png")
+			window = pygame.transform.scale(window, (300, 400))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'Top losers', (x+80, y+18), WHITE, text_size=20)
+			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+
+			result = user.get_losers()
+			res_y = y + 50
+			for idx, row in enumerate(result):
+				Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+20, res_y), GREY, text_size=16)
+				res_y += 15
+
+			Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
+			exit_btn.draw()
+
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				pass
+
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						run = False
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+			pygame.display.update()
+			clock.tick(60)
+
+
+	def information(self):
+		pygame.display.set_caption('Ludo Club (Champions)')
+		run = True
+		click = False
+		
+		x = self.width/2 - 150
+		y = self.height/2 - 200
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
+		while run:
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/background.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+
+			# Winner
+			window = pygame.image.load("images/panel_large.png")
+			window = pygame.transform.scale(window, (300, 400))
+			self.screen.blit(window, (x, y))
+
+			Text(self.screen, 'Game info', (x+80, y+18), WHITE, text_size=20)
+			Button(self.screen, f'{VERSION}', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+
+			Text(self.screen, f'Game developed by: Sule', (x+20, y+50), GREY, text_size=18)
+			Text(self.screen, f'Date started: {STARTED}', (x+20, y+70), GREY, text_size=18)
+			Text(self.screen, f'Last update: {LAST_UPDATE}', (x+20, y+90), GREY, text_size=18)
+
+			exit_btn.draw()
+
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				pass
+
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						run = False
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
 
 				if event.type == MUSIC_END:
 					self.background_music()
@@ -395,9 +520,6 @@ class App():
 						
 						volume.clear()
 
-				if refresh.rect.collidepoint((mx, my)):
-					pass
-
 				if exit_btn.click((mx, my)):
 					run = False
 
@@ -462,7 +584,7 @@ class App():
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
 
-			Text(self.screen, 'Admin panel', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, 'Admin panel', (x+90, y+18), WHITE, text_size=20)
 			Text(self.screen, 'Give admin permissions: (User ID)', (x+25, y+50), GREY, text_size=18)
 			admin_permission.draw()
 			Text(self.screen, 'Ban user from game: (User ID)', (x+25, y+100), GREY, text_size=18)

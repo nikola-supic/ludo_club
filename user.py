@@ -148,6 +148,16 @@ def online_players():
 	result = mycursor.fetchall()
 	return result
 
+def get_winners():
+	mycursor.execute("SELECT username, wins FROM users ORDER BY wins DESC")
+	result = mycursor.fetchall()
+	return result
+
+def get_losers():
+	mycursor.execute("SELECT username, defeats FROM users ORDER BY defeats DESC")
+	result = mycursor.fetchall()
+	return result
+
 class User():
 	"""
 	DOCSTRING:
