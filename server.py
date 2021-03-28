@@ -77,6 +77,15 @@ class Server():
 					elif data_list[0] == 'get_lobby':
 						conn.sendall(pickle.dumps(self.waiting))
 
+					elif data_list[0] == 'rate':
+						username = data_list[1]
+						rate = int(data_list[2])
+
+						with open('rates/rates.txt', 'a') as file:
+							file.write(f'{datetime.now()} // {username} // {rate}\n')
+
+						conn.sendall(pickle.dumps(True))
+
 					elif data_list[0] == 'join':
 						game_id = int(data_list[1])
 						game = self.games[game_id]

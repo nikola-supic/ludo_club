@@ -399,6 +399,8 @@ class App():
 		
 		x = self.width/2 - 150
 		y = self.height/2 - 200
+		rate_us = InputBox(self.screen, (x+25, y+300), (250, 25), '', RED, GREY)
+		rate_button = Button(self.screen, 'RATE US', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
 		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
@@ -418,15 +420,37 @@ class App():
 			Text(self.screen, 'Game info', (x+80, y+18), WHITE, text_size=20)
 			Button(self.screen, f'{VERSION}', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
-			Text(self.screen, f'Game developed by: Sule', (x+20, y+50), GREY, text_size=18)
-			Text(self.screen, f'Date started: {STARTED}', (x+20, y+70), GREY, text_size=18)
-			Text(self.screen, f'Last update: {LAST_UPDATE}', (x+20, y+90), GREY, text_size=18)
+			Text(self.screen, f'Game developed by: Sule', (x+25, y+50), GREY, text_size=18)
+			Text(self.screen, f'Date started: {STARTED}', (x+25, y+70), GREY, text_size=18)
+			Text(self.screen, f'Last update: {LAST_UPDATE}', (x+25, y+90), GREY, text_size=18)
 
+			Text(self.screen, f'Rate us: (1-5)', (x+25, y+290), GREY, text_size=18)
+			rate_us.draw()
+			rate_button.draw()
 			exit_btn.draw()
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
-				pass
+				if rate_button.rect.collidepoint((mx, my)):
+					if rate_us.text != '':
+						try:
+							value = int(rate_us.text)
+						except ValueError:
+							value = -1
+
+						if value < 1 or value > 5:
+							self.draw_error('Rate value must be between 1 and 5.')
+							pygame.time.delay(1000)
+						else:
+							value = self.network.send(f'rate {self.user.username} {rate_us.text}')
+
+							if value:
+								Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+270), GREY, text_size=20, center=True)
+								pygame.display.update()
+								pygame.time.delay(1500)
+						
+						rate_us.clear()
+
 
 			click = False
 			for event in pygame.event.get():
@@ -445,6 +469,9 @@ class App():
 
 				if event.type == MUSIC_END:
 					self.background_music()
+
+				rate_us.handle_event(event)
+			rate_us.update()
 
 			pygame.display.update()
 			clock.tick(60)
@@ -547,7 +574,11 @@ class App():
 
 				if save_game.rect.collidepoint((mx, my)):
 					if volume.text != '':
-						value = int(volume.text)
+						try:
+							value = int(volume.text)
+						except ValueError:
+							value = -1
+
 						if value < 0 or value > 100:
 							self.draw_error('Volume value must be between 0 and 100.')
 							pygame.time.delay(1000)
@@ -791,36 +822,33 @@ class App():
 				if create.rect.collidepoint((mx, my)):
 					try:
 						size = int(lobby_size.text)
-
-						if lobby_name.text == '' or len(lobby_name.text) > 24:
-							self.draw_error('You need to enter valid name for lobby.')
-							pygame.time.delay(1500)
-						
-						elif size < 2 or size > 4:
-							self.draw_error('You need to enter number between 2 and 4.')
-							pygame.time.delay(1500)
-						
-						else:
-							lobby_name.text.replace(' ', '_')
-							if lobby_pw.text == '':
-								pw = None
-							else:
-								lobby_pw.text.replace(' ', '_')
-								pw = lobby_pw.text
-
-							try:
-								run = False
-								game = self.network.send(f'create {lobby_name.text} {size} {pw}')
-								self.game_screen(game.id)
-							except:
-								self.draw_error('Game error #404.')
-								pygame.time.delay(1500)
-								run = False
-
 					except ValueError:
+						size = -1
+
+					if lobby_name.text == '' or len(lobby_name.text) > 24:
+						self.draw_error('You need to enter valid name for lobby.')
+						pygame.time.delay(1500)
+					
+					elif size < 2 or size > 4:
 						self.draw_error('You need to enter number between 2 and 4.')
 						pygame.time.delay(1500)
-						run = False
+					
+					else:
+						lobby_name.text.replace(' ', '_')
+						if lobby_pw.text == '':
+							pw = None
+						else:
+							lobby_pw.text.replace(' ', '_')
+							pw = lobby_pw.text
+
+						try:
+							run = False
+							game = self.network.send(f'create {lobby_name.text} {size} {pw}')
+							self.game_screen(game.id)
+						except:
+							self.draw_error('Game error #404.')
+							pygame.time.delay(1500)
+							run = False
 
 				if exit_btn.click((mx, my)):
 					run = False
