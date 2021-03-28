@@ -29,7 +29,7 @@ GREY = (55, 72, 80)
 GREEN = (34, 177, 76)
 RED = (237, 28, 36)
 BLUE = (15, 39, 99)
-YELLOW = (255, 214, 7)
+YELLOW = (229, 207, 22)
 
 VERSION = 'v0.1'
 STARTED = '23.03.2021'
@@ -96,67 +96,89 @@ class App():
 		pygame.display.set_caption('Ludo Club (Welcome)')
 		click = False
 
-		# Create left part of screen
-		login_name = InputBox(self.screen, (self.width/2-120, self.height - 150), (240, 30), 'Sule', BLUE, WHITE)
-		login_pass = InputBox(self.screen, (self.width/2-120, self.height - 100), (240, 30), '12345678', BLUE, WHITE)
-		login_button = Button(self.screen, 'LOGIN', (self.width/2-120, self.height - 60), (240, 40), BLUE, text_color=WHITE, border=2, border_color=WHITE)
+		# Login
+		x = 40
+		y = self.height/2 - 75
 
-		# Create right part of screen
-		register_name = InputBox(self.screen, (self.width/2-120, 80), (240, 30), '', BLUE, WHITE)
-		register_mail = InputBox(self.screen, (self.width/2-120, 130), (240, 30), '', BLUE, WHITE)
-		register_pass = InputBox(self.screen, (self.width/2-120, 180), (240, 30), '', BLUE, WHITE)
-		register_button = Button(self.screen, 'REGISTER', (self.width/2-120, 220), (240, 40), BLUE, text_color=WHITE, border=2, border_color=WHITE)
+		login_name = InputBox(self.screen, (x+25, y+70), (250, 30), 'Sule', RED, GREY)
+		login_pass = InputBox(self.screen, (x+25, y+130), (250, 30), '12345678', RED, GREY)
+		login_button = Button(self.screen, 'LOGIN', (x+25, y+320), (250, 30), GREY, text_color=WHITE)
+
+		# Register
+		x = self.width - 340
+		y = self.height/2 - 75
+
+		register_name = InputBox(self.screen, (x+25, y+70), (250, 30), '', RED, GREY)
+		register_mail = InputBox(self.screen, (x+25, y+130), (250, 30), '', RED, GREY)
+		register_pass = InputBox(self.screen, (x+25, y+190), (250, 30), '', RED, GREY)
+		register_button = Button(self.screen, 'REGISTER', (x+25, y+320), (250, 30), GREY, text_color=WHITE)
 
 		while True:
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/welcome.jpg")
+			bg = pygame.image.load("images/welcome.png")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
-			Text(self.screen, 'LUDO CLUB', (self.width/2, 30), WHITE, text_size=44, center=True)
-			Text(self.screen, 'PLEASE ENTER YOUR INFORMATION', (self.width/2, 50), BLUE, text_size=20, center=True)
-			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
+			# Login
+			x = 40
+			y = self.height/2 - 75
+			window = pygame.image.load("images/panel_large.png")
+			window = pygame.transform.scale(window, (300, 400))
+			self.screen.blit(window, (x, y))
 
-			# Draw bottom part of screen
-			Text(self.screen, 'ENTER USERNAME:', (self.width/2-120, self.height-160), WHITE, text_size=18)
+			Button(self.screen, 'LOGIN', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+
+			Text(self.screen, 'Enter username:', (x+25, y+60), GREY, text_size=18)
 			login_name.draw()
-			Text(self.screen, 'ENTER PASSWORD:', (self.width/2-120, self.height-110), WHITE, text_size=18)
+			Text(self.screen, 'Enter password:', (x+25, y+120), GREY, text_size=18)
 			login_pass.draw()
 			login_button.draw()
 
-			# Draw top part of screen
-			Text(self.screen, 'ENTER USERNAME:', (self.width/2-120, 70), WHITE, text_size=18)
+			# Register
+			x = self.width - 340
+			y = self.height/2 - 75
+			window = pygame.image.load("images/panel_large.png")
+			window = pygame.transform.scale(window, (300, 400))
+			self.screen.blit(window, (x, y))
+
+			Button(self.screen, 'REGISTER', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+
+			Text(self.screen, 'Enter username:', (x+25, y+60), GREY, text_size=18)
 			register_name.draw()
-			Text(self.screen, 'ENTER E-MAIL:', (self.width/2-100, 100), WHITE, text_size=18)
+			Text(self.screen, 'Enter e-mail:', (x+25, y+120), GREY, text_size=18)
 			register_mail.draw()
-			Text(self.screen, 'ENTER PASSWORD:', (self.width/2-120, 170), WHITE, text_size=18)
+			Text(self.screen, 'Enter password:', (x+25, y+180), GREY, text_size=18)
 			register_pass.draw()
 			register_button.draw()
 
 			mx, my = pygame.mouse.get_pos()
-			if login_button.rect.collidepoint((mx, my)):
-				if click:
+			if click:
+				if login_button.rect.collidepoint((mx, my)):
 					self.user = user.check_login(login_name.text, login_pass.text)
+
+					x = 40
+					y = self.height/2 - 75
 					if self.user != None:
 						self.main_menu()
 					else:
-						Text(self.screen, 'WRONG USERNAME OR PASSWORD.', (self.width/2,  self.height-180), BLUE, text_size=28, center=True)
+						Text(self.screen, 'WRONG USERNAME OR PASSWORD.', (x+150, y+310), GREY, text_size=20, center=True)
 						login_name.clear()
 						login_pass.clear()
 
 						pygame.display.update()
 						pygame.time.delay(1500)
 
-			if register_button.rect.collidepoint((mx, my)):
-				if click:
+				if register_button.rect.collidepoint((mx, my)):
 					register_name.text.replace(' ', '_')
 
+					x = self.width - 340
+					y = self.height/2 - 75
 					if user.check_register(register_name.text, register_mail.text, register_pass.text):
 						register_name.clear()
 						register_mail.clear()
 						register_pass.clear()
 						
-						Text(self.screen, 'SUCCESSFULY REGISTERED, USE THAT INFO TO LOGIN.', (self.width/2, self.height-180), BLUE, text_size=28, center=True)
+						Text(self.screen, 'SUCCESSFULY REGISTERED. NOW LOGIN.', (x+150, y+310), GREY, text_size=20, center=True)
 						pygame.display.update()
 						pygame.time.delay(1500)
 					else:
@@ -164,10 +186,9 @@ class App():
 						register_mail.clear()
 						register_pass.clear()
 						
-						Text(self.screen, 'YOU ENTERED SOME WRONG INFO. TRY AGAIN.', (self.width/2, self.height-180), BLUE, text_size=28, center=True)
+						Text(self.screen, 'YOU ENTERED SOME WRONG INFO.', (x+150, y+310), GREY, text_size=20, center=True)
 						pygame.display.update()
 						pygame.time.delay(1500)
-
 
 			click = False
 			for event in pygame.event.get():
