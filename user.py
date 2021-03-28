@@ -23,6 +23,30 @@ try:
 except mysql.connector.errors.InterfaceError: 
 	print('[ - ] Can not connect to database.')
 
+# game related function
+def add_rating(user_id, user_name, rating, review):
+	try:
+		time = datetime.now()
+		sql = "INSERT INTO ratings (userid, username, rating, review, time) VALUES (%s, %s, %s, %s, %s)"
+		val = (user_id, user_name, rating, review, time, )
+
+		mycursor.execute(sql, val)
+		mydb.commit()
+		return True
+	except Exception as e:
+		print(e)
+
+def get_reviews():
+	mycursor.execute("SELECT * FROM ratings WHERE review != ''")
+	result = mycursor.fetchall()
+	return result
+
+def get_average():
+	mycursor.execute("SELECT AVG(rating) AS average FROM ratings")
+	result = mycursor.fetchone()
+	return result
+
+# user related function
 def check_login(username, password):
 	sql = "SELECT * FROM users WHERE username=%s AND password=%s"
 	val = (username, password)
@@ -50,8 +74,8 @@ def check_register(username, email, password):
 		mycursor.execute(sql, val)
 		mydb.commit()
 		return True
-	except:
-		pass
+	except Exception as e:
+		print(e)
 	
 	return False
 

@@ -396,11 +396,16 @@ class App():
 		pygame.display.set_caption('Ludo Club (Champions)')
 		run = True
 		click = False
+		see_reviews = False
 		
-		x = self.width/2 - 150
+		# Game info
+		x = 40
 		y = self.height/2 - 200
-		rate_us = InputBox(self.screen, (x+25, y+300), (250, 25), '', RED, GREY)
-		rate_button = Button(self.screen, 'RATE US', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
+
+		rate_us = InputBox(self.screen, (x+25, y+225), (250, 25), '', RED, GREY)
+		rate_review = InputBox(self.screen, (x+25, y+270), (250, 25), '', RED, GREY)
+		rate_button = Button(self.screen, 'RATE US', (x+25, y+300), (250, 25), GREY, text_color=WHITE)
+		review_button = Button(self.screen, 'ALL REVIEWS', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
 		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
@@ -412,27 +417,54 @@ class App():
 			logo = pygame.transform.scale(logo, (160, 160))
 			self.screen.blit(logo, (self.width/2-80, -10))
 
-			# Winner
+			# Game info
+			x = 40
+			y = self.height/2 - 200
 			window = pygame.image.load("images/panel_large.png")
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
 
 			Text(self.screen, 'Game info', (x+80, y+18), WHITE, text_size=20)
 			Button(self.screen, f'{VERSION}', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
-
 			Text(self.screen, f'Game developed by: Sule', (x+25, y+50), GREY, text_size=18)
 			Text(self.screen, f'Date started: {STARTED}', (x+25, y+70), GREY, text_size=18)
 			Text(self.screen, f'Last update: {LAST_UPDATE}', (x+25, y+90), GREY, text_size=18)
 
-			Text(self.screen, f'Rate us: (1-5)', (x+25, y+290), GREY, text_size=18)
+			Text(self.screen, f'Rate us: (1-5)', (x+25, y+215), GREY, text_size=18)
 			rate_us.draw()
+			Text(self.screen, f'Write review:', (x+25, y+260), GREY, text_size=18)
+			rate_review.draw()
 			rate_button.draw()
+			review_button.draw()
+
+			# Reviews
+			if see_reviews:
+				x = self.width - 340
+				y = self.height/2 - 200
+
+				window = pygame.image.load("images/panel_large.png")
+				window = pygame.transform.scale(window, (300, 400))
+				self.screen.blit(window, (x, y))
+
+				average = user.get_average()
+				Button(self.screen, f'Average: {average[0]:.2f}', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+
+				result = user.get_reviews()
+				res_y = y + 50
+				for row in result:
+					Text(self.screen, f'{row[2]} // {row[5]}', (x+20, res_y), GREY, text_size=16)
+					Text(self.screen, f'{row[3]} - {row[4]}', (x+20, res_y+15), GREY, text_size=16)
+					res_y += 30
+
 			exit_btn.draw()
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
 				if rate_button.rect.collidepoint((mx, my)):
 					if rate_us.text != '':
+						x = 40
+						y = self.height/2 - 200
+
 						try:
 							value = int(rate_us.text)
 						except ValueError:
@@ -442,14 +474,21 @@ class App():
 							self.draw_error('Rate value must be between 1 and 5.')
 							pygame.time.delay(1000)
 						else:
-							value = self.network.send(f'rate {self.user.username} {rate_us.text}')
+							add_rating = user.add_rating(self.user.id, self.user.username, value, rate_review.text)
 
-							if value:
-								Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+270), GREY, text_size=20, center=True)
+							if add_rating:
+								Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+230), GREY, text_size=20, center=True)
 								pygame.display.update()
 								pygame.time.delay(1500)
 						
+						rate_review.clear()
 						rate_us.clear()
+
+				if review_button.rect.collidepoint((mx, my)):
+					if see_reviews:
+						see_reviews = False
+					else:
+						see_reviews = True
 
 
 			click = False
@@ -471,7 +510,9 @@ class App():
 					self.background_music()
 
 				rate_us.handle_event(event)
+				rate_review.handle_event(event)
 			rate_us.update()
+			rate_review.update()
 
 			pygame.display.update()
 			clock.tick(60)
@@ -684,10 +725,10 @@ class App():
 				Button(self.screen, 'ONLINE', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
 				result = user.online_players()
-				y += 50
+				res_y = y + 50
 				for row in result:
-					Text(self.screen, f'#{row[0]} // {row[1]}', (x+20, y), GREY, text_size=16)
-					y += 15
+					Text(self.screen, f'#{row[0]} // {row[1]}', (x+20, res_y), GREY, text_size=16)
+					res_y += 15
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
