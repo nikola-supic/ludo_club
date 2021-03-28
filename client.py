@@ -339,7 +339,7 @@ class App():
 			self.screen.blit(window, (x, y))
 
 			Text(self.screen, 'Top winner', (x+80, y+18), WHITE, text_size=20)
-			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
 			result = user.get_winners()
 			res_y = y + 50
@@ -355,7 +355,7 @@ class App():
 			self.screen.blit(window, (x, y))
 
 			Text(self.screen, 'Top losers', (x+80, y+18), WHITE, text_size=20)
-			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
 			result = user.get_losers()
 			res_y = y + 50
@@ -416,7 +416,7 @@ class App():
 			self.screen.blit(window, (x, y))
 
 			Text(self.screen, 'Game info', (x+80, y+18), WHITE, text_size=20)
-			Button(self.screen, f'{VERSION}', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+			Button(self.screen, f'{VERSION}', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
 			Text(self.screen, f'Game developed by: Sule', (x+20, y+50), GREY, text_size=18)
 			Text(self.screen, f'Date started: {STARTED}', (x+20, y+70), GREY, text_size=18)
@@ -461,18 +461,18 @@ class App():
 		username = InputBox(self.screen, (x+25, y+60), (270, 25), '', RED, GREY)
 		email = InputBox(self.screen, (x+25, y+110), (270, 25), '', RED, GREY)
 		password = InputBox(self.screen, (x+25, y+157), (270, 25), '', RED, GREY)
-		save_acc = Button(self.screen, 'SAVE ACC', (x+195, y+5), (102, 25), RED, text_color=WHITE)
+		save_acc = Button(self.screen, 'SAVE ACC', (x+195, y+5), (102, 25), YELLOW, text_color=WHITE)
 
 		# Game info
 		x = self.width/2 - 160
 		y = 260
 		volume = InputBox(self.screen, (x+25, y+60), (270, 25), '', RED, GREY)
-		save_game = Button(self.screen, 'SAVE GAME', (x+195, y+5), (102, 25), RED, text_color=WHITE)
+		save_game = Button(self.screen, 'SAVE GAME', (x+195, y+5), (102, 25), YELLOW, text_color=WHITE)
 
 		# Stats
 		x = self.width/2 - 160
 		y = 480
-		refresh = Button(self.screen, 'REFRESH', (x+195, y+5), (102, 25), RED, text_color=WHITE)
+		refresh = Button(self.screen, 'REFRESH', (x+195, y+5), (102, 25), YELLOW, text_color=WHITE)
 
 		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
@@ -521,9 +521,9 @@ class App():
 			self.screen.blit(window, (x, y))
 
 			Text(self.screen, 'Stats', (x+90, y+19), WHITE, text_size=20)
-			Text(self.screen, f'Your wins: {self.user.wins}', (x+25, y+50), GREY, text_size=22)
-			Text(self.screen, f'Your defeats: {self.user.defeats}', (x+25, y+70), GREY, text_size=22)
-			Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+90), GREY, text_size=22)
+			Text(self.screen, f'Your wins: {self.user.wins}', (x+25, y+50), GREY, text_size=20)
+			Text(self.screen, f'Your defeats: {self.user.defeats}', (x+25, y+70), GREY, text_size=20)
+			Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+90), GREY, text_size=20)
 			refresh.draw()
 
 			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
@@ -607,7 +607,7 @@ class App():
 		last_online = InputBox(self.screen, (x+25, y+260), (250, 25), '', RED, GREY)
 		
 		online_players = Button(self.screen, 'SEE ONLINE PLAYERS', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
-		refresh = Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), RED, text_color=WHITE)
+		refresh = Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE)
 		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
 		while run:
 			self.screen.fill(BLACK)
@@ -650,7 +650,7 @@ class App():
 				window = pygame.transform.scale(window, (300, 400))
 				self.screen.blit(window, (x, y))
 
-				Button(self.screen, 'ONLINE', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+				Button(self.screen, 'ONLINE', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
 				result = user.online_players()
 				y += 50
@@ -1430,7 +1430,7 @@ class App():
 									dice_button.draw()
 
 									pygame.display.update()
-									pygame.time.delay(75)
+									pygame.time.delay(50)
 
 								if fix_value != 0:
 									value = fix_value
@@ -1512,7 +1512,7 @@ class App():
 		run = True
 		click = False
 
-		input_text = InputBox(self.screen, (20, self.height - 45), (self.width - 90, 30), '', RED, WHITE)
+		input_text = InputBox(self.screen, (20, self.height - 45), (self.width - 90, 30), '', RED, GREY)
 		input_send = ImageButton(self.screen, 'images/game/chat_send.png', (30, 30), (self.width - 45, self.height - 48), 'info')
 		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (self.width - 45, 20), 'exit')
 
@@ -1533,12 +1533,12 @@ class App():
 			input_text.draw()
 			input_send.draw()
 			exit_btn.draw()
-			Text(self.screen, f'TYPING AS USER: {self.user.username}',(self.width - 65, 32), WHITE, right=True)
-			Text(self.screen, f'LUDO CLUB (Chat)',(20, 32), WHITE)
+			Text(self.screen, f'TYPING AS USER: {self.user.username}',(self.width - 65, 32), GREY, right=True)
+			Text(self.screen, f'LUDO CLUB (Chat)',(20, 32), GREY)
 
 			y = self.height - 60
 			for idx, msg in enumerate(game.messages[:30]):
-				Text(self.screen, f'# {msg[2]} // {msg[0]} // {msg[1]}', (20, y), WHITE, text_size=20)
+				Text(self.screen, f'# {msg[2]} // {msg[0]} // {msg[1]}', (20, y), GREY, text_size=20)
 				y -= 20
 
 			mx, my = pygame.mouse.get_pos()
@@ -1548,7 +1548,7 @@ class App():
 						game = self.network.send(f'msg {self.user.username} {input_text.text}')
 						input_text.clear()
 					except:
-						self.draw_error('Could not set message.')
+						self.draw_error('Could not send message.')
 						pygame.time.delay(2000)
 						run = False
 						break
