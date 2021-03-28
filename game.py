@@ -130,7 +130,6 @@ class Game():
 					if pawn.pos == self.pawn[player][move_idx].pos:
 
 						self.pawn[player_idx][pawn_idx].pos = (pawn_idx+1) * (-1)
-						# pawn.pos = (pawn_idx+1) * (-1)
 						self.pawns_free[player_idx] -= 1
 						break
 
@@ -146,6 +145,10 @@ class Game():
 
 	def give_win(self, player):
 		self.wins[player] += 1
+
+		for idx in range(self.lobby_size):
+			if idx != player:
+				self.defeats[idx] += 1
 
 
 	def update_users(self, player, username, id):

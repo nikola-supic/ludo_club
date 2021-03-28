@@ -131,11 +131,14 @@ class Server():
 
 					elif data_list[0] == 'next_move':
 						game = self.games[game_id]
+						player = int(data_list[1])
+						
 						game.rolled_dice = False
 						game.player_on_move = game.get_next()
 
 						if game.pawns_finish[player] == 1:
 							game.ready = False
+							game.give_win(player)
 							game.winner = game.user_names[player]
 
 						conn.sendall(pickle.dumps(game))

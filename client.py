@@ -1044,6 +1044,20 @@ class App():
 		x = self.width/2 - 190
 		y = 25
 		ready_btn = Button(self.screen, 'READY', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE)
+
+		try:
+			game = self.network.send(f'get {game_id}')
+		except:
+			self.draw_error('Could not get game.')
+			pygame.time.delay(2500)
+			run = False
+
+		for i in range(game.lobby_size):
+			if self.user.username == game.winner:
+				user.give_win(self.user.id)
+			else:
+				user.give_defeat(self.user.id)
+
 		while run:
 			try:
 				game = self.network.send(f'get {game_id}')
@@ -1065,15 +1079,15 @@ class App():
 				self.screen.blit(bg, (0, 0))
 
 				game_duration = int((time_finished - game.time_started).total_seconds())
-				lobby_duration = int((game.lobby_started - game.time_started).total_seconds())
+				lobby_duration = int((time_finished - game.lobby_started).total_seconds())
 
 				window = pygame.image.load("images/panel.png")
 				window = pygame.transform.scale(window, (380, 200))
 				self.screen.blit(window, (x, y))
 
 				Text(self.screen, 'We have a winner!', (x+90, y+19), WHITE, text_size=20)
-				Text(self.screen, f'GAME DURATION: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
-				Text(self.screen, f'LOBBY DURATION: {timedelta(seconds=duration)}', (x+25, y+70), RED, text_size=24)
+				Text(self.screen, f'GAME DURATION: {timedelta(seconds=game_duration)}', (x+25, y+50), RED, text_size=24)
+				Text(self.screen, f'LOBBY DURATION: {timedelta(seconds=lobby_duration)}', (x+25, y+70), RED, text_size=24)
 				Text(self.screen, f'WINNER: {game.winner}', (x+25, y+90), RED, text_size=24)
 				Text(self.screen, f'READY: {game.players_ready} / {game.joined}', (x+25, y+110), RED, text_size=24)
 				Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
@@ -1279,7 +1293,7 @@ class App():
 	def next_player(self):
 		run = True
 		try:
-			game = self.network.send('next_move')
+			game = self.network.send(f'next_move {self.player}')
 		except:
 			self.draw_error('Could not get to next player.')
 			pygame.time.delay(1500)
@@ -1338,7 +1352,6 @@ class App():
 
 			elif game.winner is not None:
 				run = self.draw_winner(game_id, datetime.now())
-
 			else:
 				self.screen.fill(BLACK)
 				bg = pygame.image.load("images/background.jpg")
