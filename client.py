@@ -869,8 +869,8 @@ class App():
 		self.screen.blit(lobby_bg, (x, y))
 
 		Text(self.screen, f'ID #{idx}', (x+60, y+13), WHITE, text_size=20)
-		Text(self.screen, f'NAME: {game.lobby_name}', (x+18, y+40), RED, text_size=20)
-		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+18, y+60), RED, text_size=20)
+		Text(self.screen, f'NAME: {game.lobby_name}', (x+18, y+40), GREY, text_size=20)
+		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+18, y+60), GREY, text_size=20)
 
 		if game.lobby_pw != 'None':
 			locked = pygame.image.load("images/locked.png")
@@ -989,9 +989,9 @@ class App():
 		self.screen.blit(window, (x, y))
 
 		Text(self.screen, 'Waiting for players to join...', (x+90, y+19), WHITE, text_size=20)
-		Text(self.screen, f'WAITING TIME: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
-		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+25, y+70), RED, text_size=24)
-		Text(self.screen, f'PASSWORD: {game.lobby_pw}', (x+25, y+90), RED, text_size=24)
+		Text(self.screen, f'WAITING TIME: {timedelta(seconds=duration)}', (x+25, y+50), GREY, text_size=20)
+		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+25, y+70), GREY, text_size=20)
+		Text(self.screen, f'PASSWORD: {game.lobby_pw}', (x+25, y+90), GREY, text_size=20)
 		Button(self.screen, 'WAITING...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
 		Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
@@ -1022,9 +1022,9 @@ class App():
 			self.screen.blit(window, (x, y))
 
 			Text(self.screen, 'One of the player left', (x+90, y+19), WHITE, text_size=20)
-			Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), RED, text_size=24)
-			Text(self.screen, f'WINS: {game.wins[self.player]}', (x+25, y+70), RED, text_size=24)
-			Text(self.screen, f'DEFEATS: {game.defeats[self.player]}', (x+25, y+90), RED, text_size=24)
+			Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), GREY, text_size=20)
+			Text(self.screen, f'WINS: {game.wins[self.player]}', (x+25, y+70), GREY, text_size=20)
+			Text(self.screen, f'DEFEATS: {game.defeats[self.player]}', (x+25, y+90), GREY, text_size=20)
 			Button(self.screen, 'QUIT...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
 			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
@@ -1100,17 +1100,17 @@ class App():
 				self.screen.blit(bg, (0, 0))
 
 				game_duration = int((time_finished - game.time_started).total_seconds())
-				lobby_duration = int((time_finished - game.lobby_started).total_seconds())
+				lobby_duration = int((datetime.now() - game.lobby_started).total_seconds())
 
 				window = pygame.image.load("images/panel.png")
 				window = pygame.transform.scale(window, (380, 200))
 				self.screen.blit(window, (x, y))
 
 				Text(self.screen, 'We have a winner!', (x+90, y+19), WHITE, text_size=20)
-				Text(self.screen, f'GAME DURATION: {timedelta(seconds=game_duration)}', (x+25, y+50), RED, text_size=24)
-				Text(self.screen, f'LOBBY DURATION: {timedelta(seconds=lobby_duration)}', (x+25, y+70), RED, text_size=24)
-				Text(self.screen, f'WINNER: {game.winner}', (x+25, y+90), RED, text_size=24)
-				Text(self.screen, f'READY: {game.players_ready} / {game.joined}', (x+25, y+110), RED, text_size=24)
+				Text(self.screen, f'GAME DURATION: {timedelta(seconds=game_duration)}', (x+25, y+50), GREY, text_size=20)
+				Text(self.screen, f'LOBBY DURATION: {timedelta(seconds=lobby_duration)}', (x+25, y+70), GREY, text_size=20)
+				Text(self.screen, f'WINNER: {game.winner}', (x+25, y+90), GREY, text_size=20)
+				Text(self.screen, f'READY: {game.players_ready} / {game.joined}', (x+25, y+110), RED, text_size=20)
 				Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 				ready_btn.draw()
 
