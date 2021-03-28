@@ -126,7 +126,7 @@ class App():
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
 
-			Button(self.screen, 'LOGIN', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+			Button(self.screen, 'LOGIN', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
 			Text(self.screen, 'Enter username:', (x+25, y+60), GREY, text_size=18)
 			login_name.draw()
@@ -141,7 +141,7 @@ class App():
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
 
-			Button(self.screen, 'REGISTER', (x+185, y+5), (92, 25), RED, text_color=WHITE).draw()
+			Button(self.screen, 'REGISTER', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
 
 			Text(self.screen, 'Enter username:', (x+25, y+60), GREY, text_size=18)
 			register_name.draw()
@@ -243,7 +243,7 @@ class App():
 			pygame.display.set_caption('Ludo Club (Main Menu)')
 
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/background.jpg")
+			bg = pygame.image.load("images/menu/background.png")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
