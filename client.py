@@ -93,7 +93,6 @@ class App():
 
 
 	def welcome(self):
-		pygame.display.set_caption('Ludo Club (Welcome)')
 		click = False
 
 		# Login
@@ -237,10 +236,8 @@ class App():
 		button_exit = ImageButton(self.screen, 'images/menu/exit.png', (100, 100), 				(self.width/2+100, self.height/2+50), 'exit')
 
 		while True:
-			pygame.display.set_caption('Ludo Club (Main Menu)')
-
 			self.screen.fill(BLACK)
-			bg = pygame.image.load("images/menu/background.png")
+			bg = pygame.image.load("images/background.jpg")
 			bg = pygame.transform.scale(bg, (self.width, self.height))
 			self.screen.blit(bg, (0, 0))
 
@@ -313,7 +310,6 @@ class App():
 
 
 	def champions(self):
-		pygame.display.set_caption('Ludo Club (Champions)')
 		run = True
 		click = False
 		
@@ -393,7 +389,6 @@ class App():
 
 
 	def information(self):
-		pygame.display.set_caption('Ludo Club (Champions)')
 		run = True
 		click = False
 		see_reviews = False
@@ -522,7 +517,6 @@ class App():
 
 
 	def settings(self):
-		pygame.display.set_caption('Ludo Club (Settings)')
 		run = True
 		click = False
 		
@@ -672,7 +666,6 @@ class App():
 
 
 	def admin_panel(self):
-		pygame.display.set_caption('Ludo Club (Admin Panel)')
 		run = True
 		click = False
 		see_online = False
@@ -829,7 +822,6 @@ class App():
 
 
 	def create_lobby(self):
-		pygame.display.set_caption('Ludo Club (Create Lobby)')
 		run = True
 		click = False
 
@@ -968,7 +960,6 @@ class App():
 
 
 	def pick_lobby(self):
-		pygame.display.set_caption('Ludo Club (Pick lobby)')
 		run = True
 		click = False
 
@@ -1084,8 +1075,6 @@ class App():
 
 
 	def draw_quitting(self, game):
-		pygame.display.set_caption('Ludo Club (Player Left)')
-
 		run = True
 		click = False
 		duration = int((datetime.now() - game.time_started).total_seconds())
@@ -1145,7 +1134,6 @@ class App():
 
 
 	def draw_winner(self, game_id, time_finished):
-		pygame.display.set_caption('Ludo Club (Winner)')
 		run = True
 		click = False
 		ready = False
@@ -1425,7 +1413,6 @@ class App():
 
 
 	def game_screen(self, game_id):
-		pygame.display.set_caption('Ludo Club (Game)')
 		run = True
 		click = False
 		x, y = 50, 50
@@ -1602,7 +1589,6 @@ class App():
 
 
 	def chat_screen(self, game_id):
-		pygame.display.set_caption('Ludo Club (Chat)')
 		run = True
 		click = False
 
