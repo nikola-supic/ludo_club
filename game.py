@@ -128,10 +128,10 @@ class Game():
 			if player_idx != player:
 				for pawn_idx, pawn in enumerate(color):
 					if pawn.pos == self.pawn[player][move_idx].pos:
-
-						self.pawn[player_idx][pawn_idx].pos = (pawn_idx+1) * (-1)
-						self.pawns_free[player_idx] -= 1
-						break
+						if pawn.pos not in [8, 34, 47, 21]:
+							self.pawn[player_idx][pawn_idx].pos = (pawn_idx+1) * (-1)
+							self.pawns_free[player_idx] -= 1
+							break
 
 
 	def get_next(self):
