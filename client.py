@@ -205,9 +205,6 @@ class App():
 					if event.button == 1:
 						click = True
 
-				if event.type == MUSIC_END:
-					self.background_music()
-
 				login_name.handle_event(event)
 				login_pass.handle_event(event)
 				register_name.handle_event(event)
@@ -301,12 +298,12 @@ class App():
 						pygame.quit()
 						sys.exit()
 
+					if event.key == pygame.K_m:
+						self.background_music()
+
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
 						click = True
-
-				if event.type == MUSIC_END:
-					self.background_music()
 
 				if event.type == MUSIC_END:
 					self.background_music()
@@ -380,6 +377,9 @@ class App():
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_ESCAPE:
 						run = False
+
+					if event.key == pygame.K_m:
+						self.background_music()
 
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
@@ -502,6 +502,9 @@ class App():
 					if event.key == pygame.K_ESCAPE:
 						run = False
 
+					if event.key == pygame.K_m:
+						self.background_music()
+
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
 						click = True
@@ -560,7 +563,7 @@ class App():
 			window = pygame.transform.scale(window, (320, 210))
 			self.screen.blit(window, (x, y))
 
-			Text(self.screen, 'Account info', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, 'Account info', (x+90, y+18), WHITE, text_size=20)
 			Text(self.screen, f'Current username: {self.user.username}', (x+25, y+50), GREY, text_size=18)
 			username.draw()
 			Text(self.screen, f'Current e-mail: {self.user.email}', (x+25, y+100), GREY, text_size=18)
@@ -576,8 +579,9 @@ class App():
 			window = pygame.transform.scale(window, (320, 210))
 			self.screen.blit(window, (x, y))
 
-			Text(self.screen, 'Game info', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, 'Game info', (x+90, y+18), WHITE, text_size=20)
 			Text(self.screen, f'Current volume: {self.user.volume}', (x+25, y+50), GREY, text_size=18)
+			Text(self.screen, f'Use M to skip song.', (x+25, y+100), GREY, text_size=18)
 			volume.draw()
 			save_game.draw()
 
@@ -588,7 +592,7 @@ class App():
 			window = pygame.transform.scale(window, (320, 210))
 			self.screen.blit(window, (x, y))
 
-			Text(self.screen, 'Stats', (x+90, y+19), WHITE, text_size=20)
+			Text(self.screen, 'Stats', (x+90, y+18), WHITE, text_size=20)
 			Text(self.screen, f'Your wins: {self.user.wins}', (x+25, y+50), GREY, text_size=20)
 			Text(self.screen, f'Your defeats: {self.user.defeats}', (x+25, y+70), GREY, text_size=20)
 			Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+90), GREY, text_size=20)
@@ -642,6 +646,9 @@ class App():
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_ESCAPE:
 						run = False
+
+					if event.key == pygame.K_m:
+						self.background_music()
 
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
@@ -795,6 +802,9 @@ class App():
 					if event.key == pygame.K_ESCAPE:
 						run = False
 
+					if event.key == pygame.K_m:
+						self.background_music()
+
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
 						click = True
@@ -904,6 +914,9 @@ class App():
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_ESCAPE:
 						run = False
+
+					if event.key == pygame.K_m:
+						self.background_music()
 
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
@@ -1025,6 +1038,9 @@ class App():
 					if event.key == pygame.K_ESCAPE:
 						run = False
 
+					if event.key == pygame.K_m:
+						self.background_music()
+
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
 						click = True
@@ -1113,6 +1129,9 @@ class App():
 					if event.key == pygame.K_ESCAPE:
 						game = self.network.send(f'quit')
 						run = False
+
+					if event.key == pygame.K_m:
+						self.background_music()
 
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
@@ -1209,6 +1228,9 @@ class App():
 					if event.key == pygame.K_ESCAPE:
 						game = self.network.send(f'quit')
 						run = False
+
+					if event.key == pygame.K_m:
+						self.background_music()
 
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
@@ -1551,6 +1573,9 @@ class App():
 						game = self.network.send('quit')
 						run = False
 
+					if event.key == pygame.K_m:
+						self.background_music()
+
 					if event.key == pygame.K_1:
 						fix_value = 1
 					if event.key == pygame.K_2:
@@ -1637,6 +1662,9 @@ class App():
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_ESCAPE:
 						run = False
+
+					if event.key == pygame.K_m:
+						self.background_music()
 
 				if event.type == pygame.MOUSEBUTTONUP:
 					if event.button == 1:
