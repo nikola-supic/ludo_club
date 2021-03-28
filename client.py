@@ -228,10 +228,10 @@ class App():
 
 		click = False
 
-		button_friends = ImageButton(self.screen, 'images/menu/friends.png', (60, 60), 			(20, 20), 'friends')
-		button_shop = ImageButton(self.screen, 'images/menu/shop.png', (60, 60), 				(100, 20), 'shop')
-		button_champions = ImageButton(self.screen, 'images/menu/champions.png', (60, 60), 		(180, 20), 'champions')
-
+		button_profile = ImageButton(self.screen, 'images/menu/profile.png', (60, 60), 			(20, 20), 'profile')
+		button_friends = ImageButton(self.screen, 'images/menu/friends.png', (60, 60), 			(100, 20), 'friends')
+		button_shop = ImageButton(self.screen, 'images/menu/shop.png', (60, 60), 				(180, 20), 'shop')
+		button_champions = ImageButton(self.screen, 'images/menu/champions.png', (60, 60), 		(260, 20), 'champions')
 
 		button_play = ImageButton(self.screen, 'images/menu/play.png', (120, 120), 				(self.width/2-220, self.height/2-60), 'play')
 		button_search = ImageButton(self.screen, 'images/menu/search.png', (120, 120), 			(self.width/2-60, self.height/2-40), 'search')
@@ -252,9 +252,10 @@ class App():
 			logo = pygame.transform.scale(logo, (160, 160))
 			self.screen.blit(logo, (self.width-170, -10))
 
-			button_champions.draw()
+			button_profile.draw()
 			button_friends.draw()
 			button_shop.draw()
+			button_champions.draw()
 			
 			button_play.draw()
 			button_search.draw()
@@ -267,7 +268,10 @@ class App():
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
-				if button_friends.click((mx, my)):
+				if button_profile.click((mx, my)):
+					pass
+
+				elif button_friends.click((mx, my)):
 					self.friends()
 
 				elif button_shop.click((mx, my)):
