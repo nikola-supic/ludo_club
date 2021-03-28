@@ -125,7 +125,7 @@ class App():
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
 
-			Button(self.screen, 'LOGIN', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+			Button(self.screen, 'LOGIN', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
 			Text(self.screen, 'Enter username:', (x+25, y+60), GREY, text_size=18)
 			login_name.draw()
@@ -140,7 +140,7 @@ class App():
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
 
-			Button(self.screen, 'REGISTER', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+			Button(self.screen, 'REGISTER', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
 			Text(self.screen, 'Enter username:', (x+25, y+60), GREY, text_size=18)
 			register_name.draw()
@@ -226,14 +226,19 @@ class App():
 
 		click = False
 
-		button_play = ImageButton(self.screen, 'images/menu/play.png', (100, 100), 				(self.width/2-275, self.height/2-150), 'play')
-		button_search = ImageButton(self.screen, 'images/menu/search.png', (100, 100), 			(self.width/2-125, self.height/2-130), 'search')
-		button_champions = ImageButton(self.screen, 'images/menu/champions.png', (100, 100), 	(self.width/2+25, self.height/2-130), 'champions')
-		button_info = ImageButton(self.screen, 'images/menu/info.png', (100, 100), 				(self.width/2+175, self.height/2-150), 'info')
+		button_friends = ImageButton(self.screen, 'images/menu/friends.png', (60, 60), 			(20, 20), 'friends')
+		button_shop = ImageButton(self.screen, 'images/menu/shop.png', (60, 60), 				(100, 20), 'shop')
+		button_champions = ImageButton(self.screen, 'images/menu/champions.png', (60, 60), 		(180, 20), 'champions')
 
-		button_settings = ImageButton(self.screen, 'images/menu/settings.png', (100, 100), 		(self.width/2-200, self.height/2+50), 'settings')
-		button_admin = ImageButton(self.screen, 'images/menu/admin.png', (100, 100), 			(self.width/2-50, self.height/2+80), 'admin')
-		button_exit = ImageButton(self.screen, 'images/menu/exit.png', (100, 100), 				(self.width/2+100, self.height/2+50), 'exit')
+
+		button_play = ImageButton(self.screen, 'images/menu/play.png', (120, 120), 				(self.width/2-220, self.height/2-60), 'play')
+		button_search = ImageButton(self.screen, 'images/menu/search.png', (120, 120), 			(self.width/2-60, self.height/2-40), 'search')
+		button_computer = ImageButton(self.screen, 'images/menu/computer.png', (120, 120), 		(self.width/2+100, self.height/2-60), 'computer')
+
+		button_admin = ImageButton(self.screen, 'images/menu/admin.png', (60, 60),  			(self.width-320, self.height-80), 'admin')
+		button_settings = ImageButton(self.screen, 'images/menu/settings.png', (60, 60), 		(self.width-240, self.height-80), 'settings')
+		button_info = ImageButton(self.screen, 'images/menu/info.png', (60, 60), 				(self.width-160, self.height-80), 'info')
+		button_exit = ImageButton(self.screen, 'images/menu/exit.png', (60, 60), 				(self.width-80, self.height-80), 'exit')
 
 		while True:
 			self.screen.fill(BLACK)
@@ -243,26 +248,40 @@ class App():
 
 			logo = pygame.image.load("images/logo.png")
 			logo = pygame.transform.scale(logo, (160, 160))
-			self.screen.blit(logo, (self.width/2-80, -10))
+			self.screen.blit(logo, (self.width-170, -10))
 
+			button_champions.draw()
+			button_friends.draw()
+			button_shop.draw()
+			
 			button_play.draw()
 			button_search.draw()
-			button_champions.draw()
-			button_info.draw()
-			button_settings.draw()
+			button_computer.draw()
+
 			button_admin.draw()
+			button_settings.draw()
+			button_info.draw()
 			button_exit.draw()
 
 			mx, my = pygame.mouse.get_pos()
 			if click:
-				if button_play.click((mx, my)):
+				if button_friends.click((mx, my)):
+					self.friends()
+
+				elif button_shop.click((mx, my)):
+					pass
+
+				elif button_champions.click((mx, my)):
+					self.champions()
+
+				elif button_play.click((mx, my)):
 					self.create_lobby()
 
 				elif button_search.click((mx, my)):
 					self.pick_lobby()
 
-				elif button_champions.click((mx, my)):
-					self.champions()
+				elif button_computer.click((mx, my)):
+					pass
 
 				elif button_info.click((mx, my)):
 					self.information()
@@ -309,6 +328,196 @@ class App():
 			clock.tick(60)
 
 
+	def friends(self):
+		run = True
+		click = False
+
+		# Add friends
+		x = 40
+		y = self.height/2 - 200
+		add_name = InputBox(self.screen, (x+25, y+60), (250, 25), '', RED, GREY)
+		add_button = Button(self.screen, 'ADD FRIEND', (x+25, y+130), (250, 25), GREY, text_color=WHITE)
+
+		# Requests
+		x = 40
+		y = self.height/2
+
+		accept_button = Button(self.screen, 'ACCEPT', (x+25, y+130), (115, 25), GREY, text_color=WHITE)
+		decline_button = Button(self.screen, 'DECLINE', (x+160, y+130), (115, 25), GREY, text_color=WHITE)
+		request_id = InputBox(self.screen, (x+25, y+100), (250, 25), '', RED, GREY)
+		
+		# Friends
+		x = self.width - 340
+		y = self.height/2 - 200
+		delete_id = InputBox(self.screen, (x+25, y+300), (250, 25), '', RED, GREY)
+		delete_button = Button(self.screen, 'DELETE FRIEND', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
+
+		# Other
+		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
+		while run:
+			self.screen.fill(BLACK)
+			bg = pygame.image.load("images/background.jpg")
+			bg = pygame.transform.scale(bg, (self.width, self.height))
+			self.screen.blit(bg, (0, 0))
+
+			logo = pygame.image.load("images/logo.png")
+			logo = pygame.transform.scale(logo, (160, 160))
+			self.screen.blit(logo, (self.width/2-80, -10))
+
+			# Add friends
+			x = 40
+			y = self.height/2 - 200
+			window = pygame.image.load("images/panel_small.png")
+			window = pygame.transform.scale(window, (300, 180))
+			self.screen.blit(window, (x, y))
+			Button(self.screen, 'ADD FRIEND', (x+175, y+6), (100, 21), YELLOW, text_color=WHITE).draw()
+
+			Text(self.screen, 'Enter username:', (x+25, y+50), GREY, text_size=16)
+			add_name.draw()
+			add_button.draw()
+
+			# Requests
+			x = 40
+			y = self.height/2
+			window = pygame.image.load("images/panel_small.png")
+			window = pygame.transform.scale(window, (300, 180))
+			self.screen.blit(window, (x, y))
+			Button(self.screen, 'REQUESTS', (x+175, y+6), (100, 21), YELLOW, text_color=WHITE).draw()
+
+			result = user.get_requests(self.user.id)
+			res_y = y + 40
+			for idx, row in enumerate(result[:2]):
+				username = user.get_name(row[1])
+				if username is not None:
+					Text(self.screen, f'#{idx+1} // ID: {row[0]} // Name: {username}', (x+25, res_y), GREY, text_size=16)
+					res_y += 15
+
+			Text(self.screen, 'Enter request ID:', (x+25, y+90), GREY, text_size=16)
+			request_id.draw()
+			accept_button.draw()
+			decline_button.draw()
+
+			# Friends
+			x = self.width - 340
+			y = self.height/2 - 200
+			window = pygame.image.load("images/panel_large.png")
+			window = pygame.transform.scale(window, (300, 400))
+			self.screen.blit(window, (x, y))
+			Button(self.screen, 'FRIENDS', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
+
+			result = user.get_friends(self.user.id)
+			res_y = y + 50
+			for idx, row in enumerate(result):
+				if row[0] == self.user.id:
+					username = user.get_name(row[1])
+				elif row[1] == self.user.id:
+					username = user.get_name(row[0])
+
+				if username is not None:
+					Text(self.screen, f'#{idx+1} // {username}', (x+25, res_y), GREY, text_size=16)
+					res_y += 15
+
+			Text(self.screen, 'Enter user ID:', (x+25, y+290), GREY, text_size=16)
+			delete_id.draw()
+			delete_button.draw()
+
+			# Other
+			exit_btn.draw()
+			Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
+
+			mx, my = pygame.mouse.get_pos()
+			if click:
+				if add_button.rect.collidepoint((mx, my)):
+					if add_button.text != '':
+						x = 40
+						y = self.height/2 - 200
+						add = user.add_friend(self.user.id, add_name.text)
+
+						if add:
+							Text(self.screen, 'YOU SUCCESSFULY SEND REQUEST.', (x+150, y+120), GREY, text_size=20, center=True)
+						else:
+							Text(self.screen, 'YOU ENTERED SOME WRONG INFO.', (x+150, y+120), GREY, text_size=20, center=True)
+
+						add_name.clear()
+						pygame.display.update()
+						pygame.time.delay(1500)
+
+				elif accept_button.rect.collidepoint((mx, my)):
+					if request_id.text != '':
+						x = 40
+						y = self.height/2
+
+						try:
+							req_id = int(request_id.text)
+
+							accept = user.accept_friend(req_id)
+							if accept:
+								Text(self.screen, 'YOU SUCCESSFULY ACCEPTED REQUEST.', (x+150, y+75), GREY, text_size=20, center=True)
+							else:
+								Text(self.screen, 'WRONG REQUEST ID.', (x+150, y+75), GREY, text_size=20, center=True)
+
+							request_id.clear()
+							pygame.display.update()
+							pygame.time.delay(1500)
+						except ValueError:
+							Text(self.screen, 'WRONG REQUEST ID.', (x+150, y+75), GREY, text_size=20, center=True)
+
+				elif decline_button.rect.collidepoint((mx, my)):
+					if request_id.text != '':
+						x = 40
+						y = self.height/2
+
+						try:
+							req_id = int(request_id.text)
+
+							accept = user.decline_friend(req_id)
+							if accept:
+								Text(self.screen, 'YOU SUCCESSFULY DECLINED REQUEST.', (x+150, y+75), GREY, text_size=20, center=True)
+							else:
+								Text(self.screen, 'WRONG REQUEST ID.', (x+150, y+75), GREY, text_size=20, center=True)
+
+							request_id.clear()
+							pygame.display.update()
+							pygame.time.delay(1500)
+						except ValueError:
+							Text(self.screen, 'WRONG REQUEST ID.', (x+150, y+75), GREY, text_size=20, center=True)
+
+				elif delete_button.rect.collidepoint((mx, my)):
+					pass
+
+
+			click = False
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.user.user_quit()
+					pygame.quit()
+					sys.exit()
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_ESCAPE:
+						run = False
+
+					if event.key == pygame.K_m:
+						self.background_music()
+
+				if event.type == pygame.MOUSEBUTTONUP:
+					if event.button == 1:
+						click = True
+
+				if event.type == MUSIC_END:
+					self.background_music()
+
+				add_name.handle_event(event)
+				request_id.handle_event(event)
+				delete_id.handle_event(event)
+			add_name.update()
+			request_id.update()
+			delete_id.update()
+
+			pygame.display.update()
+			clock.tick(60)
+
+
 	def champions(self):
 		run = True
 		click = False
@@ -330,14 +539,12 @@ class App():
 			window = pygame.image.load("images/panel_large.png")
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
-
-			Text(self.screen, 'Top winner', (x+80, y+18), WHITE, text_size=20)
-			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+			Button(self.screen, 'TOP WINNER', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
 			result = user.get_winners()
 			res_y = y + 50
 			for idx, row in enumerate(result):
-				Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+20, res_y), GREY, text_size=16)
+				Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
 				res_y += 15
 
 			# Loser
@@ -346,14 +553,12 @@ class App():
 			window = pygame.image.load("images/panel_large.png")
 			window = pygame.transform.scale(window, (300, 400))
 			self.screen.blit(window, (x, y))
-
-			Text(self.screen, 'Top losers', (x+80, y+18), WHITE, text_size=20)
-			Button(self.screen, 'REFRESH', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+			Button(self.screen, 'TOP LOSERS', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
 			result = user.get_losers()
 			res_y = y + 50
 			for idx, row in enumerate(result):
-				Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+20, res_y), GREY, text_size=16)
+				Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
 				res_y += 15
 
 			Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
@@ -420,7 +625,7 @@ class App():
 			self.screen.blit(window, (x, y))
 
 			Text(self.screen, 'Game info', (x+80, y+18), WHITE, text_size=20)
-			Button(self.screen, f'{VERSION}', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+			Button(self.screen, f'{VERSION}', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 			Text(self.screen, f'Game developed by: Sule', (x+25, y+50), GREY, text_size=18)
 			Text(self.screen, f'Date started: {STARTED}', (x+25, y+70), GREY, text_size=18)
 			Text(self.screen, f'Last update: {LAST_UPDATE}', (x+25, y+90), GREY, text_size=18)
@@ -442,13 +647,13 @@ class App():
 				self.screen.blit(window, (x, y))
 
 				average = user.get_average()
-				Button(self.screen, f'Average: {average[0]:.2f}', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+				Button(self.screen, f'Average: {average[0]:.2f}', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
 				result = user.get_reviews()
 				res_y = y + 50
 				for row in result:
-					Text(self.screen, f'{row[2]} // {row[5]}', (x+20, res_y), GREY, text_size=16)
-					Text(self.screen, f'{row[3]} - {row[4]}', (x+20, res_y+15), GREY, text_size=16)
+					Text(self.screen, f'{row[2]} // {row[5]}', (x+25, res_y), GREY, text_size=16)
+					Text(self.screen, f'{row[3]} - {row[4]}', (x+25, res_y+15), GREY, text_size=16)
 					res_y += 30
 
 			exit_btn.draw()
@@ -526,18 +731,18 @@ class App():
 		username = InputBox(self.screen, (x+25, y+60), (270, 25), '', RED, GREY)
 		email = InputBox(self.screen, (x+25, y+110), (270, 25), '', RED, GREY)
 		password = InputBox(self.screen, (x+25, y+157), (270, 25), '', RED, GREY)
-		save_acc = Button(self.screen, 'SAVE ACC', (x+195, y+5), (102, 25), YELLOW, text_color=WHITE)
+		save_acc = Button(self.screen, 'SAVE ACC', (x+195, y+5), (100, 25), YELLOW, text_color=WHITE)
 
 		# Game info
 		x = self.width/2 - 160
 		y = 260
 		volume = InputBox(self.screen, (x+25, y+60), (270, 25), '', RED, GREY)
-		save_game = Button(self.screen, 'SAVE GAME', (x+195, y+5), (102, 25), YELLOW, text_color=WHITE)
+		save_game = Button(self.screen, 'SAVE GAME', (x+195, y+5), (100, 25), YELLOW, text_color=WHITE)
 
 		# Stats
 		x = self.width/2 - 160
 		y = 480
-		refresh = Button(self.screen, 'REFRESH', (x+195, y+5), (102, 25), YELLOW, text_color=WHITE)
+		refresh = Button(self.screen, 'REFRESH', (x+195, y+5), (100, 25), YELLOW, text_color=WHITE)
 
 		exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
 		while run:
@@ -722,12 +927,12 @@ class App():
 				window = pygame.transform.scale(window, (300, 400))
 				self.screen.blit(window, (x, y))
 
-				Button(self.screen, 'ONLINE', (x+185, y+5), (92, 25), YELLOW, text_color=WHITE).draw()
+				Button(self.screen, 'ONLINE', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
 				result = user.online_players()
 				res_y = y + 50
 				for row in result:
-					Text(self.screen, f'#{row[0]} // {row[1]}', (x+20, res_y), GREY, text_size=16)
+					Text(self.screen, f'#{row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
 					res_y += 15
 
 			mx, my = pygame.mouse.get_pos()
@@ -1048,8 +1253,8 @@ class App():
 
 	def draw_waiting(self, game):
 		duration = int((datetime.now() - game.lobby_started).total_seconds())
-		x = self.width/2 - 190
-		y = self.height/2 - 100
+		x = self.width/2 - 160
+		y = self.height/2 - 105
 
 		self.screen.fill(BLACK)
 		bg = pygame.image.load("images/background.jpg")
@@ -1060,15 +1265,14 @@ class App():
 		logo = pygame.transform.scale(logo, (160, 160))
 		self.screen.blit(logo, (self.width/2-80, -10))
 
-		window = pygame.image.load("images/panel.png")
-		window = pygame.transform.scale(window, (380, 200))
+		window = pygame.image.load("images/panel_small.png")
+		window = pygame.transform.scale(window, (320, 210))
 		self.screen.blit(window, (x, y))
 
-		Text(self.screen, 'Waiting for players to join...', (x+90, y+19), WHITE, text_size=20)
+		Button(self.screen, 'WAITING', (x+195, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 		Text(self.screen, f'WAITING TIME: {timedelta(seconds=duration)}', (x+25, y+50), GREY, text_size=20)
 		Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+25, y+70), GREY, text_size=20)
 		Text(self.screen, f'PASSWORD: {game.lobby_pw}', (x+25, y+90), GREY, text_size=20)
-		Button(self.screen, 'WAITING...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
 		Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
 		pygame.display.update()
@@ -1091,15 +1295,14 @@ class App():
 			x = self.width/2 - 190
 			y = self.height/2 - 100
 
-			window = pygame.image.load("images/panel.png")
+			window = pygame.image.load("images/panel_small.png")
 			window = pygame.transform.scale(window, (380, 200))
 			self.screen.blit(window, (x, y))
 
-			Text(self.screen, 'One of the player left', (x+90, y+19), WHITE, text_size=20)
+			Button(self.screen, 'PLAYER LEFT', (x+255, y+6), (100, 25), YELLOW, text_color=WHITE).draw()
 			Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), GREY, text_size=20)
 			Text(self.screen, f'WINS: {game.wins[self.player]}', (x+25, y+70), GREY, text_size=20)
 			Text(self.screen, f'DEFEATS: {game.defeats[self.player]}', (x+25, y+90), GREY, text_size=20)
-			Button(self.screen, 'QUIT...', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE).draw()
 			Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
 			mx, my = pygame.mouse.get_pos()
@@ -1139,7 +1342,7 @@ class App():
 		ready = False
 
 		x = self.width/2 - 190
-		y = 25
+		y = 75
 		ready_btn = Button(self.screen, 'READY', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE)
 
 		try:
@@ -1166,12 +1369,13 @@ class App():
 
 			if game.player_left():
 				self.draw_quitting(game)
+				run = False
 				break
 			elif game.ready:
 				break
 			else:
 				self.screen.fill(BLACK)
-				bg = pygame.image.load("images/game/winner.jpg")
+				bg = pygame.image.load("images/game/winner.png")
 				bg = pygame.transform.scale(bg, (self.width, self.height))
 				self.screen.blit(bg, (0, 0))
 

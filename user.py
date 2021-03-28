@@ -35,6 +35,7 @@ def add_rating(user_id, user_name, rating, review):
 		return True
 	except Exception as e:
 		print(e)
+	return False
 
 def get_reviews():
 	mycursor.execute("SELECT * FROM ratings WHERE review != ''")
@@ -46,7 +47,80 @@ def get_average():
 	result = mycursor.fetchone()
 	return result
 
+# friends related functions
+def add_friend(user_id, friend_name):
+	try:
+		sql = "SELECT id FROM users WHERE username=%s LIMIT 1"
+		val = (friend_name, )
+		mycursor.execute(sql, val)
+		result = mycursor.fetchone()
+		if result is None:
+			return False
+		if result[0] == user_id:
+			return False
+
+		sql = "INSERT INTO friends (user_id, friend_id, request) VALUES (%s, %s, %s)"
+		val = (user_id, result[0], True)
+		mycursor.execute(sql, val)
+		mydb.commit()
+		return True
+
+	except Exception as e:
+		print(e)
+	return False
+
+def get_requests(user_id):
+	sql = "SELECT id, user_id FROM friends WHERE friend_id=%s AND request=1"
+	val = (user_id, )
+	mycursor.execute(sql, val)
+	result = mycursor.fetchall()
+	return result
+
+def accept_friend(req_id):
+	try:
+		sql = "UPDATE friends SET request=0 WHERE id=%s"
+		val = (req_id, ) 
+
+		mycursor.execute(sql, val)
+		mydb.commit()
+		return True
+
+	except Exception as e:
+		print(e)
+	return False
+
+def decline_friend(req_id):
+	try:
+		sql = "DELETE FROM friends WHERE id=%s"
+		val = (req_id, ) 
+
+		mycursor.execute(sql, val)
+		mydb.commit()
+		return True
+
+	except Exception as e:
+		print(e)
+	return False
+
+def get_friends(user_id):
+	sql = "SELECT friend_id, user_id FROM friends WHERE (friend_id=%s OR user_id=%s) AND request=0"
+	val = (user_id, user_id, )
+	mycursor.execute(sql, val)
+	result = mycursor.fetchall()
+	return result
+
 # user related function
+def get_name(user_id):
+	sql = "SELECT username FROM users WHERE id=%s LIMIT 1"
+	val = (user_id, )
+
+	mycursor.execute(sql, val)
+	result = mycursor.fetchone()
+
+	if result is not None:
+		return result[0]
+	return None
+
 def check_login(username, password):
 	sql = "SELECT * FROM users WHERE username=%s AND password=%s"
 	val = (username, password)
