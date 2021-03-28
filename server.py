@@ -160,6 +160,21 @@ class Server():
 						game.send_msg(username, msg)
 						conn.sendall(pickle.dumps(game))
 
+					elif data_list[0] == 'emoji':
+						game = self.games[game_id]
+
+						player = int(data_list[1])
+						emoji_idx = int(data_list[2])
+
+						game.send_emoji(player, emoji_idx)
+						conn.sendall(pickle.dumps(game))
+
+					elif data_list[0] == 'clear_emoji':
+						game = self.games[game_id]
+
+						game.send_emoji(None, None)
+						conn.sendall(pickle.dumps(game))
+
 					elif data_list[0] == 'quit':
 						game = self.games[game_id]
 

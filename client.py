@@ -11,14 +11,16 @@ Created on Wed Mar 10 14:04:30 2021
 import pygame
 import pickle
 import sys
+from _thread import start_new_thread
 from datetime import datetime, timedelta
 from random import randint
+from time import sleep
 import os
 
 from game import Game
 from network import Network
 from customs import Text, Button, ImageButton, InputBox
-from positions import BOARD_POS
+from positions import BOARD_POS, MIDDLE_POS
 from positions import GREEN_FINISH, RED_FINISH, BLUE_FINISH, YELLOW_FINISH
 from positions import GREEN_START, RED_START, BLUE_START, YELLOW_START
 import user
@@ -1568,8 +1570,99 @@ class App():
 		chat_btn.draw()
 		next_btn = ImageButton(self.screen, 'images/game/next.png', (25, 25), (150, self.height-45), 'info')
 		next_btn.draw()
+		emoji_btn = ImageButton(self.screen, 'images/emoji/normal.png', (25, 25), (195, self.height-45), 'info')
+		emoji_btn.draw()
 
-		return exit_btn, chat_btn, next_btn
+		return exit_btn, chat_btn, next_btn, emoji_btn
+
+
+	def load_emoji(self, x=0, y=0):
+		emoji_list = []
+		# row 1
+		emoji = ImageButton(self.screen, 'images/emoji/normal.png', (30, 30), (x+30, y+15), 'normal')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/laugh.png', (35, 30), (x+70, y+15), 'laugh')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/bla.png', (30, 30), (x+115, y+15), 'bla')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/boss.png', (30, 30), (x+155, y+15), 'boss')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/kiss.png', (30, 30), (x+195, y+15), 'kiss')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/love.png', (30, 30), (x+235, y+15), 'love')
+		emoji_list.append(emoji)
+
+		# row 2
+		emoji = ImageButton(self.screen, 'images/emoji/love_2.png', (30, 30), (x+30, y+55), 'love_2')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/angel.png', (30, 30), (x+73, y+55), 'angel')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/eyes.png', (30, 30), (x+115, y+55), 'eyes')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/sad.png', (30, 30), (x+155, y+55), 'sad')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/sad_2.png', (30, 30), (x+195, y+55), 'sad_2')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/hurt.png', (30, 30), (x+235, y+55), 'hurt')
+		emoji_list.append(emoji)
+
+		# row 3
+		emoji = ImageButton(self.screen, 'images/emoji/omg.png', (30, 30), (x+30, y+95), 'omg')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/omg_2.png', (30, 30), (x+73, y+95), 'omg_2')
+		emoji_list.append(emoji)
+
+		emoji = ImageButton(self.screen, 'images/emoji/angry.png', (30, 30), (x+115, y+95), 'angry')
+		emoji_list.append(emoji)
+
+		return emoji_list
+
+
+	def draw_emoji(self):
+		x = 140
+		y = self.height - 245
+		bg = pygame.image.load("images/emoji/window.png")
+		bg = pygame.transform.scale(bg, (300, 200))
+		self.screen.blit(bg, (x, y))
+
+		emoji_list = self.load_emoji(x, y)
+		for emoji in emoji_list:
+			emoji.draw()
+
+		return emoji_list
+
+
+	def draw_sent_emoji(self, player, emoji, start_x, start_y):
+		x, y = MIDDLE_POS[player]
+		x += start_x
+		y += start_y
+		
+		emoji_list = self.load_emoji()
+		emoji_list[emoji].size = (160, 160)
+		emoji_list[emoji].pos = (x-80, y-80)
+		emoji_list[emoji].draw()
+
+
+	def clear_emoji(self):
+		sleep(3)
+
+		try:
+			game = self.network.send('clear_emoji')
+		except:
+			self.draw_error('Could not clear emoji.')
+			pygame.time.delay(1500)
+			pygame.display.update()
 
 
 	def color_from_player(self):
@@ -1620,6 +1713,7 @@ class App():
 		run = True
 		click = False
 		x, y = 50, 50
+		see_emoji = False
 		fix_value = 0
 
 		try:
@@ -1668,84 +1762,109 @@ class App():
 				your_pawns = self.draw_pawns(game)
 				dice_button = self.draw_dice(game)
 				self.draw_players(game)
-				exit_btn, chat_btn, next_btn = self.draw_game_screen(game)
+				exit_btn, chat_btn, next_btn, emoji_btn = self.draw_game_screen(game)
+				if see_emoji:
+					emoji_list = self.draw_emoji()
+
+				if game.emoji != None:
+					self.draw_sent_emoji(game.emoji_player, game.emoji, x, y)
 
 				mx, my = pygame.mouse.get_pos()
 				if click:
-					if game.player_on_move == self.player:
-						for pawn_idx, pawn in enumerate(your_pawns):
-							if pawn.button.click((mx, my)):
-								if game.rolled_dice:
-									if pawn.pos < 0:
-										if game.dice == 6:
-											game, run = self.send_move(pawn_idx)
-										else:
-											pass
-									else:
-										if pawn.finish:
-											if game.dice+pawn.pos > 5:
+					if see_emoji:
+						for emoji_idx, emoji in enumerate(emoji_list):
+							if emoji.click((mx, my)):
+								try:
+									game = self.network.send(f'emoji {self.player} {emoji_idx}')
+								except:
+									self.draw_error('Could not send emoji.')
+									pygame.time.delay(2500)
+									run = False
+									break
+
+								start_new_thread(self.clear_emoji, ())
+								see_emoji = False
+
+					else:
+						if game.player_on_move == self.player:
+							for pawn_idx, pawn in enumerate(your_pawns):
+								if pawn.button.click((mx, my)):
+									if game.rolled_dice:
+										if pawn.pos < 0:
+											if game.dice == 6:
+												game, run = self.send_move(pawn_idx)
+											else:
 												pass
+										else:
+											if pawn.finish:
+												if game.dice+pawn.pos > 5:
+													pass
+												else:
+													for _ in range(game.dice):
+														game, run = self.send_move(pawn_idx)
+
+													if game.dice < 6:
+														self.next_player()
+													break
+
 											else:
 												for _ in range(game.dice):
 													game, run = self.send_move(pawn_idx)
 
 												if game.dice < 6:
 													self.next_player()
+												game, run = self.check_eat(pawn_idx)
 												break
+									else:
+										pass
 
-										else:
-											for _ in range(game.dice):
-												game, run = self.send_move(pawn_idx)
+							if dice_button.click((mx, my)):
+								if not game.rolled_dice:
+									for i in range(randint(10, 20)):
+										value = randint(1, 6)
+										dice_button.image = f'images/cube/cube_{value}.png'
+										dice_button.draw()
 
-											if game.dice < 6:
+										pygame.display.update()
+										pygame.time.delay(50)
+
+									if fix_value != 0:
+										value = fix_value
+
+									try:
+										game = self.network.send(f'dice {value}')
+									except:
+										self.draw_error('Could not send dice value.')
+										pygame.time.delay(1500)
+										run = False
+										break
+
+									if game.dice != 6 and game.pawns_free[self.player] == 0:
+										self.next_player()
+									elif game.pawns_finish[self.player] == 3:
+										if game.pawn[self.player][0].finish:
+											if game.dice + pawn.pos > 5:
 												self.next_player()
-											game, run = self.check_eat(pawn_idx)
-											break
+
+									else:
+										pass
 								else:
 									pass
 
-						if dice_button.click((mx, my)):
-							if not game.rolled_dice:
-								for i in range(randint(10, 20)):
-									value = randint(1, 6)
-									dice_button.image = f'images/cube/cube_{value}.png'
-									dice_button.draw()
-
-									pygame.display.update()
-									pygame.time.delay(50)
-
-								if fix_value != 0:
-									value = fix_value
-
-								try:
-									game = self.network.send(f'dice {value}')
-								except:
-									self.draw_error('Could not send dice value.')
-									pygame.time.delay(1500)
-									run = False
-									break
-
-								if game.dice != 6 and game.pawns_free[self.player] == 0:
+							if next_btn.click((mx, my)):
+								if game.rolled_dice:
 									self.next_player()
-								elif game.pawns_finish[self.player] == 3:
-									if game.pawn[self.player][0].finish:
-										if game.dice + pawn.pos > 5:
-											self.next_player()
-
 								else:
 									pass
-							else:
-								pass
-
-						if next_btn.click((mx, my)):
-							if game.rolled_dice:
-								self.next_player()
-							else:
-								pass
-
 
 					if chat_btn.click((mx, my)):
 						self.chat_screen(game_id)
+
+					if emoji_btn.click((mx, my)):
+						if see_emoji:
+							see_emoji = False
+						else:
+							see_emoji = True
 
 					if exit_btn.click((mx, my)):
 						pass

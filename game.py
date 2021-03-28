@@ -39,6 +39,8 @@ class Game():
 		self.defeats = [0 for _ in range(lobby_size)]
 		self.lobby_started = datetime.now()
 		self.messages = []
+		self.emoji = None
+		self.emoji_player = None
 
 
 	def start(self):
@@ -160,6 +162,11 @@ class Game():
 		time = datetime.now()
 		time_str = f'{time.hour:02d}:{time.minute:02d}:{time.second:02d}'
 		self.messages.insert(0, [username, message, time_str])
+
+
+	def send_emoji(self, player, emoji):
+		self.emoji = emoji
+		self.emoji_player = player
 
 
 class Pawn():
