@@ -419,11 +419,14 @@ class App():
             for idx, row in enumerate(result):
                 if row[0] == self.user.id:
                     username = user.get_name(row[1])
+                    status = user.get_online(row[1])
                 elif row[1] == self.user.id:
                     username = user.get_name(row[0])
+                    status = user.get_online(row[0])
 
                 if username is not None:
-                    Text(self.screen, f'#{idx+1} // {username}', (x+25, res_y), GREY, text_size=16)
+                    status = 'ONLINE' if status == 1 else 'OFFLINE'
+                    Text(self.screen, f'#{idx+1} // {username} // {status}', (x+25, res_y), GREY, text_size=16)
                     res_y += 15
 
             Text(self.screen, 'Enter user ID:', (x+25, y+290), GREY, text_size=16)

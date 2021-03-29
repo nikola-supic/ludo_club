@@ -121,6 +121,17 @@ def get_name(user_id):
 		return result[0]
 	return None
 
+def get_online(user_id):
+	sql = "SELECT online FROM users WHERE id=%s LIMIT 1"
+	val = (user_id, )
+
+	mycursor.execute(sql, val)
+	result = mycursor.fetchone()
+
+	if result is not None:
+		return result[0]
+	return None
+
 def check_login(username, password):
 	sql = "SELECT * FROM users WHERE username=%s AND password=%s"
 	val = (username, password)
