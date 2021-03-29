@@ -172,7 +172,7 @@ class App():
                         pygame.display.update()
                         pygame.time.delay(1500)
 
-                if register_button.rect.collidepoint((mx, my)):
+                elif register_button.rect.collidepoint((mx, my)):
                     register_name.text.replace(' ', '_')
 
                     x = self.width - 340
@@ -272,7 +272,7 @@ class App():
             mx, my = pygame.mouse.get_pos()
             if click:
                 if button_profile.click((mx, my)):
-                    pass
+                    self.profile()
 
                 elif button_friends.click((mx, my)):
                     self.friends()
@@ -322,6 +322,65 @@ class App():
                         self.user.user_quit()
                         pygame.quit()
                         sys.exit()
+
+                    if event.key == pygame.K_m:
+                        self.background_music()
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        click = True
+
+                if event.type == MUSIC_END:
+                    self.background_music()
+
+            pygame.display.update()
+            clock.tick(60)
+
+
+    def profile(self):
+        run = True
+        click = False
+
+        exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
+        while run:
+            self.screen.fill(BLACK)
+            bg = pygame.image.load("images/background.jpg")
+            bg = pygame.transform.scale(bg, (self.width, self.height))
+            self.screen.blit(bg, (0, 0))
+
+            logo = pygame.image.load("images/logo.png")
+            logo = pygame.transform.scale(logo, (160, 160))
+            self.screen.blit(logo, (self.width/2-80, -10))
+
+            # Game info
+            x = self.width/2 - 150
+            y = self.height/2 - 200
+            window = pygame.image.load("images/panel_large.png")
+            window = pygame.transform.scale(window, (300, 400))
+            self.screen.blit(window, (x, y))
+            Button(self.screen, 'PROFILE', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
+
+            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+50), GREY, text_size=18)
+            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+65), GREY, text_size=18)
+            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+80), GREY, text_size=18)
+
+            exit_btn.draw()
+
+            mx, my = pygame.mouse.get_pos()
+            if click:
+                if exit_btn.click((mx, my)):
+                    run = False
+
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.user.user_quit()
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
 
                     if event.key == pygame.K_m:
                         self.background_music()
@@ -497,6 +556,9 @@ class App():
                 elif delete_button.rect.collidepoint((mx, my)):
                     pass
 
+                elif exit_btn.click((mx, my)):
+                    run = False
+
 
             click = False
             for event in pygame.event.get():
@@ -578,7 +640,8 @@ class App():
 
             mx, my = pygame.mouse.get_pos()
             if click:
-                pass
+                if exit_btn.click((mx, my)):
+                    run = False
 
             click = False
             for event in pygame.event.get():
@@ -695,11 +758,14 @@ class App():
                         rate_review.clear()
                         rate_us.clear()
 
-                if review_button.rect.collidepoint((mx, my)):
+                elif review_button.rect.collidepoint((mx, my)):
                     if see_reviews:
                         see_reviews = False
                     else:
                         see_reviews = True
+
+                elif exit_btn.click((mx, my)):
+                    run = False
 
 
             click = False
@@ -827,7 +893,7 @@ class App():
                         self.user.change_password(password.text)
                         password.clear()
 
-                if save_game.rect.collidepoint((mx, my)):
+                elif save_game.rect.collidepoint((mx, my)):
                     if volume.text != '':
                         try:
                             value = int(volume.text)
@@ -842,7 +908,7 @@ class App():
                             pygame.mixer.music.set_volume(value / 100)
                         volume.clear()
 
-                if exit_btn.click((mx, my)):
+                elif exit_btn.click((mx, my)):
                     run = False
 
             click = False
@@ -990,13 +1056,13 @@ class App():
                         pygame.display.update()
                         pygame.time.delay(2000)
 
-                if online_players.rect.collidepoint((mx, my)):
+                elif online_players.rect.collidepoint((mx, my)):
                     if see_online:
                         see_online = False
                     else:
                         see_online = True
 
-                if exit_btn.click((mx, my)):
+                elif exit_btn.click((mx, my)):
                     run = False
 
             click = False
@@ -1108,7 +1174,7 @@ class App():
                             pygame.time.delay(1500)
                             run = False
 
-                if exit_btn.click((mx, my)):
+                elif exit_btn.click((mx, my)):
                     run = False
 
             click = False
@@ -1859,7 +1925,7 @@ class App():
                                 else:
                                     pass
 
-                            if next_btn.click((mx, my)):
+                            elif next_btn.click((mx, my)):
                                 if game.rolled_dice:
                                     self.next_player()
                                 else:
@@ -1868,13 +1934,13 @@ class App():
                     if chat_btn.click((mx, my)):
                         self.chat_screen(game_id)
 
-                    if emoji_btn.click((mx, my)):
+                    elif emoji_btn.click((mx, my)):
                         if see_emoji:
                             see_emoji = False
                         else:
                             see_emoji = True
 
-                    if exit_btn.click((mx, my)):
+                    elif exit_btn.click((mx, my)):
                         pass
 
 
@@ -1964,7 +2030,7 @@ class App():
                         run = False
                         break
 
-                if exit_btn.click((mx, my)):
+                elif exit_btn.click((mx, my)):
                     run = False
                     break
 
