@@ -23,7 +23,7 @@ from customs import Text, Button, ImageButton, InputBox
 from positions import BOARD_POS, MIDDLE_POS
 from positions import GREEN_FINISH, RED_FINISH, BLUE_FINISH, YELLOW_FINISH
 from positions import GREEN_START, RED_START, BLUE_START, YELLOW_START
-import user
+import database as db
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -157,7 +157,7 @@ class App():
             mx, my = pygame.mouse.get_pos()
             if click:
                 if login_button.rect.collidepoint((mx, my)):
-                    self.user = user.check_login(login_name.text, login_pass.text)
+                    self.user = db.check_login(login_name.text, login_pass.text)
 
                     x = 40
                     y = self.height/2 - 75
@@ -176,7 +176,7 @@ class App():
 
                     x = self.width - 340
                     y = self.height/2 - 75
-                    if user.check_register(register_name.text, register_mail.text, register_pass.text):
+                    if db.check_register(register_name.text, register_mail.text, register_pass.text):
                         register_name.clear()
                         register_mail.clear()
                         register_pass.clear()
@@ -324,7 +324,7 @@ class App():
                         self.background_music()
 
                     if event.key == pygame.K_x:
-                        self.user.exp = user.give_exp(self.user.id, 100)
+                        self.user.exp = db.give_exp(self.user.id, 100)
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
@@ -345,9 +345,9 @@ class App():
         if exp < 0:
             exp = 0
 
-        self.user.level = user.give_level(self.user.id, 1)
-        self.user.coins = user.give_coins(self.user.id, self.user.level * 100)
-        self.user.exp = user.set_exp(self.user.id, exp)
+        self.user.level = db.give_level(self.user.id, 1)
+        self.user.coins = db.give_coins(self.user.id, self.user.level * 100)
+        self.user.exp = db.set_exp(self.user.id, exp)
 
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
         while run:
@@ -514,10 +514,10 @@ class App():
             self.screen.blit(window, (x, y))
             Button(self.screen, 'REQUESTS', (x+175, y+6), (100, 21), YELLOW, text_color=WHITE).draw()
 
-            result = user.get_requests(self.user.id)
+            result = db.get_requests(self.user.id)
             res_y = y + 40
             for idx, row in enumerate(result[:2]):
-                username = user.get_name(row[1])
+                username = db.get_name(row[1])
                 if username is not None:
                     Text(self.screen, f'#{idx+1} // ID: {row[0]} // Name: {username}', (x+25, res_y), GREY, text_size=16)
                     res_y += 15
@@ -535,15 +535,15 @@ class App():
             self.screen.blit(window, (x, y))
             Button(self.screen, 'FRIENDS', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-            result = user.get_friends(self.user.id)
+            result = db.get_friends(self.user.id)
             res_y = y + 50
             for idx, row in enumerate(result):
                 if row[0] == self.user.id:
-                    username = user.get_name(row[1])
-                    status = user.get_online(row[1])
+                    username = db.get_name(row[1])
+                    status = db.get_online(row[1])
                 elif row[1] == self.user.id:
-                    username = user.get_name(row[0])
-                    status = user.get_online(row[0])
+                    username = db.get_name(row[0])
+                    status = db.get_online(row[0])
 
                 if username is not None:
                     status = 'ONLINE' if status == 1 else 'OFFLINE'
@@ -564,7 +564,7 @@ class App():
                     if add_button.text != '':
                         x = 40
                         y = self.height/2 - 200
-                        add = user.add_friend(self.user.id, add_name.text)
+                        add = db.add_friend(self.user.id, add_name.text)
 
                         if add:
                             Text(self.screen, 'YOU SUCCESSFULY SEND REQUEST.', (x+150, y+120), GREY, text_size=20, center=True)
@@ -583,7 +583,7 @@ class App():
                         try:
                             req_id = int(request_id.text)
 
-                            accept = user.accept_friend(req_id)
+                            accept = db.accept_friend(req_id)
                             if accept:
                                 Text(self.screen, 'YOU SUCCESSFULY ACCEPTED REQUEST.', (x+150, y+75), GREY, text_size=20, center=True)
                             else:
@@ -603,7 +603,7 @@ class App():
                         try:
                             req_id = int(request_id.text)
 
-                            accept = user.decline_friend(req_id)
+                            accept = db.decline_friend(req_id)
                             if accept:
                                 Text(self.screen, 'YOU SUCCESSFULY DECLINED REQUEST.', (x+150, y+75), GREY, text_size=20, center=True)
                             else:
@@ -677,7 +677,7 @@ class App():
             self.screen.blit(window, (x, y))
             Button(self.screen, 'TOP WINNER', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-            result = user.get_winners()
+            result = db.get_winners()
             res_y = y + 50
             for idx, row in enumerate(result):
                 Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
@@ -691,7 +691,7 @@ class App():
             self.screen.blit(window, (x, y))
             Button(self.screen, 'TOP LOSERS', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-            result = user.get_losers()
+            result = db.get_losers()
             res_y = y + 50
             for idx, row in enumerate(result):
                 Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
@@ -783,10 +783,10 @@ class App():
                 window = pygame.transform.scale(window, (300, 400))
                 self.screen.blit(window, (x, y))
 
-                average = user.get_average()
+                average = db.get_average()
                 Button(self.screen, f'Average: {average[0]:.2f}', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-                result = user.get_reviews()
+                result = db.get_reviews()
                 res_y = y + 50
                 for row in result:
                     Text(self.screen, f'{row[2]} // {row[5]}', (x+25, res_y), GREY, text_size=16)
@@ -811,7 +811,7 @@ class App():
                             self.draw_error('Rate value must be between 1 and 5.')
                             pygame.time.delay(1000)
                         else:
-                            add_rating = user.add_rating(self.user.id, self.user.username, value, rate_review.text)
+                            add_rating = db.add_rating(self.user.id, self.user.username, value, rate_review.text)
 
                             if add_rating:
                                 Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+230), GREY, text_size=20, center=True)
@@ -1067,7 +1067,7 @@ class App():
 
                 Button(self.screen, 'ONLINE', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-                result = user.online_players()
+                result = db.online_players()
                 res_y = y + 50
                 for row in result:
                     Text(self.screen, f'#{row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
@@ -1077,26 +1077,26 @@ class App():
             if click:
                 if refresh.rect.collidepoint((mx, my)):
                     if admin_permission.text != '':
-                        user.admin_permission(admin_permission.text)
+                        db.admin_permission(admin_permission.text)
 
                         admin_permission.clear()
                         pygame.display.update()
 
                     if ban_player.text != '':
-                        user.ban_player(ban_player.text)
+                        db.ban_player(ban_player.text)
 
                         ban_player.clear()
                         pygame.display.update()
 
                     if reset_stats.text != '':
-                        user.reset_stats(reset_stats.text)
+                        db.reset_stats(reset_stats.text)
 
                         reset_stats.clear()
                         pygame.display.update()
 
                     if see_pw.text != '':
                         user_id = see_pw.text
-                        pw = user.see_pw(see_pw.text)
+                        pw = db.see_pw(see_pw.text)
                         see_pw.clear()
 
                         x = 40
@@ -1108,7 +1108,7 @@ class App():
 
                     if last_online.text != '':
                         user_id = last_online.text
-                        online = user.last_online(last_online.text)
+                        online = db.last_online(last_online.text)
                         last_online.clear()
 
                         x = 40
@@ -1507,12 +1507,12 @@ class App():
             run = False
 
         if self.user.username == game.winner:
-            self.user.wins = user.give_win(self.user.id)
-            self.user.coins = user.give_coins(self.user.id, ((game.lobby_size-1) * game.lobby_price))
-            self.user.exp = user.give_exp(self.user.id, 200)
+            self.user.wins = db.give_win(self.user.id)
+            self.user.coins = db.give_coins(self.user.id, ((game.lobby_size-1) * game.lobby_price))
+            self.user.exp = db.give_exp(self.user.id, 200)
         else:
-            self.user.defeats = user.give_defeat(self.user.id)
-            self.user.coins = user.give_coins(self.user.id, -(game.lobby_price))
+            self.user.defeats = db.give_defeat(self.user.id)
+            self.user.coins = db.give_coins(self.user.id, -(game.lobby_price))
 
         while run:
             try:
@@ -1833,7 +1833,7 @@ class App():
             game = self.network.send(f'move {self.player} {pawn_idx}')
 
             if game.give_finish_exp:
-                self.user.exp = user.give_exp(self.user.id, 100)
+                self.user.exp = db.give_exp(self.user.id, 100)
 
                 Text(self.screen, f'PAWN FINISHED (+100 EXP)', (self.width/2, 18), GREY, center=True)
                 pygame.display.update()
@@ -1862,7 +1862,7 @@ class App():
             game = self.network.send(f'check_eat {self.player} {move_idx}')
 
             if game.give_exp:
-                self.user.exp = user.give_exp(self.user.id, 50)
+                self.user.exp = db.give_exp(self.user.id, 50)
 
                 Text(self.screen, f'PAWN EATEN (+50 EXP)', (self.width/2, 18), GREY, center=True)
                 pygame.display.update()
@@ -1996,7 +1996,7 @@ class App():
                                     if fix_value != 0:
                                         value = fix_value
 
-                                    self.user.exp = user.give_exp(self.user.id, value)
+                                    self.user.exp = db.give_exp(self.user.id, value)
 
                                     try:
                                         game = self.network.send(f'dice {value}')
