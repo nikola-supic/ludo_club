@@ -260,6 +260,16 @@ def set_exp(id, value):
 	mydb.commit()
 	return value
 
+def set_avatar(id, value):
+	sql = "UPDATE users SET avatar=%s WHERE id=%s"
+	val = (value, id, )
+
+	mycursor.execute(sql, val)
+	mydb.commit()
+	return value
+
+
+
 def admin_permission(id):
 	try:
 		user_id = int(id)

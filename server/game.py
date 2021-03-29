@@ -37,6 +37,7 @@ class Game():
 
 		self.user_names = ['' for _ in range(lobby_size)]
 		self.user_ids = [0 for _ in range(lobby_size)]
+		self.user_avatars = [0 for _ in range(lobby_size)]
 		self.wins = [0 for _ in range(lobby_size)]
 		self.defeats = [0 for _ in range(lobby_size)]
 		self.lobby_started = datetime.now()
@@ -159,9 +160,10 @@ class Game():
 				self.defeats[idx] += 1
 
 
-	def update_users(self, player, username, id):
+	def update_users(self, player, username, id, avatar):
 		self.user_names[player] = username
 		self.user_ids[player] = id
+		self.user_avatars[player] = avatar
 
 
 	def send_msg(self, username, message):

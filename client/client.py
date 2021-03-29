@@ -682,8 +682,136 @@ class App():
             clock.tick(60)
 
 
+    def load_avatar(self, x=0, y=0):
+        avatar_list = []
+        # row 1
+        avatar = ImageButton(self.screen, 'images/avatar/avatar_1.png', (90, 90), (x+40, y+50), '1')
+        avatar_list.append(avatar)
+
+        avatar = ImageButton(self.screen, 'images/avatar/avatar_2.png', (90, 90), (x+170, y+50), '2')
+        avatar_list.append(avatar)
+
+        avatar = ImageButton(self.screen, 'images/avatar/avatar_3.png', (90, 90), (x+40, y+150), '3')
+        avatar_list.append(avatar)
+
+        avatar = ImageButton(self.screen, 'images/avatar/avatar_4.png', (90, 90), (x+170, y+150), '4')
+        avatar_list.append(avatar)
+
+        avatar = ImageButton(self.screen, 'images/avatar/avatar_5.png', (90, 90), (x+40, y+250), '5')
+        avatar_list.append(avatar)
+
+        avatar = ImageButton(self.screen, 'images/avatar/avatar_6.png', (90, 90), (x+170, y+250), '6')
+        avatar_list.append(avatar)
+
+        return avatar_list
+
+
     def shop(self):
-        pass
+        run = True
+        click = False
+
+        # Avatars
+        x = 40
+        y = 40
+        avatar_list = self.load_avatar(x, y)
+
+        # Dice
+        x = self.width - 340
+        y = 40
+
+        # Powers
+        x = 40
+        y = self.height - 260
+
+        # Other
+        exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
+        while run:
+            self.screen.fill(BLACK)
+            bg = pygame.image.load("images/background.jpg")
+            bg = pygame.transform.scale(bg, (self.width, self.height))
+            self.screen.blit(bg, (0, 0))
+
+            # Avatars
+            x = 40
+            y = 40
+            window = pygame.image.load("images/panel_large.png")
+            window = pygame.transform.scale(window, (300, 400))
+            self.screen.blit(window, (x, y))
+            Text(self.screen, '1000 Coins', (x+80, y+18), WHITE, text_size=20)
+            Button(self.screen, 'BUY AVATAR', (x+165, y+5), (110, 25), YELLOW, text_color=WHITE).draw()
+            for avatar in avatar_list:
+                avatar.draw()
+
+            # Dice
+            x = self.width - 340
+            y = 40
+            window = pygame.image.load("images/panel_large.png")
+            window = pygame.transform.scale(window, (300, 400))
+            self.screen.blit(window, (x, y))
+            Button(self.screen, 'BUY DICE', (x+165, y+5), (110, 25), YELLOW, text_color=WHITE).draw()
+
+            # Powers
+            x = 40
+            y = self.height - 260
+            window = pygame.image.load("images/panel_small.png")
+            window = pygame.transform.scale(window, (300, 200))
+            self.screen.blit(window, (x, y))
+            Button(self.screen, 'BUY POWERS', (x+165, y+5), (110, 25), YELLOW, text_color=WHITE).draw()
+
+            # Other
+            Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
+            exit_btn.draw()
+
+            mx, my = pygame.mouse.get_pos()
+            if click:
+                for idx, avatar in enumerate(avatar_list):
+                    if avatar.click((mx, my)):
+                        x = 40
+                        y = 40
+                        if self.user.coins < 1000:
+                            Text(self.screen, 'YOU DO NOT HAVE ENOUGH COINS.', (x+150, x+360), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
+                        elif self.user.avatar == idx+1:
+                            Text(self.screen, 'YOU ALREADT HAVE THIS AVATAR.', (x+150, x+360), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
+                        else:
+                            Text(self.screen, 'YOU SUCCESSFULY BOUGHT NEW AVATAR.', (x+150, x+360), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
+                            self.user.coins = db.give_coins(self.user.id, -1000)
+                            self.user.avatar = db.set_avatar(self.user.id, idx+1)
+
+                if exit_btn.click((mx, my)):
+                    run = False
+
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.user.user_quit()
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+
+                    if event.key == pygame.K_m:
+                        self.background_music()
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        click = True
+
+                if event.type == MUSIC_END:
+                    self.background_music()
+
+            pygame.display.update()
+            clock.tick(60)
 
 
     def champions(self):
@@ -1694,12 +1822,23 @@ class App():
         dice_button.draw()
         return dice_button
 
-    def draw_players(self, game):
+    def draw_players(self, game, start_x, start_y):
+        AVATAR_POS = [(181, 181), (368, 368), (181, 368), (368, 181)]
+
+
         for idx, user_name in enumerate(game.user_names):
             user_id = game.user_ids[idx]
+            avatar = game.user_avatars[idx]
             wins = game.wins[idx]
             defeats = game.defeats[idx]
             finished = game.pawns_finish[idx]
+
+            x, y = AVATAR_POS[idx]
+            x += start_x
+            y += start_y
+            avatar_img = pygame.image.load(f"images/avatar/avatar_{avatar}.png")
+            avatar_img = pygame.transform.scale(avatar_img, (50, 50))
+            self.screen.blit(avatar_img, (x, y))
 
             if idx == 0:
                 x, y = 75, 80
@@ -1918,7 +2057,7 @@ class App():
             run = False
 
         try:
-            game = self.network.send(f'username {self.player} {self.user.username} {self.user.id}')
+            game = self.network.send(f'username {self.player} {self.user.username} {self.user.id} {self.user.avatar}')
         except Exception:
             self.draw_error('Could not send username.')
             pygame.time.delay(2500)
@@ -1954,7 +2093,7 @@ class App():
 
                 your_pawns = self.draw_pawns(game)
                 dice_button = self.draw_dice(game)
-                self.draw_players(game)
+                self.draw_players(game, x, y)
                 exit_btn, chat_btn, next_btn, emoji_btn = self.draw_game_screen(game)
                 if see_emoji:
                     emoji_list = self.draw_emoji()

@@ -109,8 +109,9 @@ class Server():
 						player = int(data_list[1])
 						user_name = data_list[2]
 						user_id = int(data_list[3])
+						avatar = int(data_list[4])
 
-						game.update_users(player, user_name, user_id)
+						game.update_users(player, user_name, user_id, avatar)
 						conn.sendall(pickle.dumps(game))
 
 					elif data_list[0] == 'dice':
