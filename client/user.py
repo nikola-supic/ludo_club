@@ -177,6 +177,7 @@ def give_win(id):
 
 	mycursor.execute(sql, val)
 	mydb.commit()
+	return wins
 
 def give_defeat(id):
 	sql = "SELECT defeats FROM users WHERE id=%s"
@@ -191,6 +192,7 @@ def give_defeat(id):
 
 	mycursor.execute(sql, val)
 	mydb.commit()
+	return defeats
 
 def give_coins(id, value):
 	sql = "SELECT coins FROM users WHERE id=%s"
@@ -205,6 +207,45 @@ def give_coins(id, value):
 
 	mycursor.execute(sql, val)
 	mydb.commit()
+	return coins
+
+def give_exp(id, value):
+	sql = "SELECT exp FROM users WHERE id=%s"
+	val = (id, )
+
+	mycursor.execute(sql, val)
+	result = mycursor.fetchone()
+	exp = result[0] + value
+
+	sql = "UPDATE users SET exp=%s WHERE id=%s"
+	val = (exp, id, )
+
+	mycursor.execute(sql, val)
+	mydb.commit()
+	return exp
+
+def give_level(id, value):
+	sql = "SELECT level FROM users WHERE id=%s"
+	val = (id, )
+
+	mycursor.execute(sql, val)
+	result = mycursor.fetchone()
+	level = result[0] + value
+
+	sql = "UPDATE users SET level=%s WHERE id=%s"
+	val = (level, id, )
+
+	mycursor.execute(sql, val)
+	mydb.commit()
+	return level
+
+def set_exp(id, value):
+	sql = "UPDATE users SET exp=%s WHERE id=%s"
+	val = (value, id, )
+
+	mycursor.execute(sql, val)
+	mydb.commit()
+	return value
 
 def admin_permission(id):
 	try:
@@ -299,6 +340,8 @@ class User():
 		self.admin = result[9]
 		self.volume = result[10]
 		self.coins = result[11]
+		self.level = result[12]
+		self.exp = result[13]
 
 		sql = "UPDATE users SET last_online=%s, online=1 WHERE id=%s"
 		val = (self.last_online, self.id, )

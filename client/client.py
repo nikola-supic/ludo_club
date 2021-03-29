@@ -45,6 +45,8 @@ clock = pygame.time.Clock()
 MUSIC_END = pygame.USEREVENT+1
 pygame.mixer.music.set_endevent(MUSIC_END)
 
+get_level_exp = lambda n: 200 + n * 160 
+
 def get_music():
     songs_list = []
     os.chdir('music')
@@ -266,6 +268,9 @@ class App():
             button_info.draw()
             button_exit.draw()
 
+            if self.user.exp >= get_level_exp(self.user.level):
+                self.level_up()
+
             mx, my = pygame.mouse.get_pos()
             if click:
                 if button_profile.click((mx, my)):
@@ -315,10 +320,64 @@ class App():
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_m:
+                        self.background_music()
+
+                    if event.key == pygame.K_x:
+                        self.user.exp = user.give_exp(self.user.id, 100)
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        click = True
+
+                if event.type == MUSIC_END:
+                    self.background_music()
+
+            pygame.display.update()
+            clock.tick(60)
+
+
+    def level_up(self):
+        run = True
+        click = False
+
+        exp = self.user.exp - get_level_exp(self.user.level)
+        if exp < 0:
+            exp = 0
+
+        self.user.level = user.give_level(self.user.id, 1)
+        self.user.coins = user.give_coins(self.user.id, self.user.level * 100)
+        self.user.exp = user.set_exp(self.user.id, exp)
+
+        exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
+        while run:
+            self.screen.fill(BLACK)
+            bg = pygame.image.load("images/level_up.png")
+            bg = pygame.transform.scale(bg, (self.width, self.height))
+            self.screen.blit(bg, (0, 0))
+
+            Text(self.screen, f'{self.user.level}', (self.width-133, self.height/2+20), WHITE, text_size=84, center=True)
+            Text(self.screen, f'{exp} / {get_level_exp(self.user.level)}', (self.width-133, self.height/2+50), WHITE, text_size=22, center=True)
+            Text(self.screen, f'+{self.user.level*100} COINS', (self.width-133, self.height/2+95), GREY, text_size=22, center=True)
+
+            Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
+            exit_btn.draw()
+
+            mx, my = pygame.mouse.get_pos()
+            if click:
+                if exit_btn.click((mx, my)):
+                    run = False
+
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.user.user_quit()
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self.user.user_quit()
-                        pygame.quit()
-                        sys.exit()
+                        run = False
 
                     if event.key == pygame.K_m:
                         self.background_music()
@@ -359,11 +418,14 @@ class App():
 
             Text(self.screen, f'Username: {self.user.username}', (x+25, y+50), GREY, text_size=18)
             Text(self.screen, f'E-Mail: {self.user.email}', (x+25, y+65), GREY, text_size=18)
-            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+80), GREY, text_size=18)
-            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+95), GREY, text_size=18)
-            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+110), GREY, text_size=18)
-            Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+125), GREY, text_size=18)
+            Text(self.screen, f'Level: {self.user.level}', (x+25, y+80), GREY, text_size=18)
+            Text(self.screen, f'Exp: {self.user.exp} / {get_level_exp(self.user.level)} ', (x+25, y+95), GREY, text_size=18)
+            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+110), GREY, text_size=18)
+            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+125), GREY, text_size=18)
+            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+140), GREY, text_size=18)
+            Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+155), GREY, text_size=18)
 
+            Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
             exit_btn.draw()
 
             mx, my = pygame.mouse.get_pos()
@@ -1445,16 +1507,12 @@ class App():
             run = False
 
         if self.user.username == game.winner:
-            user.give_win(self.user.id)
-
-            value = ((game.lobby_size-1) * game.lobby_price)
-            user.give_coins(self.user.id, value)
-            self.user.coins += value
+            self.user.wins = user.give_win(self.user.id)
+            self.user.coins = user.give_coins(self.user.id, ((game.lobby_size-1) * game.lobby_price))
+            self.user.exp = user.give_exp(self.user.id, 200)
         else:
-            user.give_defeat(self.user.id)
-            
-            user.give_coins(self.user.id, -(game.lobby_price))
-            self.user.coin -= game.lobby_price
+            self.user.defeats = user.give_defeat(self.user.id)
+            self.user.coins = user.give_coins(self.user.id, -(game.lobby_price))
 
         while run:
             try:
@@ -1502,7 +1560,6 @@ class App():
                             except Exception:
                                 self.draw_error('Could not set you to status ready.')
                                 pygame.time.delay(1500)
-                                pygame.display.update()
                                 run = False
 
 
@@ -1758,7 +1815,6 @@ class App():
         except Exception:
             self.draw_error('Could not clear emoji.')
             pygame.time.delay(1500)
-            pygame.display.update()
 
 
     def color_from_player(self):
@@ -1775,10 +1831,16 @@ class App():
         run = True
         try:
             game = self.network.send(f'move {self.player} {pawn_idx}')
+
+            if game.give_finish_exp:
+                self.user.exp = user.give_exp(self.user.id, 100)
+
+                Text(self.screen, f'PAWN FINISHED (+100 EXP)', (self.width/2, 18), GREY, center=True)
+                pygame.display.update()
+                pygame.time.delay(1000)
         except Exception:
             self.draw_error('Could not move pawn.')
             pygame.time.delay(1500)
-            pygame.display.update()
             run = False
         return game, run
 
@@ -1798,6 +1860,13 @@ class App():
         run = True
         try:
             game = self.network.send(f'check_eat {self.player} {move_idx}')
+
+            if game.give_exp:
+                self.user.exp = user.give_exp(self.user.id, 50)
+
+                Text(self.screen, f'PAWN EATEN (+50 EXP)', (self.width/2, 18), GREY, center=True)
+                pygame.display.update()
+                pygame.time.delay(1000)
         except Exception:
             self.draw_error('Could not check for eating.')
             pygame.time.delay(1500)
@@ -1926,6 +1995,8 @@ class App():
 
                                     if fix_value != 0:
                                         value = fix_value
+
+                                    self.user.exp = user.give_exp(self.user.id, value)
 
                                     try:
                                         game = self.network.send(f'dice {value}')
@@ -2083,7 +2154,6 @@ class App():
 
             pygame.display.update()
             clock.tick(60)
-
 
 if __name__ == '__main__':
     app = App(700, 700)

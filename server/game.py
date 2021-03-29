@@ -32,6 +32,8 @@ class Game():
 		self.player_on_move = None
 		self.rolled_dice = False
 		self.dice = 1
+		self.give_exp = False
+		self.give_finish_exp = False
 
 		self.user_names = ['' for _ in range(lobby_size)]
 		self.user_ids = [0 for _ in range(lobby_size)]
@@ -98,6 +100,8 @@ class Game():
 
 
 	def move_pawn(self, player, move_idx):
+		self.give_exp = False
+		self.give_finish_exp = False
 		for player_idx, color in enumerate(self.pawn):
 			if player_idx == player:
 				for pawn_idx, pawn in enumerate(color):
@@ -107,6 +111,7 @@ class Game():
 								del self.pawn[player_idx][pawn_idx]
 								self.pawns_finish[player] += 1
 								self.pawns_free[player] -= 1
+								self.give_finish_exp = True
 								break
 							else:
 								pawn.pos += 1
@@ -133,6 +138,7 @@ class Game():
 						if pawn.pos not in [8, 34, 47, 21]:
 							self.pawn[player_idx][pawn_idx].pos = (pawn_idx+1) * (-1)
 							self.pawns_free[player_idx] -= 1
+							self.give_exp = True
 							break
 
 
