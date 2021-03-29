@@ -103,11 +103,24 @@ def decline_friend(req_id):
 	return False
 
 def get_friends(user_id):
-	sql = "SELECT friend_id, user_id FROM friends WHERE (friend_id=%s OR user_id=%s) AND request=0"
+	sql = "SELECT friend_id, user_id, id FROM friends WHERE (friend_id=%s OR user_id=%s) AND request=0"
 	val = (user_id, user_id, )
 	mycursor.execute(sql, val)
 	result = mycursor.fetchall()
 	return result
+
+def delete_friend(id):
+	try:
+		sql = "DELETE FROM friends WHERE id=%s"
+		val = (id, ) 
+
+		mycursor.execute(sql, val)
+		mydb.commit()
+		return True
+
+	except Exception as e:
+		print(e)
+	return False
 
 # user related function
 def get_name(user_id):

@@ -280,7 +280,7 @@ class App():
                     self.friends()
 
                 elif button_shop.click((mx, my)):
-                    pass
+                    self.shop()
 
                 elif button_champions.click((mx, my)):
                     self.champions()
@@ -430,7 +430,7 @@ class App():
             Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+165), GREY, text_size=18)
             Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+180), GREY, text_size=18)
 
-            Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
+            Text(self.screen, 'GAME BY: SULE', (self.width-20, self.height-25), GREY, text_size=14, right=True)
             exit_btn.draw()
 
             mx, my = pygame.mouse.get_pos()
@@ -552,7 +552,7 @@ class App():
 
                 if username is not None:
                     status = 'ONLINE' if status == 1 else 'OFFLINE'
-                    Text(self.screen, f'#{idx+1} // {username} // {status}', (x+25, res_y), GREY, text_size=16)
+                    Text(self.screen, f'#{idx+1} // ID: {row[2]} // {username} // {status}', (x+25, res_y), GREY, text_size=16)
                     res_y += 15
 
             Text(self.screen, 'Enter user ID:', (x+25, y+290), GREY, text_size=16)
@@ -599,6 +599,8 @@ class App():
                             pygame.time.delay(1500)
                         except ValueError:
                             Text(self.screen, 'WRONG REQUEST ID.', (x+150, y+75), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1500)
 
                 elif decline_button.rect.collidepoint((mx, my)):
                     if request_id.text != '':
@@ -619,9 +621,30 @@ class App():
                             pygame.time.delay(1500)
                         except ValueError:
                             Text(self.screen, 'WRONG REQUEST ID.', (x+150, y+75), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1500)
 
                 elif delete_button.rect.collidepoint((mx, my)):
-                    pass
+                    if delete_id.text != '':
+                        x = self.width - 340
+                        y = self.height/2 - 200
+
+                        try:
+                            friend_id = int(delete_id.text)
+                            delete = db.delete_friend(friend_id)
+                            if delete:
+                                Text(self.screen, 'YOU SUCCESSFULY DELETED FRIEND.', (x+150, y+275), GREY, text_size=20, center=True)
+                            else:
+                                Text(self.screen, 'WRONG FRIEND ID.', (x+150, y+275), GREY, text_size=20, center=True)
+
+                            delete_id.clear()
+                            pygame.display.update()
+                            pygame.time.delay(1500)
+
+                        except ValueError:
+                            Text(self.screen, 'WRONG FRIEND ID.', (x+150, y+275), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1500)
 
                 elif exit_btn.click((mx, my)):
                     run = False
@@ -657,6 +680,10 @@ class App():
 
             pygame.display.update()
             clock.tick(60)
+
+
+    def shop(self):
+        pass
 
 
     def champions(self):
@@ -1463,10 +1490,6 @@ class App():
             Text(self.screen, f'WINS: {game.wins[self.player]}', (x+25, y+70), GREY, text_size=20)
             Text(self.screen, f'DEFEATS: {game.defeats[self.player]}', (x+25, y+90), GREY, text_size=20)
             Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
-
-            mx, my = pygame.mouse.get_pos()
-            if click:
-                pass
 
             click = False
             for event in pygame.event.get():
