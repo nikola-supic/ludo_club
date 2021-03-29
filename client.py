@@ -11,16 +11,13 @@ Created on Wed Mar 10 14:04:30 2021
 #pylint: disable=line-too-long
 
 import os
-# import pickle
 import sys
 from _thread import start_new_thread
 from datetime import datetime, timedelta
 from random import randint
 from time import sleep
-# from pygame.locals import *
 import pygame
 
-from game import Game
 from network import Network
 from customs import Text, Button, ImageButton, InputBox
 from positions import BOARD_POS, MIDDLE_POS
@@ -360,9 +357,12 @@ class App():
             self.screen.blit(window, (x, y))
             Button(self.screen, 'PROFILE', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+50), GREY, text_size=18)
-            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+65), GREY, text_size=18)
-            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+80), GREY, text_size=18)
+            Text(self.screen, f'Username: {self.user.username}', (x+25, y+50), GREY, text_size=18)
+            Text(self.screen, f'E-Mail: {self.user.email}', (x+25, y+65), GREY, text_size=18)
+            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+80), GREY, text_size=18)
+            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+95), GREY, text_size=18)
+            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+110), GREY, text_size=18)
+            Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+125), GREY, text_size=18)
 
             exit_btn.draw()
 
@@ -1106,14 +1106,15 @@ class App():
         run = True
         click = False
 
-        x = self.width/2 - 190
-        y = self.height/2 - 100
+        x = self.width/2 - 150
+        y = self.height/2 - 200
 
-        lobby_name = InputBox(self.screen, (x+25, y+60), (332, 25), 'lobby', RED, GREY)
-        lobby_pw = InputBox(self.screen, (x+25, y+110), (332, 25), '', RED, GREY)
-        lobby_size = InputBox(self.screen, (x+25, y+157), (160, 25), '2', RED, GREY)
+        lobby_name = InputBox(self.screen, (x+25, y+70), (250, 30), 'lobby', RED, GREY)
+        lobby_pw = InputBox(self.screen, (x+25, y+120), (250, 30), '', RED, GREY)
+        lobby_size = InputBox(self.screen, (x+25, y+170), (250, 30), '2', RED, GREY)
+        lobby_price = InputBox(self.screen, (x+25, y+220), (250, 30), '100', RED, GREY)
 
-        create = Button(self.screen, 'CREATE', (x+210, y+144), (140, 39), RED, text_size=30, text_color=WHITE)
+        create = Button(self.screen, 'CREATE', (x+25, y+320), (250, 30), GREY, text_color=WHITE)
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
         while run:
             self.screen.fill(BLACK)
@@ -1125,17 +1126,19 @@ class App():
             logo = pygame.transform.scale(logo, (160, 160))
             self.screen.blit(logo, (self.width/2-80, -10))
 
-            window = pygame.image.load("images/panel.png")
-            window = pygame.transform.scale(window, (380, 200))
+            window = pygame.image.load("images/panel_large.png")
+            window = pygame.transform.scale(window, (300, 400))
             self.screen.blit(window, (x, y))
 
-            Text(self.screen, 'Creating new lobby', (x+90, y+19), WHITE, text_size=20)
-            Text(self.screen, 'Enter lobby name:', (x+25, y+50), GREY, text_size=18)
+            Button(self.screen, 'CREATE LOBBY', (x+155, y+5), (120, 25), YELLOW, text_color=WHITE).draw()
+            Text(self.screen, 'Enter lobby name:', (x+25, y+60), GREY, text_size=18)
             lobby_name.draw()
-            Text(self.screen, 'Enter lobby password:', (x+25, y+100), GREY, text_size=18)
+            Text(self.screen, 'Enter lobby password:', (x+25, y+110), GREY, text_size=18)
             lobby_pw.draw()
-            Text(self.screen, 'Enter lobby size:', (x+25, y+147), GREY, text_size=18)
+            Text(self.screen, 'Enter lobby size:', (x+25, y+160), GREY, text_size=18)
             lobby_size.draw()
+            Text(self.screen, 'Enter lobby price:', (x+25, y+210), GREY, text_size=18)
+            lobby_price.draw()
             Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
             create.draw()
@@ -1149,8 +1152,17 @@ class App():
                     except ValueError:
                         size = -1
 
+                    try:
+                        price = int(lobby_price.text)
+                    except ValueError:
+                        price = -1
+
                     if lobby_name.text == '' or len(lobby_name.text) > 24:
                         self.draw_error('You need to enter valid name for lobby.')
+                        pygame.time.delay(1500)
+
+                    elif price < 0:
+                        self.draw_error('Price can not be lower then 0.')
                         pygame.time.delay(1500)
 
                     elif size < 2 or size > 4:
@@ -1167,7 +1179,7 @@ class App():
 
                         try:
                             run = False
-                            game = self.network.send(f'create {lobby_name.text} {size} {pw}')
+                            game = self.network.send(f'create {lobby_name.text} {size} {pw} {price}')
                             self.game_screen(game.id)
                         except Exception:
                             self.draw_error('Game error #404.')
@@ -1201,10 +1213,12 @@ class App():
                 lobby_name.handle_event(event)
                 lobby_size.handle_event(event)
                 lobby_pw.handle_event(event)
+                lobby_price.handle_event(event)
 
             lobby_name.update()
             lobby_size.update()
             lobby_pw.update()
+            lobby_price.update()
 
             pygame.display.update()
             clock.tick(60)
@@ -1226,6 +1240,7 @@ class App():
         Text(self.screen, f'ID #{idx}', (x+60, y+13), WHITE, text_size=20)
         Text(self.screen, f'NAME: {game.lobby_name}', (x+18, y+40), GREY, text_size=20)
         Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+18, y+60), GREY, text_size=20)
+        Text(self.screen, f'PRICE: {game.lobby_price}', (x+18, y+80), GREY, text_size=20)
 
         if game.lobby_pw != 'None':
             locked = pygame.image.load("images/locked.png")
@@ -1283,13 +1298,13 @@ class App():
 
                 for idx, game in enumerate(waiting):
                     if join_btn_dict[game.id].rect.collidepoint((mx, my)):
-                        if game.lobby_pw == 'None':
+                        if game.lobby_pw == 'None' and game.lobby_price < self.user.coins:
                             game = self.network.send(f'join {game.id}')
                             run = False
 
                             self.game_screen(game.id)
                         else:
-                            if game.lobby_pw == input_pw.text:
+                            if game.lobby_pw == input_pw.text and game.lobby_price < self.user.coins:
                                 game = self.network.send(f'join {game.id}')
                                 run = False
 
@@ -1349,6 +1364,7 @@ class App():
         Text(self.screen, f'WAITING TIME: {timedelta(seconds=duration)}', (x+25, y+50), GREY, text_size=20)
         Text(self.screen, f'JOINED: {game.joined} / {game.lobby_size}', (x+25, y+70), GREY, text_size=20)
         Text(self.screen, f'PASSWORD: {game.lobby_pw}', (x+25, y+90), GREY, text_size=20)
+        Text(self.screen, f'PRICE: {game.lobby_price}', (x+25, y+110), GREY, text_size=20)
         Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
         pygame.display.update()
@@ -1428,11 +1444,17 @@ class App():
             pygame.time.delay(2500)
             run = False
 
-        for i in range(game.lobby_size):
-            if self.user.username == game.winner:
-                user.give_win(self.user.id)
-            else:
-                user.give_defeat(self.user.id)
+        if self.user.username == game.winner:
+            user.give_win(self.user.id)
+
+            value = ((game.lobby_size-1) * game.lobby_price)
+            user.give_coins(self.user.id, value)
+            self.user.coins += value
+        else:
+            user.give_defeat(self.user.id)
+            
+            user.give_coins(self.user.id, -(game.lobby_price))
+            self.user.coin -= game.lobby_price
 
         while run:
             try:

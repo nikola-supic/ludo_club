@@ -192,6 +192,20 @@ def give_defeat(id):
 	mycursor.execute(sql, val)
 	mydb.commit()
 
+def give_coins(id, value):
+	sql = "SELECT coins FROM users WHERE id=%s"
+	val = (id, )
+
+	mycursor.execute(sql, val)
+	result = mycursor.fetchone()
+	coins = result[0] + value
+
+	sql = "UPDATE users SET coins=%s WHERE id=%s"
+	val = (coins, id, )
+
+	mycursor.execute(sql, val)
+	mydb.commit()
+
 def admin_permission(id):
 	try:
 		user_id = int(id)
@@ -288,6 +302,10 @@ class User():
 
 		sql = "UPDATE users SET last_online=%s, online=1 WHERE id=%s"
 		val = (self.last_online, self.id, )
+
+		if self.last_online.day != result[7].day:
+			self.coins += 250
+			give_coins(self.id, 250)
 
 		mycursor.execute(sql, val)
 		mydb.commit()

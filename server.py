@@ -65,9 +65,10 @@ class Server():
 						name = data_list[1]
 						size = int(data_list[2])
 						pw = data_list[3]
+						price = int(data_list[4])
 						game_id = len(self.games)
 						p = 0
-						self.games[game_id] = Game(game_id, name, size, pw)
+						self.games[game_id] = Game(game_id, name, size, pw, price)
 
 						self.waiting.append(self.games[game_id])
 						print(f'[ + ] Creating a new game... (of size {size})')

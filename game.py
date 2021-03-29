@@ -12,11 +12,12 @@ from random import randint
 from positions import BOARD_POS
 
 class Game():
-	def __init__(self, id, lobby_name, lobby_size, lobby_pw):
+	def __init__(self, id, lobby_name, lobby_size, lobby_pw, lobby_price):
 		self.id = id
 		self.lobby_name = lobby_name
 		self.lobby_size = lobby_size
 		self.lobby_pw = lobby_pw
+		self.lobby_price = lobby_price
 		self.joined = 1
 		self.all_connected = False
 		self.quit = False
