@@ -416,14 +416,19 @@ class App():
             self.screen.blit(window, (x, y))
             Button(self.screen, 'PROFILE', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-            Text(self.screen, f'Username: {self.user.username}', (x+25, y+50), GREY, text_size=18)
-            Text(self.screen, f'E-Mail: {self.user.email}', (x+25, y+65), GREY, text_size=18)
-            Text(self.screen, f'Level: {self.user.level}', (x+25, y+80), GREY, text_size=18)
-            Text(self.screen, f'Exp: {self.user.exp} / {get_level_exp(self.user.level)} ', (x+25, y+95), GREY, text_size=18)
-            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+110), GREY, text_size=18)
-            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+125), GREY, text_size=18)
-            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+140), GREY, text_size=18)
-            Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+155), GREY, text_size=18)
+            avatar = pygame.image.load(f"images/avatar/avatar_{self.user.avatar}.png")
+            avatar = pygame.transform.scale(avatar, (75, 75))
+            self.screen.blit(avatar, (x+20, y+45))
+
+            Text(self.screen, f'Username: {self.user.username}', (x+275, y+50), GREY, text_size=18, right=True)
+            Text(self.screen, f'{self.user.email}', (x+275, y+65), GREY, text_size=18, right=True)
+            Text(self.screen, f'Level: {self.user.level}', (x+275, y+80), GREY, text_size=18, right=True)
+            Text(self.screen, f'Exp: {self.user.exp} / {get_level_exp(self.user.level)}', (x+275, y+95), GREY, text_size=18, right=True)
+
+            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+135), GREY, text_size=18)
+            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+150), GREY, text_size=18)
+            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+165), GREY, text_size=18)
+            Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+180), GREY, text_size=18)
 
             Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
             exit_btn.draw()
