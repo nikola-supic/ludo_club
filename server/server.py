@@ -22,7 +22,7 @@ class Server():
 
 	"""
 	def __init__(self):
-		server = 'localhost'
+		server = socket.gethostbyname(socket.gethostname())
 		port = 5555
 
 		print(f'[ > ] Binding {server}:{port}')

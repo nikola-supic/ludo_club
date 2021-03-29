@@ -9,7 +9,6 @@ Created on Wed Mar 10 14:04:30 2021
 #!/usr/bin/env python3
 from datetime import datetime
 from random import randint
-from positions import BOARD_POS
 
 class Game():
 	def __init__(self, id, lobby_name, lobby_size, lobby_pw, lobby_price):
@@ -120,7 +119,7 @@ class Game():
 									pawn.pos = 0
 									pawn.finish = True
 								else:
-									if pawn.pos+1 == len(BOARD_POS):
+									if pawn.pos+1 == 52:
 										pawn.pos = 0
 									else:
 										pawn.pos += 1

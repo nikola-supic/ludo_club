@@ -10,12 +10,11 @@ Created on Wed Mar 10 14:04:30 2021
 
 import socket
 import pickle
-import json
 
 class Network():
 	def __init__(self):
 		self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.server = 'localhost'
+		self.server = socket.gethostbyname(socket.gethostname())
 		self.port = 5555
 		self.addr = (self.server, self.port)
 		self.first_data = self.connect()
