@@ -18,6 +18,9 @@ from random import randint
 from time import sleep
 import pygame
 
+import tkinter as tk
+from tkinter import filedialog
+
 from network import Network
 from customs import Text, Button, ImageButton, InputBox
 from positions import BOARD_POS, MIDDLE_POS
@@ -84,16 +87,46 @@ class App():
         self.show_info = False
         self.network = None
         self.player = None
+        self.custom_music = []
+        self.custom_loaded = False
+        self.custom_path = None
 
 
     def background_music(self):
-        songs_list = get_music()
-        rand = randint(0, len(songs_list)-1)
+        if self.custom_music:
+            songs_list = self.custom_music
+            rand = randint(0, len(songs_list)-1)
 
-        pygame.mixer.music.load('music//' + songs_list[rand])
-        pygame.mixer.music.set_volume(self.user.volume / 100)
-        pygame.mixer.music.play()
+            pygame.mixer.music.load(f'{self.custom_path}//{songs_list[rand]}')
+            pygame.mixer.music.set_volume(self.user.volume / 100)
+            pygame.mixer.music.play()
+        else:
+            songs_list = get_music()
+            rand = randint(0, len(songs_list)-1)
 
+            pygame.mixer.music.load('music//' + songs_list[rand])
+            pygame.mixer.music.set_volume(self.user.volume / 100)
+            pygame.mixer.music.play()
+
+        start_new_thread(self.now_playing, (songs_list[rand], datetime.now(), ))
+
+
+    def now_playing(self, song, time_started):
+        run = True
+        bg = pygame.image.load("images/now_playing.png")
+        bg = pygame.transform.scale(bg, (300, 75))
+ 
+        x, y = (self.width - 15, 65)
+        font = pygame.font.SysFont(None, 18)
+        txt = font.render(song, True, WHITE)
+        text_rect = txt.get_rect(midright=(x, y))
+
+        while run:
+            self.screen.blit(bg, (self.width-300, 15))  
+            self.screen.blit(txt, text_rect)
+
+            if int((datetime.now() - time_started).total_seconds()) > 4:
+                run = False
 
     def draw_error(self, msg):
         self.screen.fill(BLACK)
@@ -312,7 +345,7 @@ class App():
                         pygame.time.delay(1000)
 
                 elif button_music.click((mx, my)):
-                    pass
+                    self.music()
 
                 elif button_settings.click((mx, my)):
                     self.settings()
@@ -1070,6 +1103,113 @@ class App():
                 rate_review.handle_event(event)
             rate_us.update()
             rate_review.update()
+
+            pygame.display.update()
+            clock.tick(60)
+
+
+    def music(self):
+        run = True
+        click = False
+
+        x = self.width/2 - 150
+        y = self.height/2 - 200
+        clear_list = Button(self.screen, 'CLEAR SONGS LIST', (x+25, y+300), (250, 25), GREY, text_color=WHITE)
+        pick_song = Button(self.screen, 'PICK MUSIC FOLDER', (x+25, y+330), (250, 25), GREY, text_color=WHITE)
+
+        exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
+        while run:
+            self.screen.fill(BLACK)
+            bg = pygame.image.load("images/background.jpg")
+            bg = pygame.transform.scale(bg, (self.width, self.height))
+            self.screen.blit(bg, (0, 0))
+
+            logo = pygame.image.load("images/logo.png")
+            logo = pygame.transform.scale(logo, (160, 160))
+            self.screen.blit(logo, (self.width/2-80, -10))
+
+            window = pygame.image.load("images/panel_large.png")
+            window = pygame.transform.scale(window, (300, 400))
+            self.screen.blit(window, (x, y))
+            Button(self.screen, 'CUSTOM MUSIC', (x+155, y+5), (120, 25), YELLOW, text_color=WHITE).draw()
+            clear_list.draw()
+            pick_song.draw()
+
+            if self.custom_loaded:
+                res_y = y + 50
+                for idx, song in enumerate(self.custom_music[:17]):
+                    if idx == 16:
+                        Text(self.screen, f'+{len(self.custom_music)-16} more...', (x+25, res_y), GREY, text_size=16)
+                    else:
+                        Text(self.screen, f'#{idx+1} // {song}', (x+25, res_y), GREY, text_size=16)
+                    res_y += 15
+
+            Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
+            exit_btn.draw()
+
+            mx, my = pygame.mouse.get_pos()
+            if click:
+                if pick_song.rect.collidepoint((mx, my)):
+                    root = tk.Tk()
+                    root.withdraw()
+
+                    old_path = os.getcwd()
+                    file_path = filedialog.askdirectory()
+                    os.chdir(file_path)
+
+                    self.custom_music = []
+                    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+                    for mp3 in files:
+                        if mp3.endswith('.mp3'):
+                            self.custom_music.append(mp3)                 
+
+                    if not self.custom_music:
+                        self.custom_path = None
+                        self.custom_loaded = False
+                        Text(self.screen, 'THERE IS NO .mp3 FILES IN THIS FOLDER.', (x+150, y+285), GREY, text_size=20, center=True)
+                    else:
+                        self.custom_path = file_path
+                        self.custom_loaded = True
+                        Text(self.screen, 'YOU SUCCESSFULY PICKED SONG.', (x+150, y+285), GREY, text_size=20, center=True)
+
+                    os.chdir(old_path)
+                    self.background_music()
+                    pygame.display.update()
+                    pygame.time.delay(2000)
+
+                if clear_list.rect.collidepoint((mx, my)):
+                    self.custom_music = []
+                    self.custom_loaded = False
+                    self.custom_path = None
+
+                    self.background_music()
+                    Text(self.screen, 'YOU SUCCESSFULY CLEARED SONG LIST.', (x+150, y+285), GREY, text_size=20, center=True)
+                    pygame.display.update()
+                    pygame.time.delay(2000)
+
+                elif exit_btn.click((mx, my)):
+                    run = False
+
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.user.user_quit()
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+
+                    if event.key == pygame.K_m:
+                        self.background_music()
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        click = True
+
+                if event.type == MUSIC_END:
+                    self.background_music()
 
             pygame.display.update()
             clock.tick(60)
