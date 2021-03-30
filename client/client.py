@@ -247,7 +247,8 @@ class App():
         button_search = ImageButton(self.screen, 'images/menu/search.png', (120, 120),          (self.width/2-60, self.height/2-40), 'search')
         button_computer = ImageButton(self.screen, 'images/menu/computer.png', (120, 120),      (self.width/2+100, self.height/2-60), 'computer')
 
-        button_admin = ImageButton(self.screen, 'images/menu/admin.png', (60, 60),              (self.width-320, self.height-80), 'admin')
+        button_admin = ImageButton(self.screen, 'images/menu/admin.png', (60, 60),              (self.width-400, self.height-80), 'admin')
+        button_music = ImageButton(self.screen, 'images/menu/music.png', (60, 60),              (self.width-320, self.height-80), 'music')
         button_settings = ImageButton(self.screen, 'images/menu/settings.png', (60, 60),        (self.width-240, self.height-80), 'settings')
         button_info = ImageButton(self.screen, 'images/menu/info.png', (60, 60),                (self.width-160, self.height-80), 'info')
         button_exit = ImageButton(self.screen, 'images/menu/exit.png', (60, 60),                (self.width-80, self.height-80), 'exit')
@@ -272,6 +273,7 @@ class App():
             button_computer.draw()
 
             button_admin.draw()
+            button_music.draw()
             button_settings.draw()
             button_info.draw()
             button_exit.draw()
@@ -302,12 +304,6 @@ class App():
                 elif button_computer.click((mx, my)):
                     pass
 
-                elif button_info.click((mx, my)):
-                    self.information()
-
-                elif button_settings.click((mx, my)):
-                    self.settings()
-
                 elif button_admin.click((mx, my)):
                     if self.user.admin:
                         self.admin_panel()
@@ -315,6 +311,14 @@ class App():
                         self.draw_error('You do not have admin permissions.')
                         pygame.time.delay(1000)
 
+                elif button_music.click((mx, my)):
+                    pass
+
+                elif button_settings.click((mx, my)):
+                    self.settings()
+
+                elif button_info.click((mx, my)):
+                    self.information()
                 elif button_exit.click((mx, my)):
                     self.user.user_quit()
                     pygame.quit()
