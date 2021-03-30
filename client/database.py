@@ -252,6 +252,21 @@ def give_level(id, value):
 	mydb.commit()
 	return level
 
+def give_trophies(id, value):
+	sql = "SELECT trophies FROM users WHERE id=%s"
+	val = (id, )
+
+	mycursor.execute(sql, val)
+	result = mycursor.fetchone()
+	trophies = result[0] + value
+
+	sql = "UPDATE users SET trophies=%s WHERE id=%s"
+	val = (trophies, id, )
+
+	mycursor.execute(sql, val)
+	mydb.commit()
+	return trophies
+
 def set_exp(id, value):
 	sql = "UPDATE users SET exp=%s WHERE id=%s"
 	val = (value, id, )
@@ -373,6 +388,7 @@ class User():
 		self.exp = result[13]
 		self.avatar = result[14]
 		self.dice = result[15]
+		self.trophies = result[16]
 
 		sql = "UPDATE users SET last_online=%s, online=1 WHERE id=%s"
 		val = (self.last_online, self.id, )

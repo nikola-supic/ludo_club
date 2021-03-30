@@ -108,7 +108,8 @@ class App():
             pygame.mixer.music.set_volume(self.user.volume / 100)
             pygame.mixer.music.play()
 
-        start_new_thread(self.now_playing, (songs_list[rand], datetime.now(), ))
+        if self.user.volume > 0:
+                start_new_thread(self.now_playing, (songs_list[rand], datetime.now(), ))
 
 
     def now_playing(self, song, time_started):
@@ -453,7 +454,6 @@ class App():
             logo = pygame.transform.scale(logo, (160, 160))
             self.screen.blit(logo, (self.width/2-80, -10))
 
-            # Game info
             x = self.width/2 - 150
             y = self.height/2 - 200
             window = pygame.image.load("images/panel_large.png")
@@ -462,7 +462,7 @@ class App():
             Button(self.screen, 'PROFILE', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
             avatar = pygame.image.load(f"images/avatar/avatar_{self.user.avatar}.png")
-            avatar = pygame.transform.scale(avatar, (75, 75))
+            avatar = pygame.transform.scale(avatar, (80, 80))
             self.screen.blit(avatar, (x+20, y+45))
 
             Text(self.screen, f'Username: {self.user.username}', (x+275, y+50), GREY, text_size=18, right=True)
@@ -472,12 +472,18 @@ class App():
 
             dice = pygame.image.load(f"images/dice/{name_from_dice(self.user.dice)}_6.png")
             dice = pygame.transform.scale(dice, (80, 80))
-            self.screen.blit(dice, (x+200, y+110))
+            self.screen.blit(dice, (x+200, y+125))
 
-            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+135), GREY, text_size=18)
-            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+150), GREY, text_size=18)
-            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+165), GREY, text_size=18)
-            Text(self.screen, f'Joined: {self.user.register_date}', (x+25, y+180), GREY, text_size=18)
+            Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+145), GREY, text_size=18)
+            Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+160), GREY, text_size=18)
+            Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+175), GREY, text_size=18)
+            Text(self.screen, f'Joined: {self.user.register_date}', (x+25, y+190), GREY, text_size=18)
+
+            trophy = pygame.image.load(f"images/trophy.png")
+            trophy = pygame.transform.scale(trophy, (80, 80))
+            self.screen.blit(trophy, (x+20, y+210))
+
+            Text(self.screen, f'{self.user.trophies}', (x+115, y+250), GREY, text_size=64)
 
             Text(self.screen, 'GAME BY: SULE', (self.width-20, self.height-25), GREY, text_size=14, right=True)
             exit_btn.draw()
@@ -1861,9 +1867,12 @@ class App():
             self.user.wins = db.give_win(self.user.id)
             self.user.coins = db.give_coins(self.user.id, ((game.lobby_size-1) * game.lobby_price))
             self.user.exp = db.give_exp(self.user.id, 200)
+            self.user.trophies = db.give_trophies(self.user.id, (randint(20, 30)))
         else:
             self.user.defeats = db.give_defeat(self.user.id)
             self.user.coins = db.give_coins(self.user.id, -(game.lobby_price))
+            if self.user.trophies > 100:
+                self.user.trophies = db.give_trophies(self.user.id, -(randint(10, 20)))
 
         while run:
             try:
