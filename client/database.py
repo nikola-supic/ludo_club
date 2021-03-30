@@ -274,6 +274,7 @@ class User():
 		self.avatar = result[14]
 		self.dice = result[15]
 		self.trophies = result[16]
+		self.power = result[17]
 
 		sql = "UPDATE users SET last_online=%s, online=1 WHERE id=%s"
 		val = (self.last_online, self.id, )

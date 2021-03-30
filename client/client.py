@@ -482,8 +482,12 @@ class App():
             trophy = pygame.image.load(f"images/trophy.png")
             trophy = pygame.transform.scale(trophy, (80, 80))
             self.screen.blit(trophy, (x+20, y+210))
-
             Text(self.screen, f'{self.user.trophies}', (x+115, y+250), GREY, text_size=64)
+
+            power = pygame.image.load(f"images/power.png")
+            power = pygame.transform.scale(power, (80, 80))
+            self.screen.blit(power, (x+200, y+270))
+            Text(self.screen, f'{self.user.power}', (x+185, y+310), GREY, text_size=64, right=True)
 
             Text(self.screen, 'GAME BY: SULE', (self.width-20, self.height-25), GREY, text_size=14, right=True)
             exit_btn.draw()
@@ -754,7 +758,6 @@ class App():
         avatar_list.append(avatar)
         avatar = ImageButton(self.screen, 'images/avatar/avatar_6.png', (90, 90), (x+170, y+250), '6')
         avatar_list.append(avatar)
-
         return avatar_list
 
 
@@ -768,7 +771,6 @@ class App():
         # row 2
         dice = ImageButton(self.screen, f'images/dice/special_{randint(1,6)}.png', (90, 90), (x+40, y+150), '3')
         dice_list.append(dice)
-
         return dice_list
 
 
@@ -789,6 +791,7 @@ class App():
         # Powers
         x = 40
         y = self.height - 260
+        power_btn = ImageButton(self.screen, f'images/power.png', (90, 90), (x+40, y+65), '1')
 
         # Other
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
@@ -826,7 +829,9 @@ class App():
             window = pygame.image.load("images/panel_small.png")
             window = pygame.transform.scale(window, (300, 200))
             self.screen.blit(window, (x, y))
+            Text(self.screen, '1500 Coins', (x+80, y+18), WHITE, text_size=20)
             Button(self.screen, 'BUY POWERS', (x+165, y+5), (110, 25), YELLOW, text_color=WHITE).draw()
+            power_btn.draw()
 
             # Other
             Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
@@ -883,6 +888,23 @@ class App():
                             self.user.dice = idx+1
                             self.user.update_sql('dice', self.user.dice)
                         break
+
+                if power_btn.click((mx, my)):
+                    x = 40
+                    y = self.height - 260
+                    if self.user.coins < 1500:
+                        Text(self.screen, 'YOU DO NOT HAVE ENOUGH COINS.', (x+150, y+170), GREY, text_size=20, center=True)
+                        pygame.display.update()
+                        pygame.time.delay(1000)
+                    else:
+                        Text(self.screen, 'YOU SUCCESSFULY BOUGHT POWER.', (x+150, y+170), GREY, text_size=20, center=True)
+                        pygame.display.update()
+                        pygame.time.delay(1000)
+
+                        self.user.coins -= 1500
+                        self.user.update_sql('coins', self.user.coins)
+                        self.user.power += 1
+                        self.user.update_sql('power', self.user.power)
 
                 if exit_btn.click((mx, my)):
                     run = False
@@ -2115,14 +2137,16 @@ class App():
 
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (62, self.height-45), 'exit')
         exit_btn.draw()
-        chat_btn = ImageButton(self.screen, 'images/game/chat.png', (25, 25), (105, self.height-45), 'info')
+        chat_btn = ImageButton(self.screen, 'images/game/chat.png', (25, 25), (105, self.height-45), 'chat')
         chat_btn.draw()
-        next_btn = ImageButton(self.screen, 'images/game/next.png', (25, 25), (150, self.height-45), 'info')
+        next_btn = ImageButton(self.screen, 'images/game/next.png', (25, 25), (150, self.height-45), 'next')
         next_btn.draw()
-        emoji_btn = ImageButton(self.screen, 'images/emoji/normal.png', (25, 25), (195, self.height-45), 'info')
+        emoji_btn = ImageButton(self.screen, 'images/emoji/normal.png', (25, 25), (195, self.height-45), 'emoji')
         emoji_btn.draw()
+        power_btn = ImageButton(self.screen, 'images/power.png', (25, 25), (240, self.height-45), 'power')
+        power_btn.draw()
 
-        return exit_btn, chat_btn, next_btn, emoji_btn
+        return exit_btn, chat_btn, next_btn, emoji_btn, power_btn
 
 
     def load_emoji(self, x=0, y=0):
@@ -2213,6 +2237,45 @@ class App():
             pygame.time.delay(1500)
 
 
+    def load_power(self, x=0, y=0):
+        dice_list = []
+        # row 1
+        dice = ImageButton(self.screen, 'images/dice/normal_1.png', (60, 60), (x+40, y+10), '1')
+        dice_list.append(dice)
+
+        dice = ImageButton(self.screen, 'images/dice/normal_2.png', (60, 60), (x+120, y+10), '2')
+        dice_list.append(dice)
+
+        dice = ImageButton(self.screen, 'images/dice/normal_3.png', (60, 60), (x+200, y+10), '3')
+        dice_list.append(dice)
+
+        # row 2
+        dice = ImageButton(self.screen, 'images/dice/normal_4.png', (60, 60), (x+40, y+80), '4')
+        dice_list.append(dice)
+
+        dice = ImageButton(self.screen, 'images/dice/normal_5.png', (60, 60), (x+120, y+80), '5')
+        dice_list.append(dice)
+
+        dice = ImageButton(self.screen, 'images/dice/normal_6.png', (60, 60), (x+200, y+80), '6')
+        dice_list.append(dice)
+
+        return dice_list
+
+
+    def draw_power(self):
+        x = 195
+        y = self.height - 245
+        bg = pygame.image.load("images/emoji/window.png")
+        bg = pygame.transform.scale(bg, (300, 200))
+        self.screen.blit(bg, (x, y))
+
+        power_list = self.load_power(x, y)
+        for power in power_list:
+            power.draw()
+
+        return power_list
+
+
     def color_from_player(self):
         colors = {
             0 : 'Green',
@@ -2277,7 +2340,8 @@ class App():
         click = False
         x, y = 50, 50
         see_emoji = False
-        fix_value = 0
+        see_power = False
+        power_value = 0
 
         try:
             self.player = self.network.send('get_player')
@@ -2325,9 +2389,12 @@ class App():
                 your_pawns = self.draw_pawns(game)
                 dice_button = self.draw_dice(game)
                 self.draw_players(game, x, y)
-                exit_btn, chat_btn, next_btn, emoji_btn = self.draw_game_screen(game)
+                exit_btn, chat_btn, next_btn, emoji_btn, power_btn = self.draw_game_screen(game)
                 if see_emoji:
                     emoji_list = self.draw_emoji()
+
+                if see_power:
+                    power_list = self.draw_power()
 
                 if game.emoji is not None:
                     self.draw_sent_emoji(game.emoji_player, game.emoji, x, y)
@@ -2347,6 +2414,15 @@ class App():
 
                                 start_new_thread(self.clear_emoji, ())
                                 see_emoji = False
+
+                    if see_power:
+                        for power_idx, power in enumerate(power_list):
+                            if power.click((mx, my)):
+                                power_value = power_idx+1
+                                see_power = False
+
+                                self.user.power -= 1
+                                self.user.update_sql('power', self.user.power)
 
                     else:
                         if game.player_on_move == self.player:
@@ -2393,8 +2469,9 @@ class App():
                                         pygame.display.update()
                                         pygame.time.delay(50)
 
-                                    if fix_value != 0:
-                                        value = fix_value
+                                    if power_value != 0:
+                                        value = power_value
+                                        power_value = 0
 
                                     self.user.exp += value
                                     self.user.update_sql('exp', self.user.exp)
@@ -2422,6 +2499,18 @@ class App():
                             elif next_btn.click((mx, my)):
                                 if game.rolled_dice:
                                     self.next_player()
+                                else:
+                                    pass
+
+                            elif power_btn.click((mx, my)):
+                                if not game.rolled_dice:
+                                    if self.user.power > 0:
+                                        if see_power:
+                                            see_power = False
+                                        else:
+                                            see_power = True
+                                    else:
+                                        pass
                                 else:
                                     pass
 
@@ -2453,19 +2542,6 @@ class App():
 
                     if event.key == pygame.K_m:
                         self.background_music()
-
-                    if event.key == pygame.K_1:
-                        fix_value = 1
-                    if event.key == pygame.K_2:
-                        fix_value = 2
-                    if event.key == pygame.K_3:
-                        fix_value = 3
-                    if event.key == pygame.K_4:
-                        fix_value = 4
-                    if event.key == pygame.K_5:
-                        fix_value = 5
-                    if event.key == pygame.K_6:
-                        fix_value = 6
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
