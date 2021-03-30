@@ -123,28 +123,6 @@ def delete_friend(id):
 	return False
 
 # user related function
-def get_name(user_id):
-	sql = "SELECT username FROM users WHERE id=%s LIMIT 1"
-	val = (user_id, )
-
-	mycursor.execute(sql, val)
-	result = mycursor.fetchone()
-
-	if result is not None:
-		return result[0]
-	return None
-
-def get_online(user_id):
-	sql = "SELECT online FROM users WHERE id=%s LIMIT 1"
-	val = (user_id, )
-
-	mycursor.execute(sql, val)
-	result = mycursor.fetchone()
-
-	if result is not None:
-		return result[0]
-	return None
-
 def check_login(username, password):
 	sql = "SELECT * FROM users WHERE username=%s AND password=%s"
 	val = (username, password)
@@ -174,122 +152,29 @@ def check_register(username, email, password):
 		return True
 	except Exception as e:
 		print(e)
-	
 	return False
 
-def give_win(id):
-	sql = "SELECT wins FROM users WHERE id=%s"
-	val = (id, )
+def get_name(user_id):
+	sql = "SELECT username FROM users WHERE id=%s LIMIT 1"
+	val = (user_id, )
 
 	mycursor.execute(sql, val)
 	result = mycursor.fetchone()
-	wins = result[0] + 1
 
-	sql = "UPDATE users SET wins=%s WHERE id=%s"
-	val = (wins, id, )
+	if result is not None:
+		return result[0]
+	return None
 
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return wins
-
-def give_defeat(id):
-	sql = "SELECT defeats FROM users WHERE id=%s"
-	val = (id, )
+def get_online(user_id):
+	sql = "SELECT online FROM users WHERE id=%s LIMIT 1"
+	val = (user_id, )
 
 	mycursor.execute(sql, val)
 	result = mycursor.fetchone()
-	defeats = result[0] + 1
 
-	sql = "UPDATE users SET defeats=%s WHERE id=%s"
-	val = (defeats, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return defeats
-
-def give_coins(id, value):
-	sql = "SELECT coins FROM users WHERE id=%s"
-	val = (id, )
-
-	mycursor.execute(sql, val)
-	result = mycursor.fetchone()
-	coins = result[0] + value
-
-	sql = "UPDATE users SET coins=%s WHERE id=%s"
-	val = (coins, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return coins
-
-def give_exp(id, value):
-	sql = "SELECT exp FROM users WHERE id=%s"
-	val = (id, )
-
-	mycursor.execute(sql, val)
-	result = mycursor.fetchone()
-	exp = result[0] + value
-
-	sql = "UPDATE users SET exp=%s WHERE id=%s"
-	val = (exp, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return exp
-
-def give_level(id, value):
-	sql = "SELECT level FROM users WHERE id=%s"
-	val = (id, )
-
-	mycursor.execute(sql, val)
-	result = mycursor.fetchone()
-	level = result[0] + value
-
-	sql = "UPDATE users SET level=%s WHERE id=%s"
-	val = (level, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return level
-
-def give_trophies(id, value):
-	sql = "SELECT trophies FROM users WHERE id=%s"
-	val = (id, )
-
-	mycursor.execute(sql, val)
-	result = mycursor.fetchone()
-	trophies = result[0] + value
-
-	sql = "UPDATE users SET trophies=%s WHERE id=%s"
-	val = (trophies, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return trophies
-
-def set_exp(id, value):
-	sql = "UPDATE users SET exp=%s WHERE id=%s"
-	val = (value, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return value
-
-def set_avatar(id, value):
-	sql = "UPDATE users SET avatar=%s WHERE id=%s"
-	val = (value, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return value
-
-def set_dice(id, value):
-	sql = "UPDATE users SET dice=%s WHERE id=%s"
-	val = (value, id, )
-
-	mycursor.execute(sql, val)
-	mydb.commit()
-	return value
+	if result is not None:
+		return result[0]
+	return None
 
 def admin_permission(id):
 	try:
@@ -410,47 +295,9 @@ class User():
 		mycursor.execute(sql, val)
 		mydb.commit()
 
-	def change_username(self, name):
-		if len(name) < 4:
-			return False
-
-		self.username = name
-		sql = "UPDATE users SET username=%s WHERE id=%s"
-		val = (name, self.id, )
-
-		mycursor.execute(sql, val)
-		mydb.commit()
-
-	def change_email(self, email):
-		if len(email) < 4:
-			return False
-
-		self.email = email
-		sql = "UPDATE users SET email=%s WHERE id=%s"
-		val = (email, self.id, )
-
-		mycursor.execute(sql, val)
-		mydb.commit()
-
-	def change_password(self, password):
-		if len(password) < 8 or len(password) > 24:
-			return False
-
-		self.password = password
-		sql = "UPDATE users SET password=%s WHERE id=%s"
-		val = (password, self.id, )
-
-		mycursor.execute(sql, val)
-		mydb.commit()
-
-	def change_volume(self, volume):
-		if volume < 0 or volume > 100:
-			return False
-
-		self.volume = volume
-		sql = "UPDATE users SET volume=%s WHERE id=%s"
-		val = (volume, self.id, )
-
+	def update_sql(self, column, value):
+		sql = f"UPDATE users SET {column}=%s WHERE id=%s"
+		val = (value, self.id, )
 		mycursor.execute(sql, val)
 		mydb.commit()
 

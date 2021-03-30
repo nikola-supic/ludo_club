@@ -369,9 +369,6 @@ class App():
                     if event.key == pygame.K_m:
                         self.background_music()
 
-                    if event.key == pygame.K_x:
-                        self.user.exp = db.give_exp(self.user.id, 100)
-
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
                         click = True
@@ -391,9 +388,12 @@ class App():
         if exp < 0:
             exp = 0
 
-        self.user.level = db.give_level(self.user.id, 1)
-        self.user.coins = db.give_coins(self.user.id, self.user.level * 100)
-        self.user.exp = db.set_exp(self.user.id, exp)
+        self.user.level += 1
+        self.user.update_sql('level', self.user.level)
+        self.user.coins += self.user.level * 100
+        self.user.update_sql('coins', self.user.coins)
+        self.user.exp = exp
+        self.user.update_sql('exp', exp)
 
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
         while run:
@@ -849,12 +849,14 @@ class App():
                             pygame.time.delay(1000)
 
                         else:
-                            Text(self.screen, 'YOU SUCCESSFULY BOUGHT NEW AVATAR.', (x+150, xy+360), GREY, text_size=20, center=True)
+                            Text(self.screen, 'YOU SUCCESSFULY BOUGHT NEW AVATAR.', (x+150, y+360), GREY, text_size=20, center=True)
                             pygame.display.update()
                             pygame.time.delay(1000)
 
-                            self.user.coins = db.give_coins(self.user.id, -1000)
-                            self.user.avatar = db.set_avatar(self.user.id, idx+1)
+                            self.user.coins -= 1000
+                            self.user.update_sql('coins', self.user.coins)
+                            self.user.avatar = idx+1
+                            self.user.update_sql('avatar', self.user.avatar)
                         break
 
                 for idx, dice in enumerate(dice_list):
@@ -876,8 +878,10 @@ class App():
                             pygame.display.update()
                             pygame.time.delay(1000)
 
-                            self.user.coins = db.give_coins(self.user.id, -750)
-                            self.user.dice = db.set_dice(self.user.id, idx+1)
+                            self.user.coins -= 750
+                            self.user.update_sql('coins', self.user.coins)
+                            self.user.dice = idx+1
+                            self.user.update_sql('dice', self.user.dice)
                         break
 
                 if exit_btn.click((mx, my)):
@@ -1304,17 +1308,23 @@ class App():
             if click:
                 if save_acc.rect.collidepoint((mx, my)):
                     if username.text != '':
-                        username.text.replace(' ', '_')
-                        self.user.change_username(username.text)
-                        username.clear()
+                        if len(username.text) > 4:
+                            username.text.replace(' ', '_')
+                            self.user.username = username.text
+                            self.user.update_sql('username', self.user.username)
+                            username.clear()
 
                     if email.text != '':
-                        self.user.change_email(email.text)
-                        email.clear()
+                        if len(email.text) > 4:
+                            self.user.email = email.text
+                            self.user.update_sql('email', self.user.email)
+                            email.clear()
 
                     if password.text != '':
-                        self.user.change_password(password.text)
-                        password.clear()
+                        if len(password.text) > 8 and len(password.text) < 24:
+                            self.user.password = password.text
+                            self.user.update_sql('password', self.user.password)
+                            password.clear()
 
                 elif save_game.rect.collidepoint((mx, my)):
                     if volume.text != '':
@@ -1327,7 +1337,8 @@ class App():
                             self.draw_error('Volume value must be between 0 and 100.')
                             pygame.time.delay(1000)
                         else:
-                            self.user.change_volume(value)
+                            self.user.volume = value
+                            self.user.update_sql('volume', self.user.volume)
                             pygame.mixer.music.set_volume(value / 100)
                         volume.clear()
 
@@ -1864,15 +1875,27 @@ class App():
             run = False
 
         if self.user.username == game.winner:
-            self.user.wins = db.give_win(self.user.id)
-            self.user.coins = db.give_coins(self.user.id, ((game.lobby_size-1) * game.lobby_price))
-            self.user.exp = db.give_exp(self.user.id, 200)
-            self.user.trophies = db.give_trophies(self.user.id, (randint(20, 30)))
+            self.user.wins += 1
+            self.user.update_sql('wins', self.user.wins)
+
+            self.user.coins += ((game.lobby_size-1) * game.lobby_price)
+            self.user.update_sql('coins', self.user.coins)
+
+            self.user.exp += 200
+            self.user.update_sql('exp', self.user.exp)
+
+            self.user.trophies += randint(20, 30)
+            self.user.update_sql('trophies', self.user.trophies)
         else:
-            self.user.defeats = db.give_defeat(self.user.id)
-            self.user.coins = db.give_coins(self.user.id, -(game.lobby_price))
+            self.user.defeats += 1
+            self.user.update_sql('defeats', self.user.defeats)
+
+            self.user.coins -= game.lobby_price
+            self.user.update_sql('coins', self.user.coins)
+
             if self.user.trophies > 100:
-                self.user.trophies = db.give_trophies(self.user.id, -(randint(10, 20)))
+                self.user.trophies -= randint(10, 20)
+                self.user.update_sql('trophies', self.user.trophies)
 
         while run:
             try:
@@ -2206,7 +2229,8 @@ class App():
             game = self.network.send(f'move {self.player} {pawn_idx}')
 
             if game.give_finish_exp:
-                self.user.exp = db.give_exp(self.user.id, 100)
+                self.user.exp += 100
+                self.user.update_sql('exp', self.user.exp)
 
                 Text(self.screen, f'PAWN FINISHED (+100 EXP)', (self.width/2, 18), GREY, center=True)
                 pygame.display.update()
@@ -2235,7 +2259,8 @@ class App():
             game = self.network.send(f'check_eat {self.player} {move_idx}')
 
             if game.give_exp:
-                self.user.exp = db.give_exp(self.user.id, 50)
+                self.user.exp += 50
+                self.user.update_sql('exp', self.user.exp)
 
                 Text(self.screen, f'PAWN EATEN (+50 EXP)', (self.width/2, 18), GREY, center=True)
                 pygame.display.update()
@@ -2371,7 +2396,8 @@ class App():
                                     if fix_value != 0:
                                         value = fix_value
 
-                                    self.user.exp = db.give_exp(self.user.id, value)
+                                    self.user.exp += value
+                                    self.user.update_sql('exp', self.user.exp)
 
                                     try:
                                         game = self.network.send(f'dice {value} {self.user.dice}')
