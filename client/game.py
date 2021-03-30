@@ -32,6 +32,7 @@ class Game():
 		self.player_on_move = None
 		self.rolled_dice = False
 		self.dice = 1
+		self.dice_skin = 1
 		self.give_exp = False
 		self.give_finish_exp = False
 

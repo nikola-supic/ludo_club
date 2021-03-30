@@ -268,7 +268,13 @@ def set_avatar(id, value):
 	mydb.commit()
 	return value
 
+def set_dice(id, value):
+	sql = "UPDATE users SET dice=%s WHERE id=%s"
+	val = (value, id, )
 
+	mycursor.execute(sql, val)
+	mydb.commit()
+	return value
 
 def admin_permission(id):
 	try:
@@ -366,6 +372,7 @@ class User():
 		self.level = result[12]
 		self.exp = result[13]
 		self.avatar = result[14]
+		self.dice = result[15]
 
 		sql = "UPDATE users SET last_online=%s, online=1 WHERE id=%s"
 		val = (self.last_online, self.id, )

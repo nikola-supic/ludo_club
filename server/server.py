@@ -117,9 +117,11 @@ class Server():
 					elif data_list[0] == 'dice':
 						game = self.games[game_id]
 						dice = int(data_list[1])
+						dice_skin = int(data_list[2])
 
 						game.rolled_dice = True
 						game.dice = dice
+						game.dice_skin = dice_skin
 						conn.sendall(pickle.dumps(game))
 
 					elif data_list[0] == 'move':

@@ -47,6 +47,14 @@ pygame.mixer.music.set_endevent(MUSIC_END)
 
 get_level_exp = lambda n: 200 + n * 160 
 
+def name_from_dice(dice):
+    name = {
+        1 : 'normal',
+        2 : 'grey',
+        3 : 'special'
+    }
+    return name[dice]
+
 def get_music():
     songs_list = []
     os.chdir('music')
@@ -425,10 +433,14 @@ class App():
             Text(self.screen, f'Level: {self.user.level}', (x+275, y+80), GREY, text_size=18, right=True)
             Text(self.screen, f'Exp: {self.user.exp} / {get_level_exp(self.user.level)}', (x+275, y+95), GREY, text_size=18, right=True)
 
+            dice = pygame.image.load(f"images/dice/{name_from_dice(self.user.dice)}_6.png")
+            dice = pygame.transform.scale(dice, (80, 80))
+            self.screen.blit(dice, (x+200, y+110))
+
             Text(self.screen, f'Wins: {self.user.wins}', (x+25, y+135), GREY, text_size=18)
             Text(self.screen, f'Defeats: {self.user.defeats}', (x+25, y+150), GREY, text_size=18)
             Text(self.screen, f'Coins: {self.user.coins}', (x+25, y+165), GREY, text_size=18)
-            Text(self.screen, f'Register date: {self.user.register_date}', (x+25, y+180), GREY, text_size=18)
+            Text(self.screen, f'Joined: {self.user.register_date}', (x+25, y+180), GREY, text_size=18)
 
             Text(self.screen, 'GAME BY: SULE', (self.width-20, self.height-25), GREY, text_size=14, right=True)
             exit_btn.draw()
@@ -687,23 +699,34 @@ class App():
         # row 1
         avatar = ImageButton(self.screen, 'images/avatar/avatar_1.png', (90, 90), (x+40, y+50), '1')
         avatar_list.append(avatar)
-
         avatar = ImageButton(self.screen, 'images/avatar/avatar_2.png', (90, 90), (x+170, y+50), '2')
         avatar_list.append(avatar)
-
+        # row 2
         avatar = ImageButton(self.screen, 'images/avatar/avatar_3.png', (90, 90), (x+40, y+150), '3')
         avatar_list.append(avatar)
-
         avatar = ImageButton(self.screen, 'images/avatar/avatar_4.png', (90, 90), (x+170, y+150), '4')
         avatar_list.append(avatar)
-
+        # row 3
         avatar = ImageButton(self.screen, 'images/avatar/avatar_5.png', (90, 90), (x+40, y+250), '5')
         avatar_list.append(avatar)
-
         avatar = ImageButton(self.screen, 'images/avatar/avatar_6.png', (90, 90), (x+170, y+250), '6')
         avatar_list.append(avatar)
 
         return avatar_list
+
+
+    def load_dice(self, x=0, y=0):
+        dice_list = []
+        # row 1
+        dice = ImageButton(self.screen, f'images/dice/normal_{randint(1,6)}.png', (90, 90), (x+40, y+50), '1')
+        dice_list.append(dice)
+        dice = ImageButton(self.screen, f'images/dice/grey_{randint(1,6)}.png', (90, 90), (x+170, y+50), '2')
+        dice_list.append(dice)
+        # row 2
+        dice = ImageButton(self.screen, f'images/dice/special_{randint(1,6)}.png', (90, 90), (x+40, y+150), '3')
+        dice_list.append(dice)
+
+        return dice_list
 
 
     def shop(self):
@@ -718,6 +741,7 @@ class App():
         # Dice
         x = self.width - 340
         y = 40
+        dice_list = self.load_dice(x, y)
 
         # Powers
         x = 40
@@ -748,7 +772,10 @@ class App():
             window = pygame.image.load("images/panel_large.png")
             window = pygame.transform.scale(window, (300, 400))
             self.screen.blit(window, (x, y))
+            Text(self.screen, '750 Coins', (x+80, y+18), WHITE, text_size=20)
             Button(self.screen, 'BUY DICE', (x+165, y+5), (110, 25), YELLOW, text_color=WHITE).draw()
+            for dice in dice_list:
+                dice.draw()
 
             # Powers
             x = 40
@@ -769,22 +796,46 @@ class App():
                         x = 40
                         y = 40
                         if self.user.coins < 1000:
-                            Text(self.screen, 'YOU DO NOT HAVE ENOUGH COINS.', (x+150, x+360), GREY, text_size=20, center=True)
+                            Text(self.screen, 'YOU DO NOT HAVE ENOUGH COINS.', (x+150, y+360), GREY, text_size=20, center=True)
                             pygame.display.update()
                             pygame.time.delay(1000)
 
                         elif self.user.avatar == idx+1:
-                            Text(self.screen, 'YOU ALREADT HAVE THIS AVATAR.', (x+150, x+360), GREY, text_size=20, center=True)
+                            Text(self.screen, 'YOU ALREADY HAVE THIS AVATAR.', (x+150, y+360), GREY, text_size=20, center=True)
                             pygame.display.update()
                             pygame.time.delay(1000)
 
                         else:
-                            Text(self.screen, 'YOU SUCCESSFULY BOUGHT NEW AVATAR.', (x+150, x+360), GREY, text_size=20, center=True)
+                            Text(self.screen, 'YOU SUCCESSFULY BOUGHT NEW AVATAR.', (x+150, xy+360), GREY, text_size=20, center=True)
                             pygame.display.update()
                             pygame.time.delay(1000)
 
                             self.user.coins = db.give_coins(self.user.id, -1000)
                             self.user.avatar = db.set_avatar(self.user.id, idx+1)
+                        break
+
+                for idx, dice in enumerate(dice_list):
+                    if dice.click((mx, my)):
+                        x = self.width - 340
+                        y = 40
+                        if self.user.coins < 750:
+                            Text(self.screen, 'YOU DO NOT HAVE ENOUGH COINS.', (x+150, y+360), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
+                        elif self.user.dice == idx+1:
+                            Text(self.screen, 'YOU ALREADY HAVE THIS DICE SKIN.', (x+150, y+360), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
+                        else:
+                            Text(self.screen, 'YOU SUCCESSFULY BOUGHT NEW DICE SKIN.', (x+150, y+360), GREY, text_size=20, center=True)
+                            pygame.display.update()
+                            pygame.time.delay(1000)
+
+                            self.user.coins = db.give_coins(self.user.id, -750)
+                            self.user.dice = db.set_dice(self.user.id, idx+1)
+                        break
 
                 if exit_btn.click((mx, my)):
                     run = False
@@ -971,7 +1022,7 @@ class App():
                             self.draw_error('Rate value must be between 1 and 5.')
                             pygame.time.delay(1000)
                         else:
-                            add_rating = db.add_rating(self.user.id, self.user.username, value, rate_review.text)
+                            add_rating = db.add_rating(self.user.id, self.user.username, value, rate_review.text, self.user.dice)
 
                             if add_rating:
                                 Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+230), GREY, text_size=20, center=True)
@@ -1818,7 +1869,9 @@ class App():
         rect = pygame.Rect(self.width/2-25, self.height/2-25, 50, 50)
         pygame.draw.rect(self.screen, color, rect)
 
-        dice_button = ImageButton(self.screen, f'images/cube/cube_{game.dice}.png', (40, 40), (self.width/2 - 20, self.height/2 - 20), 'cube')
+        img_name = name_from_dice(game.dice_skin)
+
+        dice_button = ImageButton(self.screen, f'images/dice/{img_name}_{game.dice}.png', (40, 40), (self.width/2 - 20, self.height/2 - 20), 'cube')
         dice_button.draw()
         return dice_button
 
@@ -2152,9 +2205,11 @@ class App():
 
                             if dice_button.click((mx, my)):
                                 if not game.rolled_dice:
+                                    img = name_from_dice(self.user.dice)
+
                                     for i in range(randint(10, 20)):
                                         value = randint(1, 6)
-                                        dice_button.image = f'images/cube/cube_{value}.png'
+                                        dice_button.image = f'images/dice/{img}_{value}.png'
                                         dice_button.draw()
 
                                         pygame.display.update()
@@ -2166,7 +2221,7 @@ class App():
                                     self.user.exp = db.give_exp(self.user.id, value)
 
                                     try:
-                                        game = self.network.send(f'dice {value}')
+                                        game = self.network.send(f'dice {value} {self.user.dice}')
                                     except Exception:
                                         self.draw_error('Could not send dice value.')
                                         pygame.time.delay(1500)
