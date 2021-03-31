@@ -241,13 +241,28 @@ def online_players():
 	result = mycursor.fetchall()
 	return result
 
-def get_winners():
-	mycursor.execute("SELECT username, wins FROM users ORDER BY wins DESC")
+def get_top_wins():
+	mycursor.execute("SELECT username, wins FROM users ORDER BY wins DESC LIMIT 20")
 	result = mycursor.fetchall()
 	return result
 
-def get_losers():
-	mycursor.execute("SELECT username, defeats FROM users ORDER BY defeats DESC")
+def get_top_defeats():
+	mycursor.execute("SELECT username, defeats FROM users ORDER BY defeats DESC LIMIT 20")
+	result = mycursor.fetchall()
+	return result
+
+def get_top_coins():
+	mycursor.execute("SELECT username, coins FROM users ORDER BY coins DESC LIMIT 20")
+	result = mycursor.fetchall()
+	return result
+
+def get_top_level():
+	mycursor.execute("SELECT username, level FROM users ORDER BY level DESC LIMIT 20")
+	result = mycursor.fetchall()
+	return result
+
+def get_top_trophies():
+	mycursor.execute("SELECT username, trophies FROM users ORDER BY trophies DESC LIMIT 20")
 	result = mycursor.fetchall()
 	return result
 

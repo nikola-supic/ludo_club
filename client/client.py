@@ -145,8 +145,8 @@ class App():
         x = 40
         y = self.height/2 - 75
 
-        login_name = InputBox(self.screen, (x+25, y+70), (250, 30), '', RED, GREY)
-        login_pass = InputBox(self.screen, (x+25, y+130), (250, 30), '', RED, GREY)
+        login_name = InputBox(self.screen, (x+25, y+70), (250, 30), 'Sule', RED, GREY)
+        login_pass = InputBox(self.screen, (x+25, y+130), (250, 30), '12345678', RED, GREY)
         login_button = Button(self.screen, 'LOGIN', (x+25, y+320), (250, 30), GREY, text_color=WHITE)
 
         # Register
@@ -937,6 +937,16 @@ class App():
     def champions(self):
         run = True
         click = False
+        sort_by = [False for _ in range(5)]
+        sort_name = ['Wins', 'Defeats', 'Coins', 'Level', 'Trophy']
+
+        x = 40
+        y = self.height/2 - 200
+        wins_btn = Button(self.screen, 'WINS', (x+25, y+50), (250, 25), GREY, text_color=WHITE)
+        defeats_btn = Button(self.screen, 'DEFEATS', (x+25, y+80), (250, 25), GREY, text_color=WHITE)
+        coins_btn = Button(self.screen, 'COINS', (x+25, y+110), (250, 25), GREY, text_color=WHITE)
+        level_btn = Button(self.screen, 'LEVEL', (x+25, y+140), (250, 25), GREY, text_color=WHITE)
+        trophies_btn = Button(self.screen, 'TROPHIES', (x+25, y+170), (250, 25), GREY, text_color=WHITE)
 
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
         while run:
@@ -949,40 +959,77 @@ class App():
             logo = pygame.transform.scale(logo, (160, 160))
             self.screen.blit(logo, (self.width/2-80, -10))
 
-            # Winner
+            # Sort By
             x = 40
             y = self.height/2 - 200
             window = pygame.image.load("images/panel_large.png")
             window = pygame.transform.scale(window, (300, 400))
             self.screen.blit(window, (x, y))
-            Button(self.screen, 'TOP WINNER', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
+            Button(self.screen, 'SORT BY', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-            result = db.get_winners()
-            res_y = y + 50
-            for idx, row in enumerate(result):
-                Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
-                res_y += 15
+            wins_btn.draw()
+            defeats_btn.draw()
+            coins_btn.draw()
+            level_btn.draw()
+            trophies_btn.draw()
 
-            # Loser
+            # Sorted
             x = self.width - 340
             y = self.height/2 - 200
             window = pygame.image.load("images/panel_large.png")
             window = pygame.transform.scale(window, (300, 400))
             self.screen.blit(window, (x, y))
-            Button(self.screen, 'TOP LOSERS', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
 
-            result = db.get_losers()
-            res_y = y + 50
-            for idx, row in enumerate(result):
-                Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
-                res_y += 15
+            text = 'None'
+            result = None
+            for i in range(len(sort_by)):
+                if sort_by[i]:
+                    text = sort_name[i].upper()
+                    if i == 0:
+                        result = db.get_top_wins()
+                    elif i == 1:
+                        result = db.get_top_defeats()
+                    elif i == 2:
+                        result = db.get_top_coins()
+                    elif i == 3:
+                        result = db.get_top_level()
+                    elif i == 4:
+                        result = db.get_top_trophies()
 
+            Button(self.screen, f'{text}', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
+            if result is not None:
+                res_y = y + 55
+                for idx, row in enumerate(result):
+                    Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
+                    res_y += 15
+
+            # Other
             Text(self.screen, 'GAME BY: SULE', (self.width-40, self.height-25), GREY, text_size=14, right=True)
             exit_btn.draw()
 
             mx, my = pygame.mouse.get_pos()
             if click:
-                if exit_btn.click((mx, my)):
+                if wins_btn.rect.collidepoint((mx, my)):
+                    sort_by = [False for _ in range(5)]
+                    sort_by[0] = True
+
+                elif defeats_btn.rect.collidepoint((mx, my)):
+                    sort_by = [False for _ in range(5)]
+                    sort_by[1] = True
+
+                elif coins_btn.rect.collidepoint((mx, my)):
+                    sort_by = [False for _ in range(5)]
+                    sort_by[2] = True
+
+                elif level_btn.rect.collidepoint((mx, my)):
+                    sort_by = [False for _ in range(5)]
+                    sort_by[3] = True
+
+                elif trophies_btn.rect.collidepoint((mx, my)):
+                    sort_by = [False for _ in range(5)]
+                    sort_by[4] = True
+
+                elif exit_btn.click((mx, my)):
                     run = False
 
             click = False
