@@ -13,10 +13,10 @@ import mysql.connector
 
 try:
 	mydb = mysql.connector.connect(
-		host='localhost',
-		user='root',
-		passwd='',
-		database='ludo_club'
+		host='freedb.tech',
+		user='freedbtech_suleludoclub',
+		passwd='rootroot',
+		database='freedbtech_suleludoclub'
 		)
 	mycursor = mydb.cursor()
 	print('[ + ] Successfully connected to database.')
