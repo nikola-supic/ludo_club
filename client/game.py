@@ -27,8 +27,8 @@ class Game():
 		self.time_started = 0
 		self.winner = None
 		self.pawn = []
-		self.pawns_finish = [0 for _ in range(lobby_size)]
-		self.pawns_free = [0 for _ in range(lobby_size)]
+		self.pawns_finish = [0 for _ in range(self.lobby_size)]
+		self.pawns_free = [0 for _ in range(self.lobby_size)]
 		self.player_on_move = None
 		self.rolled_dice = False
 		self.dice = 1
@@ -36,11 +36,11 @@ class Game():
 		self.give_exp = False
 		self.give_finish_exp = False
 
-		self.user_names = ['' for _ in range(lobby_size)]
-		self.user_ids = [0 for _ in range(lobby_size)]
-		self.user_avatars = [0 for _ in range(lobby_size)]
-		self.wins = [0 for _ in range(lobby_size)]
-		self.defeats = [0 for _ in range(lobby_size)]
+		self.user_names = []
+		self.user_ids = []
+		self.user_avatars = []
+		self.wins = []
+		self.defeats = []
 		self.lobby_started = datetime.now()
 		self.messages = []
 		self.emoji = None
@@ -162,9 +162,13 @@ class Game():
 
 
 	def update_users(self, player, username, id, avatar):
-		self.user_names[player] = username
-		self.user_ids[player] = id
-		self.user_avatars[player] = avatar
+		self.user_names.append(username)
+		self.user_ids.append(id)
+		self.user_avatars.append(avatar)
+		self.wins.append(0)
+		self.defeats.append(0)
+
+		print(f'[USER] P:{player} // U:{username} // ID:{id} // Avatar:{avatar}')
 
 
 	def send_msg(self, username, message):

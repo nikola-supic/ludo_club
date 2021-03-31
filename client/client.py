@@ -145,8 +145,8 @@ class App():
         x = 40
         y = self.height/2 - 75
 
-        login_name = InputBox(self.screen, (x+25, y+70), (250, 30), 'Sule', RED, GREY)
-        login_pass = InputBox(self.screen, (x+25, y+130), (250, 30), '12345678', RED, GREY)
+        login_name = InputBox(self.screen, (x+25, y+70), (250, 30), '', RED, GREY)
+        login_pass = InputBox(self.screen, (x+25, y+130), (250, 30), '', RED, GREY)
         login_button = Button(self.screen, 'LOGIN', (x+25, y+320), (250, 30), GREY, text_color=WHITE)
 
         # Register
@@ -1565,10 +1565,10 @@ class App():
         x = self.width/2 - 150
         y = self.height/2 - 200
 
-        lobby_name = InputBox(self.screen, (x+25, y+70), (250, 30), 'lobby', RED, GREY)
+        lobby_name = InputBox(self.screen, (x+25, y+70), (250, 30), '', RED, GREY)
         lobby_pw = InputBox(self.screen, (x+25, y+120), (250, 30), '', RED, GREY)
-        lobby_size = InputBox(self.screen, (x+25, y+170), (250, 30), '2', RED, GREY)
-        lobby_price = InputBox(self.screen, (x+25, y+220), (250, 30), '100', RED, GREY)
+        lobby_size = InputBox(self.screen, (x+25, y+170), (250, 30), '', RED, GREY)
+        lobby_price = InputBox(self.screen, (x+25, y+220), (250, 30), '', RED, GREY)
 
         create = Button(self.screen, 'CREATE', (x+25, y+320), (250, 30), GREY, text_color=WHITE)
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (20, self.height - 45), 'exit')
@@ -2075,14 +2075,14 @@ class App():
 
     def draw_players(self, game, start_x, start_y):
         AVATAR_POS = [(181, 181), (368, 368), (181, 368), (368, 181)]
-
-
-        for idx, user_name in enumerate(game.user_names):
+        for idx in range(len(game.user_names)):
+            user_name = game.user_names[idx]
             user_id = game.user_ids[idx]
             avatar = game.user_avatars[idx]
             wins = game.wins[idx]
             defeats = game.defeats[idx]
             finished = game.pawns_finish[idx]
+            # print(f'ID: {user_id} // Avatar: {avatar} // W/D: {wins}/{defeats} // Finished: {finished}')
 
             x, y = AVATAR_POS[idx]
             x += start_x
