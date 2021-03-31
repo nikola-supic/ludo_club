@@ -469,6 +469,7 @@ class App():
             Text(self.screen, f'{self.user.email}', (x+275, y+65), GREY, text_size=18, right=True)
             Text(self.screen, f'Level: {self.user.level}', (x+275, y+80), GREY, text_size=18, right=True)
             Text(self.screen, f'Exp: {self.user.exp} / {get_level_exp(self.user.level)}', (x+275, y+95), GREY, text_size=18, right=True)
+            Text(self.screen, f'{self.user.games_started} started // {self.user.games_finished} finished', (x+275, y+110), GREY, text_size=18, right=True)
 
             dice = pygame.image.load(f"images/dice/{name_from_dice(self.user.dice)}_6.png")
             dice = pygame.transform.scale(dice, (80, 80))
@@ -1903,14 +1904,14 @@ class App():
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    game = self.network.send('quit')
+                    game = self.player_quit(game)
                     self.user.user_quit()
                     pygame.quit()
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        game = self.network.send('quit')
+                        game = self.player_quit(game)
                         run = False
 
                     if event.key == pygame.K_m:
@@ -1942,6 +1943,9 @@ class App():
             self.draw_error('Could not get game.')
             pygame.time.delay(2500)
             run = False
+
+        self.user.games_finished += 1
+        self.user.update_sql('games_finished', self.user.games_finished)
 
         if self.user.username == game.winner:
             self.user.wins += 1
@@ -2018,14 +2022,14 @@ class App():
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    game = self.network.send('quit')
+                    game = self.player_quit(game)
                     self.user.user_quit()
                     pygame.quit()
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        game = self.network.send('quit')
+                        game = self.player_quit(game)
                         run = False
 
                     if event.key == pygame.K_m:
@@ -2099,6 +2103,7 @@ class App():
 
         return your_pawns
 
+
     def draw_dice(self, game):
         if not game.rolled_dice:
             colors = {
@@ -2119,6 +2124,7 @@ class App():
         dice_button = ImageButton(self.screen, f'images/dice/{img_name}_{game.dice}.png', (40, 40), (self.width/2 - 20, self.height/2 - 20), 'cube')
         dice_button.draw()
         return dice_button
+
 
     def draw_players(self, game, start_x, start_y):
         AVATAR_POS = [(181, 181), (368, 368), (181, 368), (368, 181)]
@@ -2173,6 +2179,7 @@ class App():
                     Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16, right=True)
 
                 Text(self.screen, f'{finished}', (self.width/2, self.height/-30), BLACK, text_size=16, center=True)
+
 
     def draw_game_screen(self, game):
         game_duration = int((datetime.now() - game.time_started).total_seconds())
@@ -2382,6 +2389,13 @@ class App():
         return game, run
 
 
+    def player_quit(self, game):
+        self.user.games_started += game.games_started 
+        self.user.update_sql('games_started', self.user.games_started)
+        game = self.network.send('quit')
+        return game
+
+
     def game_screen(self, game_id):
         run = True
         click = False
@@ -2423,6 +2437,7 @@ class App():
 
             elif game.winner is not None:
                 run = self.draw_winner(game_id, datetime.now())
+
             else:
                 self.screen.fill(BLACK)
                 bg = pygame.image.load("images/background.jpg")
@@ -2577,14 +2592,14 @@ class App():
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    game = self.network.send('quit')
+                    game = self.player_quit(game)
                     self.user.user_quit()
                     pygame.quit()
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        game = self.network.send('quit')
+                        game = self.player_quit(game)
                         run = False
 
                     if event.key == pygame.K_m:
@@ -2654,7 +2669,7 @@ class App():
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    game = self.network.send('quit')
+                    game = self.player_quit(game)
                     self.user.user_quit()
                     pygame.quit()
                     sys.exit()

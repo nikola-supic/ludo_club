@@ -45,6 +45,7 @@ class Game():
 		self.messages = []
 		self.emoji = None
 		self.emoji_player = None
+		self.games_started = 0
 
 
 	def start(self):
@@ -58,6 +59,7 @@ class Game():
 				break
 
 		self.player_on_move = randint(0, self.lobby_size-1)
+		self.games_started += 1
 
 
 	def reset(self):
