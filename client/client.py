@@ -938,8 +938,8 @@ class App():
     def champions(self):
         run = True
         click = False
-        sort_by = [False for _ in range(5)]
-        sort_name = ['Wins', 'Defeats', 'Coins', 'Level', 'Trophy']
+        sort_name = ['Wins', 'Defeats', 'Coins', 'Level', 'Trophy', 'Games Started']
+        sort_by = [False for _ in range(len(sort_name))]
 
         x = 40
         y = self.height/2 - 200
@@ -948,6 +948,7 @@ class App():
         coins_btn = Button(self.screen, 'COINS', (x+25, y+110), (250, 25), GREY, text_color=WHITE)
         level_btn = Button(self.screen, 'LEVEL', (x+25, y+140), (250, 25), GREY, text_color=WHITE)
         trophies_btn = Button(self.screen, 'TROPHIES', (x+25, y+170), (250, 25), GREY, text_color=WHITE)
+        games_btn = Button(self.screen, 'GAMES STARTED', (x+25, y+200), (250, 25), GREY, text_color=WHITE)
 
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
         while run:
@@ -973,6 +974,7 @@ class App():
             coins_btn.draw()
             level_btn.draw()
             trophies_btn.draw()
+            games_btn.draw()
 
             # Sorted
             x = self.width - 340
@@ -996,8 +998,10 @@ class App():
                         result = db.get_top_level()
                     elif i == 4:
                         result = db.get_top_trophies()
+                    elif i == 5:
+                        result = db.get_top_games()
 
-            Button(self.screen, f'{text}', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
+            Button(self.screen, f'{text}', (x+155, y+5), (120, 25), YELLOW, text_color=WHITE).draw()
             if result is not None:
                 res_y = y + 55
                 for idx, row in enumerate(result):
@@ -1011,24 +1015,28 @@ class App():
             mx, my = pygame.mouse.get_pos()
             if click:
                 if wins_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(5)]
+                    sort_by = [False for _ in range(len(sort_by))]
                     sort_by[0] = True
 
                 elif defeats_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(5)]
+                    sort_by = [False for _ in range(len(sort_by))]
                     sort_by[1] = True
 
                 elif coins_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(5)]
+                    sort_by = [False for _ in range(len(sort_by))]
                     sort_by[2] = True
 
                 elif level_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(5)]
+                    sort_by = [False for _ in range(len(sort_by))]
                     sort_by[3] = True
 
                 elif trophies_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(5)]
+                    sort_by = [False for _ in range(len(sort_by))]
                     sort_by[4] = True
+
+                elif games_btn.rect.collidepoint((mx, my)):
+                    sort_by = [False for _ in range(len(sort_by))]
+                    sort_by[5] = True
 
                 elif exit_btn.click((mx, my)):
                     run = False

@@ -266,6 +266,11 @@ def get_top_trophies():
 	result = mycursor.fetchall()
 	return result
 
+def get_top_games():
+	mycursor.execute("SELECT username, games_started FROM users ORDER BY games_started DESC LIMIT 20")
+	result = mycursor.fetchall()
+	return result
+
 class User():
 	"""
 	DOCSTRING:
