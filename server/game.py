@@ -170,8 +170,6 @@ class Game():
 		self.wins.append(0)
 		self.defeats.append(0)
 
-		print(f'[USER] P:{player} // U:{username} // ID:{id} // Avatar:{avatar}')
-
 
 	def send_msg(self, username, message):
 		time = datetime.now()

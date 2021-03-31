@@ -57,7 +57,7 @@ class Server():
 				data = conn.recv(4096).decode()
 
 				if not data:
-					print('[ - ] DATA BREAK')
+					print('[ - ] Lost connection...')
 					break
 				else:
 					data_list = data.split()
@@ -214,13 +214,11 @@ class Server():
 
 						conn.sendall(pickle.dumps(game))
 
-
-
-			except:
-				print('[ - ] ERROR BREAK')
+			except Exception as e:
+				print(e)
+				print('[ - ] Lost connection... (Error)')
 				break
 
-		print('[ - ] Lost connection')
 		self.id_count -= 1
 		conn.close()
 

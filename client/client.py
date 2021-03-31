@@ -353,6 +353,7 @@ class App():
 
                 elif button_info.click((mx, my)):
                     self.information()
+                    
                 elif button_exit.click((mx, my)):
                     self.user.user_quit()
                     pygame.quit()

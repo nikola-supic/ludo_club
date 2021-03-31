@@ -18,17 +18,19 @@ class Network():
 		self.port = 16203
 		self.addr = (self.server, self.port)
 		self.first_data = self.connect()
+		print(f'[ + ] Successfully connected.')
 
 	def get_first_data(self):
 		return self.first_data
 
 	def connect(self):
 		try:
-			print(f'[ > ] Trying to connect to: {self.server}:{self.port}')
+			print(f'[ > ] Trying connection to: {self.server}:{self.port}')
 			self.client.connect(self.addr)
 			return self.client.recv(2048).decode()
-		except:
-			print(f'[ > ] Error while trying connection to: {self.server}:{self.port}')
+		except Exception as e:
+			print(e)
+			print(f'[ - ] Error while connecting to: {self.server}:{self.port}')
 
 	def send(self, data):
 		try:
