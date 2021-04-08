@@ -36,9 +36,9 @@ RED = (237, 28, 36)
 BLUE = (15, 39, 99)
 YELLOW = (229, 207, 22)
 
-VERSION = 'v0.1'
+VERSION = 'v1.0'
 STARTED = '23.03.2021'
-LAST_UPDATE = '27.03.2021'
+LAST_UPDATE = '31   .03.2021'
 
 pygame.font.init()
 pygame.mixer.init()
