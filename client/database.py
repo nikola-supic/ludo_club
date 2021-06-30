@@ -303,7 +303,7 @@ class User():
 
 		if self.last_online.day != result[7].day:
 			self.coins += 250
-			give_coins(self.id, 250)
+			self.update_sql('coins', self.coins)
 
 		mycursor.execute(sql, val)
 		mydb.commit()
