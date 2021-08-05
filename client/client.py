@@ -268,7 +268,8 @@ class App():
 
     def main_menu(self):
         self.background_music()
-        self.network = Network()
+        self.network = Network('localhost', 5555)
+        self.network.connect()
 
         click = False
 
@@ -1683,7 +1684,7 @@ class App():
                         pygame.time.delay(1500)
 
                     else:
-                        lobby_name.text.replace(' ', '_')
+                        name = lobby_name.text.replace(' ', '_')
                         if lobby_pw.text == '':
                             pw = None
                         else:
@@ -1692,7 +1693,7 @@ class App():
 
                         try:
                             run = False
-                            game = self.network.send(f'create {lobby_name.text} {size} {pw} {price}')
+                            game = self.network.send(f'create {name} {size} {pw} {price}')
                             self.game_screen(game.id)
                         except Exception:
                             self.draw_error('Game error #404.')

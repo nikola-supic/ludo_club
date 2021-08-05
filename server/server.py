@@ -62,6 +62,7 @@ class Server():
 				else:
 					data_list = data.split()
 					if data_list[0] == 'create':
+						print('debug v1')
 						name = data_list[1]
 						size = int(data_list[2])
 						pw = data_list[3]
@@ -72,8 +73,10 @@ class Server():
 
 						self.waiting.append(self.games[game_id])
 						print(f'[ + ] Creating a new game... (of size {size})')
+						print('debug v2')
 
 						conn.sendall(pickle.dumps(self.games[game_id]))
+						print('debug v3')
 
 					elif data_list[0] == 'get_lobby':
 						conn.sendall(pickle.dumps(self.waiting))

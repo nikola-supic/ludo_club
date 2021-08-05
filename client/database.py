@@ -4,24 +4,29 @@ Created on Wed Mar 10 14:04:30 2021
 @author: Sule
 @name: user.py
 @description: ->
-    DOCSTRING:
+	DOCSTRING:
 """
 #!/usr/bin/env python3
 
 from datetime import datetime, timedelta
 import mysql.connector
 
-try:
-	mydb = mysql.connector.connect(
-		host='freedb.tech',
-		user='freedbtech_suleludoclub',
-		passwd='rootroot',
-		database='freedbtech_suleludoclub'
-		)
-	mycursor = mydb.cursor()
-	print('[ + ] Successfully connected to database.')
-except mysql.connector.errors.InterfaceError: 
-	print('[ - ] Can not connect to database.')
+global mydb, mycursor
+def connect(host='localhost', user='root', password='', database=''):
+	try:
+		global mydb, mycursor
+		mydb = mysql.connector.connect(
+			host=host,
+			user=user,
+			passwd=password,
+			database=database
+			)
+		mycursor = mydb.cursor()
+		print('[ + ] Successfully connected to database.')
+	except mysql.connector.errors.InterfaceError: 
+		print('[ - ] Can not connect to database.')
+
+connect(database='ludo_club')
 
 # game related function
 def add_rating(user_id, user_name, rating, review):
