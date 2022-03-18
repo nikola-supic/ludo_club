@@ -121,21 +121,22 @@ class InputBox():
         self.draw()
 
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.active = not self.active
-            else:
-                self.active = False
-            self.color = self.color_active if self.active else self.color_inactive
-            
-        if event.type == pygame.KEYDOWN:
-            if self.active:
-                if event.key == pygame.K_RETURN:
-                    self.text = ''
-                elif event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
+        match event.type:
+            case pygame.MOUSEBUTTONDOWN:
+                if self.rect.collidepoint(event.pos):
+                    self.active = not self.active
                 else:
-                    self.text += event.unicode
+                    self.active = False
+                self.color = self.color_active if self.active else self.color_inactive
+                
+            case pygame.KEYDOWN:
+                if self.active:
+                    if event.key == pygame.K_RETURN:
+                        self.text = ''
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.text = self.text[:-1]
+                    else:
+                        self.text += event.unicode
 
     def update(self):
         width = max(self.rect.w, self.txt_surface.get_width()+10)
@@ -149,52 +150,7 @@ class InputBox():
         pygame.draw.rect(self.screen, self.color, self.rect, 2)
 
 def main():
-    width = 500
-    height = 500
-    win = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Client")
-    pygame.font.init()
-
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-    RED = (255, 0, 0)
-    GREEN = (74, 145, 35)
-    YELLOW = (242, 209, 17)
-    ORANGE = (242, 118, 9)
-
-    clock = pygame.time.Clock()
-    click = False
-    while True:
-        clock.tick(60)
-        win.fill((128, 128, 128))   
-        btn_1 = ImageButton(win, 'images/red/red_0.jpg', (75, 150), (20, 40), '')
-        btn_2 = ImageButton(win, 'images/green/green_0.jpg', (75, 150), (60, 40), '')
-        btn_3 = ImageButton(win, 'images/wild_4.jpg', (75, 150), (100, 40), '')
-        btn_4 = ImageButton(win, 'images/wild_color.jpg', (75, 150), (140, 40), '')
-        btn_1.draw()
-        btn_2.draw()
-        btn_3.draw()
-        btn_4.draw()
-        mx, my = pygame.mouse.get_pos()
-
-        if click:
-            if btn_4.click((mx, my)):
-                print('BTN4')
-            elif btn_3.click((mx, my)):
-                print('BTN3')
-            elif btn_2.click((mx, my)):
-                print('BTN2')
-            elif btn_1.click((mx, my)):
-                print('BTN1')
-
-        click = False
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                click = True
-
-        pygame.display.update()
-
-    pygame.quit()
+    print('You are not supposed to run this.')
 
 
 if __name__ == '__main__':
