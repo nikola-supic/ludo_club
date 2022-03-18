@@ -1114,22 +1114,23 @@ class App():
 
             # Reviews
             if see_reviews:
-                x = self.width - 340
-                y = self.height/2 - 200
-
-                window = pygame.image.load("images/panel_large.png")
-                window = pygame.transform.scale(window, (300, 400))
-                self.screen.blit(window, (x, y))
-
                 average = db.get_average()
-                Button(self.screen, f'Average: {average[0]:.2f}', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
+                if average[0] is not None:
+                    x = self.width - 340
+                    y = self.height/2 - 200
 
-                result = db.get_reviews()
-                res_y = y + 50
-                for row in result:
-                    Text(self.screen, f'{row[2]} // {row[5]}', (x+25, res_y), GREY, text_size=16)
-                    Text(self.screen, f'{row[3]} - {row[4]}', (x+25, res_y+15), GREY, text_size=16)
-                    res_y += 30
+                    window = pygame.image.load("images/panel_large.png")
+                    window = pygame.transform.scale(window, (300, 400))
+                    self.screen.blit(window, (x, y))
+
+                    Button(self.screen, f'Average: {average[0]:.2f}', (x+175, y+5), (100, 25), YELLOW, text_color=WHITE).draw()
+
+                    result = db.get_reviews()
+                    res_y = y + 50
+                    for row in result:
+                        Text(self.screen, f'{row[2]} // {row[5]}', (x+25, res_y), GREY, text_size=16)
+                        Text(self.screen, f'{row[3]} - {row[4]}', (x+25, res_y+15), GREY, text_size=16)
+                        res_y += 30
 
             exit_btn.draw()
 
@@ -1149,7 +1150,7 @@ class App():
                             self.draw_error('Rate value must be between 1 and 5.')
                             pygame.time.delay(1000)
                         else:
-                            add_rating = db.add_rating(self.user.id, self.user.username, value, rate_review.text, self.user.dice)
+                            add_rating = db.add_rating(self.user.id, self.user.username, value, rate_review.text)
 
                             if add_rating:
                                 Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+230), GREY, text_size=20, center=True)
