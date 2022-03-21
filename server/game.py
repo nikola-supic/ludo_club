@@ -4,7 +4,7 @@ Created on Wed Mar 10 14:04:30 2021
 @author: Sule
 @name: game.py
 @description: ->
-    DOCSTRING:
+	DOCSTRING:
 """
 #!/usr/bin/env python3
 from datetime import datetime
@@ -106,32 +106,29 @@ class Game():
 	def move_pawn(self, player, move_idx):
 		self.give_exp = False
 		self.give_finish_exp = False
-		for player_idx, color in enumerate(self.pawn):
-			if player_idx == player:
-				for pawn_idx, pawn in enumerate(color):
-					if pawn_idx == move_idx:
-						if pawn.finish:
-							if pawn.pos+1 == 5:
-								del self.pawn[player_idx][pawn_idx]
-								self.pawns_finish[player] += 1
-								self.pawns_free[player] -= 1
-								self.give_finish_exp = True
-								break
-							else:
-								pawn.pos += 1
-						else:
-							if pawn.pos < 0:
-								pawn.pos = self.start_from_color(player_idx)
-								self.pawns_free[player] += 1
-							else:
-								if pawn.pos == self.last_from_color(player_idx):
-									pawn.pos = 0
-									pawn.finish = True
-								else:
-									if pawn.pos+1 == 52:
-										pawn.pos = 0
-									else:
-										pawn.pos += 1
+
+		pawn = self.pawn[player][move_idx]
+		if pawn.finish:
+			if pawn.pos+1 == 5:
+				del self.pawn[player][pawn_idx]
+				self.pawns_finish[player] += 1
+				self.pawns_free[player] -= 1
+				self.give_finish_exp = True
+			else:
+				pawn.pos += 1
+		else:
+			if pawn.pos < 0:
+				pawn.pos = self.start_from_color(player)
+				self.pawns_free[player] += 1
+			else:
+				if pawn.pos == self.last_from_color(player):
+					pawn.pos = 0
+					pawn.finish = True
+				else:
+					if pawn.pos+1 == 52:
+						pawn.pos = 0
+					else:
+						pawn.pos += 1
 
 
 	def check_eat(self, player, move_idx):
