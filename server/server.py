@@ -63,7 +63,6 @@ class Server():
 					data_list = data.split()
 					match data_list[0]:
 						case 'create':
-							print('debug v1')
 							name = data_list[1]
 							size = int(data_list[2])
 							pw = data_list[3]
@@ -74,10 +73,8 @@ class Server():
 
 							self.waiting.append(self.games[game_id])
 							print(f'[ + ] Creating a new game... (of size {size})')
-							print('debug v2')
 
 							conn.sendall(pickle.dumps(self.games[game_id]))
-							print('debug v3')
 
 						case 'get_lobby':
 							conn.sendall(pickle.dumps(self.waiting))
@@ -132,7 +129,6 @@ class Server():
 							game = self.games[game_id]
 							player = int(data_list[1])
 							pawn_idx = int(data_list[2])
-							
 							game.rolled_dice = False
 							game.move_pawn(player, pawn_idx)
 							conn.sendall(pickle.dumps(game))
