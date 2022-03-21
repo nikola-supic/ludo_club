@@ -109,7 +109,7 @@ class App():
             pygame.mixer.music.play()
 
         if self.user.volume > 0:
-                start_new_thread(self.now_playing, (songs_list[rand], datetime.now(), ))
+            start_new_thread(self.now_playing, (songs_list[rand], datetime.now(), ))
 
 
     def now_playing(self, song, time_started):
@@ -128,6 +128,7 @@ class App():
 
             if int((datetime.now() - time_started).total_seconds()) > 4:
                 run = False
+
 
     def draw_error(self, msg):
         self.screen.fill(BLACK)
@@ -237,17 +238,16 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                match event.type:
+                    case pygame.QUIT:
                         pygame.quit()
                         sys.exit()
 
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.KEYDOWN if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
+
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
                 login_name.handle_event(event)
@@ -362,21 +362,17 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END, pygame.KEYDOWN if event.key == pygame.K_m:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -418,24 +414,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -496,30 +491,28 @@ class App():
             exit_btn.draw()
 
             mx, my = pygame.mouse.get_pos()
-            if click:
-                if exit_btn.click((mx, my)):
-                    run = False
+            if click and exit_btn.click((mx, my)):
+                run = False
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -714,24 +707,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
                 add_name.handle_event(event)
                 request_id.handle_event(event)
@@ -782,19 +774,13 @@ class App():
         click = False
 
         # Avatars
-        x = 40
-        y = 40
-        avatar_list = self.load_avatar(x, y)
+        avatar_list = self.load_avatar(40, 40)
 
         # Dice
-        x = self.width - 340
-        y = 40
-        dice_list = self.load_dice(x, y)
+        dice_list = self.load_dice((self.width - 340), 40)
 
         # Powers
-        x = 40
-        y = self.height - 260
-        power_btn = ImageButton(self.screen, f'images/power.png', (90, 90), (x+40, y+65), '1')
+        power_btn = ImageButton(self.screen, f'images/power.png', (90, 90), (40+40, (self.height - 260)+65), '1')
 
         # Other
         exit_btn = ImageButton(self.screen, 'images/exit.png', (25, 25), (40, self.height - 45), 'exit')
@@ -914,24 +900,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -1045,24 +1030,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -1153,7 +1137,7 @@ class App():
                             add_rating = db.add_rating(self.user.id, self.user.username, value, rate_review.text)
 
                             if add_rating:
-                                Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+230), GREY, text_size=20, center=True)
+                                Text(self.screen, 'YOU SUCCESSFULY RATED US.', (x+150, y+210), GREY, text_size=20, center=True)
                                 pygame.display.update()
                                 pygame.time.delay(1500)
                         rate_review.clear()
@@ -1171,24 +1155,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
                 rate_us.handle_event(event)
                 rate_review.handle_event(event)
@@ -1283,24 +1266,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -1428,24 +1410,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
                 username.handle_event(event)
                 email.handle_event(event)
@@ -1582,24 +1563,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
                 admin_permission.handle_event(event)
                 ban_player.handle_event(event)
@@ -1706,24 +1686,23 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
                 lobby_name.handle_event(event)
                 lobby_size.handle_event(event)
@@ -1813,13 +1792,8 @@ class App():
 
                 for idx, game in enumerate(waiting):
                     if join_btn_dict[game.id].rect.collidepoint((mx, my)):
-                        if game.lobby_pw == 'None' and game.lobby_price < self.user.coins:
-                            game = self.network.send(f'join {game.id}')
-                            run = False
-
-                            self.game_screen(game.id)
-                        else:
-                            if game.lobby_pw == input_pw.text and game.lobby_price < self.user.coins:
+                        if game.lobby_price < self.user.coins:
+                            if (game.lobby_pw == 'None') or (game.lobby_pw == input_pw.text):
                                 game = self.network.send(f'join {game.id}')
                                 run = False
 
@@ -1827,28 +1801,29 @@ class App():
                             else:
                                 self.draw_error('Wrong password.')
                                 pygame.time.delay(2500)
-
+                        else:
+                            self.draw_error('You do not have enough coins.')
+                            pygame.time.delay(2500)
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
                 input_pw.handle_event(event)
             input_pw.update()
@@ -1914,26 +1889,25 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game = self.player_quit(game)
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                match event.type:
+                    case pygame.QUIT:
                         game = self.player_quit(game)
-                        run = False
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            game = self.player_quit(game)
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -2029,29 +2003,27 @@ class App():
                                 pygame.time.delay(1500)
                                 run = False
 
-
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game = self.player_quit(game)
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                match event.type:
+                    case pygame.QUIT:
                         game = self.player_quit(game)
-                        run = False
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            game = self.player_quit(game)
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
             pygame.display.update()
             clock.tick(60)
@@ -2065,42 +2037,44 @@ class App():
             for idx, pawn in enumerate(player_pawn):
                 if pawn.pos < 0:
                     pos = pawn.pos * (-1) - 1
-                    if pawn.color == 'green':
-                        x = 50 + GREEN_START[pos][0] + 5
-                        y = 50 + GREEN_START[pos][1] + 5
+                    match pawn.color:
+                        case 'green':
+                            x = 50 + GREEN_START[pos][0] + 5
+                            y = 50 + GREEN_START[pos][1] + 5
 
-                    if pawn.color == 'red':
-                        x = 50 + RED_START[pos][0] + 5
-                        y = 50 + RED_START[pos][1] + 5
+                        case 'red':
+                            x = 50 + RED_START[pos][0] + 5
+                            y = 50 + RED_START[pos][1] + 5
 
-                    if pawn.color == 'blue':
-                        x = 50 + BLUE_START[pos][0] + 5
-                        y = 50 + BLUE_START[pos][1] + 5
+                        case 'blue':
+                            x = 50 + BLUE_START[pos][0] + 5
+                            y = 50 + BLUE_START[pos][1] + 5
 
-                    if pawn.color == 'yellow':
-                        x = 50 + YELLOW_START[pos][0] + 5
-                        y = 50 + YELLOW_START[pos][1] + 5
+                        case 'yellow':
+                            x = 50 + YELLOW_START[pos][0] + 5
+                            y = 50 + YELLOW_START[pos][1] + 5
 
                     pawn.button = ImageButton(self.screen, pawn.img, (30, 30), (x, y), 'pawn')
                     pawn.button.draw()
 
                 else:
                     if pawn.finish:
-                        if pawn.color == 'green':
-                            x = 50 + GREEN_FINISH[pawn.pos][0] + 5
-                            y = 50 + GREEN_FINISH[pawn.pos][1] + 5
+                        match pawn.color:
+                            case 'green':
+                                x = 50 + GREEN_FINISH[pawn.pos][0] + 5
+                                y = 50 + GREEN_FINISH[pawn.pos][1] + 5
 
-                        if pawn.color == 'red':
-                            x = 50 + RED_FINISH[pawn.pos][0] + 5
-                            y = 50 + RED_FINISH[pawn.pos][1] + 5
+                            case 'red':
+                                x = 50 + RED_FINISH[pawn.pos][0] + 5
+                                y = 50 + RED_FINISH[pawn.pos][1] + 5
 
-                        if pawn.color == 'blue':
-                            x = 50 + BLUE_FINISH[pawn.pos][0] + 5
-                            y = 50 + BLUE_FINISH[pawn.pos][1] + 5
+                            case 'blue':
+                                x = 50 + BLUE_FINISH[pawn.pos][0] + 5
+                                y = 50 + BLUE_FINISH[pawn.pos][1] + 5
 
-                        if pawn.color == 'yellow':
-                            x = 50 + YELLOW_FINISH[pawn.pos][0] + 5
-                            y = 50 + YELLOW_FINISH[pawn.pos][1] + 5
+                            case 'yellow':
+                                x = 50 + YELLOW_FINISH[pawn.pos][0] + 5
+                                y = 50 + YELLOW_FINISH[pawn.pos][1] + 5
 
                     else:
                         x = 50 + BOARD_POS[pawn.pos][0] + 5
@@ -2155,41 +2129,42 @@ class App():
             avatar_img = pygame.transform.scale(avatar_img, (50, 50))
             self.screen.blit(avatar_img, (x, y))
 
-            if idx == 0:
-                x, y = 75, 80
-                Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16)
-                Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16)
-                if game.player_on_move == idx:
-                    Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16)
+            match idx:
+                case 0:
+                    x, y = 75, 80
+                    Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16)
+                    Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16)
+                    if game.player_on_move == idx:
+                        Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16)
 
-                Text(self.screen, f'{finished}', (self.width/2-30, self.height/2), BLACK, text_size=16, right=True)
+                    Text(self.screen, f'{finished}', (self.width/2-30, self.height/2), BLACK, text_size=16, right=True)
 
-            if idx == 1:
-                x, y = 625, 620
-                Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16, right=True)
-                Text(self.screen, f'{wins}W / {defeats}D', (x, y), BLACK, text_size=16, right=True)
-                if game.player_on_move == idx:
-                    Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16, right=True)
+                case 1:
+                    x, y = 625, 620
+                    Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16, right=True)
+                    Text(self.screen, f'{wins}W / {defeats}D', (x, y), BLACK, text_size=16, right=True)
+                    if game.player_on_move == idx:
+                        Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16, right=True)
 
-                Text(self.screen, f'{finished}', (self.width/2+30, self.height/2), BLACK, text_size=16)
+                    Text(self.screen, f'{finished}', (self.width/2+30, self.height/2), BLACK, text_size=16)
 
-            if idx == 2:
-                x, y = 75, 620
-                Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16)
-                Text(self.screen, f'{wins}W / {defeats}D', (x, y), BLACK, text_size=16)
-                if game.player_on_move == idx:
-                    Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16)
+                case 2:
+                    x, y = 75, 620
+                    Text(self.screen, f'{user_name} # {user_id}', (x, y-11), BLACK, text_size=16)
+                    Text(self.screen, f'{wins}W / {defeats}D', (x, y), BLACK, text_size=16)
+                    if game.player_on_move == idx:
+                        Text(self.screen, 'Move', (x, y-22), BLACK, text_size=16)
 
-                Text(self.screen, f'{finished}', (self.width/2, self.height/2+30), BLACK, text_size=16, center=True)
+                    Text(self.screen, f'{finished}', (self.width/2, self.height/2+30), BLACK, text_size=16, center=True)
 
-            if idx == 3:
-                x, y = 625, 80
-                Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16, right=True)
-                Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16, right=True)
-                if game.player_on_move == idx:
-                    Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16, right=True)
+                case 3:
+                    x, y = 625, 80
+                    Text(self.screen, f'{user_name} # {user_id}', (x, y), BLACK, text_size=16, right=True)
+                    Text(self.screen, f'{wins}W / {defeats}D', (x, y+11), BLACK, text_size=16, right=True)
+                    if game.player_on_move == idx:
+                        Text(self.screen, 'Move', (x, y+22), BLACK, text_size=16, right=True)
 
-                Text(self.screen, f'{finished}', (self.width/2, self.height/-30), BLACK, text_size=16, center=True)
+                    Text(self.screen, f'{finished}', (self.width/2, self.height/-30), BLACK, text_size=16, center=True)
 
 
     def draw_game_screen(self, game):
@@ -2363,6 +2338,7 @@ class App():
                 Text(self.screen, f'PAWN FINISHED (+100 EXP)', (self.width/2, 18), GREY, center=True)
                 pygame.display.update()
                 pygame.time.delay(1000)
+                
         except Exception:
             self.draw_error('Could not move pawn.')
             pygame.time.delay(1500)
@@ -2474,6 +2450,15 @@ class App():
 
                 mx, my = pygame.mouse.get_pos()
                 if click:
+                    if chat_btn.click((mx, my)):
+                        self.chat_screen(game_id)
+
+                    elif emoji_btn.click((mx, my)):
+                        see_emoji = not see_emoji
+
+                    elif exit_btn.click((mx, my)):
+                        pass
+
                     if see_emoji:
                         for emoji_idx, emoji in enumerate(emoji_list):
                             if emoji.click((mx, my)):
@@ -2491,137 +2476,97 @@ class App():
                     if see_power:
                         for power_idx, power in enumerate(power_list):
                             if power.click((mx, my)):
-                                power_value = power_idx+1
+                                power_value = power_idx + 1
                                 see_power = False
 
                                 self.user.power -= 1
                                 self.user.update_sql('power', self.user.power)
 
-                    else:
-                        if game.player_on_move == self.player:
+                    if game.player_on_move == self.player:
+                        if game.rolled_dice:
                             for pawn_idx, pawn in enumerate(your_pawns):
                                 if pawn.button.click((mx, my)):
-                                    if game.rolled_dice:
-                                        if pawn.pos < 0:
-                                            if game.dice == 6:
-                                                game, run = self.send_move(pawn_idx)
-                                            else:
-                                                pass
-                                        else:
-                                            if pawn.finish:
-                                                if game.dice+pawn.pos > 5:
-                                                    pass
-                                                else:
-                                                    for _ in range(game.dice):
-                                                        game, run = self.send_move(pawn_idx)
-
-                                                    if game.dice < 6:
-                                                        self.next_player()
-                                                    break
-
-                                            else:
+                                    if pawn.pos < 0 and game.dice == 6:
+                                        game, run = self.send_move(pawn_idx)
+                                    else:
+                                        if pawn.finish:
+                                            if game.dice+pawn.pos <= 5:
                                                 for _ in range(game.dice):
                                                     game, run = self.send_move(pawn_idx)
 
                                                 if game.dice < 6:
                                                     self.next_player()
-                                                game, run = self.check_eat(pawn_idx)
-                                                break
-                                    else:
-                                        pass
-
-                            if dice_button.click((mx, my)):
-                                if not game.rolled_dice:
-                                    img = name_from_dice(self.user.dice)
-
-                                    for i in range(randint(10, 20)):
-                                        value = randint(1, 6)
-                                        dice_button.image = f'images/dice/{img}_{value}.png'
-                                        dice_button.draw()
-
-                                        pygame.display.update()
-                                        pygame.time.delay(50)
-
-                                    if power_value != 0:
-                                        value = power_value
-                                        power_value = 0
-
-                                    self.user.exp += value
-                                    self.user.update_sql('exp', self.user.exp)
-
-                                    try:
-                                        game = self.network.send(f'dice {value} {self.user.dice}')
-                                    except Exception:
-                                        self.draw_error('Could not send dice value.')
-                                        pygame.time.delay(1500)
-                                        run = False
-                                        break
-
-                                    if game.dice != 6 and game.pawns_free[self.player] == 0:
-                                        self.next_player()
-                                    elif game.pawns_finish[self.player] == 3:
-                                        if game.pawn[self.player][0].finish:
-                                            if game.dice + pawn.pos > 5:
+                                        else:
+                                            for _ in range(game.dice):
+                                                game, run = self.send_move(pawn_idx)
+                                            game, run = self.check_eat(pawn_idx)
+                                            if game.dice < 6:
                                                 self.next_player()
+                                    break
 
-                                    else:
-                                        pass
-                                else:
-                                    pass
+                            if next_btn.click((mx, my)):
+                                self.next_player()
+                        else:
+                            if dice_button.click((mx, my)):
+                                img = name_from_dice(self.user.dice)
 
-                            elif next_btn.click((mx, my)):
-                                if game.rolled_dice:
+                                for i in range(randint(10, 20)):
+                                    value = randint(1, 6)
+                                    dice_button.image = f'images/dice/{img}_{value}.png'
+                                    dice_button.draw()
+
+                                    pygame.display.update()
+                                    pygame.time.delay(50)
+
+                                if power_value != 0:
+                                    value = power_value
+                                    power_value = 0
+
+                                self.user.exp += value
+                                self.user.update_sql('exp', self.user.exp)
+
+                                try:
+                                    game = self.network.send(f'dice {value} {self.user.dice}')
+                                except Exception:
+                                    self.draw_error('Could not send dice value.')
+                                    pygame.time.delay(1500)
+                                    run = False
+                                    break
+
+                                if game.dice != 6 and game.pawns_free[self.player] == 0:
                                     self.next_player()
+                                elif game.pawns_finish[self.player] == 3:
+                                    if game.pawn[self.player][0].finish:
+                                        if game.dice + pawn.pos > 5:
+                                            self.next_player()
                                 else:
                                     pass
 
                             elif power_btn.click((mx, my)):
-                                if not game.rolled_dice:
-                                    if self.user.power > 0:
-                                        if see_power:
-                                            see_power = False
-                                        else:
-                                            see_power = True
-                                    else:
-                                        pass
-                                else:
-                                    pass
-
-                    if chat_btn.click((mx, my)):
-                        self.chat_screen(game_id)
-
-                    elif emoji_btn.click((mx, my)):
-                        if see_emoji:
-                            see_emoji = False
-                        else:
-                            see_emoji = True
-
-                    elif exit_btn.click((mx, my)):
-                        pass
-
+                                if self.user.power > 0:
+                                    see_power = not see_power
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game = self.player_quit(game)
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                match event.type:
+                    case pygame.QUIT:
                         game = self.player_quit(game)
-                        run = False
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            game = self.player_quit(game)
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
 
             pygame.display.update()
@@ -2679,25 +2624,24 @@ class App():
 
             click = False
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game = self.player_quit(game)
-                    self.user.user_quit()
-                    pygame.quit()
-                    sys.exit()
+                match event.type:
+                    case pygame.QUIT:
+                        game = self.player_quit(game)
+                        self.user.user_quit()
+                        pygame.quit()
+                        sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        run = False
+                    case pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            run = False
+                        elif event.key == pygame.K_m:
+                            self.background_music()
 
-                    if event.key == pygame.K_m:
-                        self.background_music()
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if event.button == 1:
+                    case pygame.MOUSEBUTTONUP if event.button == 1:
                         click = True
 
-                if event.type == MUSIC_END:
-                    self.background_music()
+                    case MUSIC_END:
+                        self.background_music()
 
                 input_text.handle_event(event)
             input_text.update()
