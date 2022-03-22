@@ -2514,7 +2514,7 @@ class App():
 
                                 if power_value != 0:
                                     value = power_value
-                                    # power_value = 0
+                                    power_value = 0
 
                                 self.user.exp += value
                                 self.user.update_sql('exp', self.user.exp)
