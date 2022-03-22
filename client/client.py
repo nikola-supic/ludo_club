@@ -2333,6 +2333,31 @@ class App():
         return game, run
 
 
+    def move_pawn(self, your_pawns, game, run):
+        for pawn_idx, pawn in enumerate(your_pawns):
+            if pawn.button.click((mx, my)):
+                if pawn.pos < 0 and game.dice == 6:
+                    game, run = self.send_move(pawn_idx)
+                else:
+                    if pawn.finish:
+                        if game.dice+pawn.pos <= 5:
+                            for _ in range(game.dice):
+                                game, run = self.send_move(pawn_idx)
+
+                            if game.dice < 6:
+                                self.next_player()
+                    else:
+                        for _ in range(game.dice):
+                            game, run = self.send_move(pawn_idx)
+
+                        if pawn.pos not in [8, 34, 47, 21]:
+                            game, run = self.check_eat(pawn_idx)
+                        if game.dice < 6:
+                            self.next_player()
+                break
+        return game, run
+
+
     def next_player(self):
         run = True
         try:
@@ -2471,28 +2496,11 @@ class App():
 
                     if game.player_on_move == self.player:
                         if game.rolled_dice:
-                            for pawn_idx, pawn in enumerate(your_pawns):
-                                if pawn.button.click((mx, my)):
-                                    if pawn.pos < 0 and game.dice == 6:
-                                        game, run = self.send_move(pawn_idx)
-                                    else:
-                                        if pawn.finish:
-                                            if game.dice+pawn.pos <= 5:
-                                                for _ in range(game.dice):
-                                                    game, run = self.send_move(pawn_idx)
-
-                                                if game.dice < 6:
-                                                    self.next_player()
-                                        else:
-                                            for _ in range(game.dice):
-                                                game, run = self.send_move(pawn_idx)
-                                            game, run = self.check_eat(pawn_idx)
-                                            if game.dice < 6:
-                                                self.next_player()
-                                    break
-
                             if next_btn.click((mx, my)):
                                 self.next_player()
+                            else:
+                                game, run = self.move_pawn(your_pawns, game, run)
+
                         else:
                             if dice_button.click((mx, my)):
                                 img = name_from_dice(self.user.dice)
@@ -2524,7 +2532,7 @@ class App():
                                     self.next_player()
                                 elif game.pawns_finish[self.player] == 3:
                                     if game.pawn[self.player][0].finish:
-                                        if game.dice + pawn.pos > 5:
+                                        if game.dice + game.pawn[self.player][0].pos > 5:
                                             self.next_player()
                                 else:
                                     pass

@@ -133,14 +133,15 @@ class Game():
 
 	def check_eat(self, player, move_idx):
 		for player_idx, color in enumerate(self.pawn):
-			if player_idx != player:
-				for pawn_idx, pawn in enumerate(color):
-					if pawn.pos == self.pawn[player][move_idx].pos:
-						if pawn.pos not in [8, 34, 47, 21]:
-							self.pawn[player_idx][pawn_idx].pos = (pawn_idx+1) * (-1)
-							self.pawns_free[player_idx] -= 1
-							self.give_exp = True
-							break
+			if player_idx == player:
+				continue
+
+			for pawn_idx, pawn in enumerate(color):
+				if pawn.pos == self.pawn[player][move_idx].pos:
+					self.pawn[player_idx][pawn_idx].pos = -(pawn_idx+1)
+					self.pawns_free[player_idx] -= 1
+					self.give_exp = True
+					break
 
 
 	def get_next(self):
@@ -156,8 +157,9 @@ class Game():
 		self.wins[player] += 1
 
 		for idx in range(self.lobby_size):
-			if idx != player:
-				self.defeats[idx] += 1
+			if idx == player:
+				continue
+			self.defeats[idx] += 1
 
 
 	def update_users(self, player, username, id, avatar):
