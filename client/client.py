@@ -925,8 +925,7 @@ class App():
     def champions(self):
         run = True
         click = False
-        sort_name = ['Wins', 'Defeats', 'Coins', 'Level', 'Trophy', 'Games Started']
-        sort_by = [False for _ in range(len(sort_name))]
+        sort_name = None
 
         x = 40
         y = self.height/2 - 200
@@ -970,26 +969,26 @@ class App():
             window = pygame.transform.scale(window, (300, 400))
             self.screen.blit(window, (x, y))
 
-            text = 'None'
             result = None
-            for i in range(len(sort_by)):
-                if sort_by[i]:
-                    text = sort_name[i].upper()
-                    if i == 0:
+            if sort_name is not None:
+                match sort_name:
+                    case 'wins':
                         result = db.get_top_wins()
-                    elif i == 1:
+                    case 'defeats':
                         result = db.get_top_defeats()
-                    elif i == 2:
+                    case 'coins':
                         result = db.get_top_coins()
-                    elif i == 3:
+                    case 'level':
                         result = db.get_top_level()
-                    elif i == 4:
+                    case 'trophy':
                         result = db.get_top_trophies()
-                    elif i == 5:
+                    case 'games':
                         result = db.get_top_games()
+                    case _:
+                        result = None
 
-            Button(self.screen, f'{text}', (x+155, y+5), (120, 25), YELLOW, text_color=WHITE).draw()
             if result is not None:
+                Button(self.screen, f'{sort_name.upper()}', (x+155, y+5), (120, 25), YELLOW, text_color=WHITE).draw()
                 res_y = y + 55
                 for idx, row in enumerate(result):
                     Text(self.screen, f'#{idx+1} // {row[0]} // {row[1]}', (x+25, res_y), GREY, text_size=16)
@@ -1002,29 +1001,17 @@ class App():
             mx, my = pygame.mouse.get_pos()
             if click:
                 if wins_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(len(sort_by))]
-                    sort_by[0] = True
-
+                    sort_name = 'wins'
                 elif defeats_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(len(sort_by))]
-                    sort_by[1] = True
-
+                    sort_name = 'defeats'
                 elif coins_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(len(sort_by))]
-                    sort_by[2] = True
-
+                    sort_name = 'coins'
                 elif level_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(len(sort_by))]
-                    sort_by[3] = True
-
+                    sort_name = 'level'
                 elif trophies_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(len(sort_by))]
-                    sort_by[4] = True
-
+                    sort_name = 'trophy'
                 elif games_btn.rect.collidepoint((mx, my)):
-                    sort_by = [False for _ in range(len(sort_by))]
-                    sort_by[5] = True
-
+                    sort_name = 'games'
                 elif exit_btn.click((mx, my)):
                     run = False
 
@@ -2113,7 +2100,7 @@ class App():
 
     def draw_players(self, game, start_x, start_y):
         AVATAR_POS = [(181, 181), (368, 368), (181, 368), (368, 181)]
-        for idx in range(len(game.user_names)):
+        for idx in range(game.lobby_size):
             user_name = game.user_names[idx]
             user_id = game.user_ids[idx]
             avatar = game.user_avatars[idx]
