@@ -36,11 +36,7 @@ class Game():
 		self.give_exp = False
 		self.give_finish_exp = False
 
-		self.user_names = []
-		self.user_ids = []
-		self.user_avatars = []
-		self.wins = []
-		self.defeats = []
+		self.users = []
 		self.lobby_started = datetime.now()
 		self.messages = []
 		self.emoji = None
@@ -154,20 +150,15 @@ class Game():
 
 
 	def give_win(self, player):
-		self.wins[player] += 1
+		self.user[player].wins += 1
+		self.user[player].defeats -= 1
 
-		for idx in range(self.lobby_size):
-			if idx == player:
-				continue
-			self.defeats[idx] += 1
+		for user in self.users:
+			self.user.defeats += 1
 
 
-	def update_users(self, player, username, id, avatar):
-		self.user_names.append(username)
-		self.user_ids.append(id)
-		self.user_avatars.append(avatar)
-		self.wins.append(0)
-		self.defeats.append(0)
+	def update_users(self, user_id, user_name, avatar):
+		self.users.append(User(user_id, username, avatar))
 
 
 	def send_msg(self, username, message):
@@ -198,3 +189,22 @@ class Pawn():
 		
 	def __repr__(self):
 		return f'{self.color}-{self.pos}-{self.img}'
+
+
+class User():
+	"""
+	DOCSTRING:
+
+	"""
+	def __init__(self, user_id, name, avatar):
+		self.user_id = user_id
+		self.name = name
+		self.avatar = avatar
+		self.wins = 0
+		self.defeats = 0
+
+	def __repr__(self):
+		return f'{self.name}#{self.user_id}'
+
+	def __str__(self):
+		return f'{self.name}#{self.user_id}'	

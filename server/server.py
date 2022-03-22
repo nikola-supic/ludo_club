@@ -112,7 +112,7 @@ class Server():
 							user_id = int(data_list[3])
 							avatar = int(data_list[4])
 
-							game.update_users(player, user_name, user_id, avatar)
+							game.update_users(user_id, user_name, avatar)
 							conn.sendall(pickle.dumps(game))
 
 						case 'dice':
@@ -143,7 +143,7 @@ class Server():
 							if game.pawns_finish[player] == 4:
 								game.ready = False
 								game.give_win(player)
-								game.winner = game.user_names[player]
+								game.winner = game.users[player].name
 
 							conn.sendall(pickle.dumps(game))
 

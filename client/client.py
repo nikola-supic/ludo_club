@@ -16,10 +16,9 @@ from _thread import start_new_thread
 from datetime import datetime, timedelta
 from random import randint
 from time import sleep
-import pygame
-
 import tkinter as tk
 from tkinter import filedialog
+import pygame
 
 from network import Network
 from customs import Text, Button, ImageButton, InputBox
@@ -1870,8 +1869,8 @@ class App():
 
             Button(self.screen, 'PLAYER LEFT', (x+255, y+6), (100, 25), YELLOW, text_color=WHITE).draw()
             Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), GREY, text_size=20)
-            Text(self.screen, f'WINS: {game.wins[self.player]}', (x+25, y+70), GREY, text_size=20)
-            Text(self.screen, f'DEFEATS: {game.defeats[self.player]}', (x+25, y+90), GREY, text_size=20)
+            Text(self.screen, f'WINS: {game.user[self.player].wins}', (x+25, y+70), GREY, text_size=20)
+            Text(self.screen, f'DEFEATS: {game.user[self.player].defeats}', (x+25, y+90), GREY, text_size=20)
             Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
             click = False
@@ -2100,14 +2099,13 @@ class App():
 
     def draw_players(self, game, start_x, start_y):
         AVATAR_POS = [(181, 181), (368, 368), (181, 368), (368, 181)]
-        for idx in range(game.lobby_size):
-            user_name = game.user_names[idx]
-            user_id = game.user_ids[idx]
-            avatar = game.user_avatars[idx]
-            wins = game.wins[idx]
-            defeats = game.defeats[idx]
+        for idx, user in enumerate(game.users):
+            user_id = user.user_id
+            user_name = user.name
+            avatar = user.avatar
+            wins = user.wins
+            defeats = user.defeats
             finished = game.pawns_finish[idx]
-            # print(f'ID: {user_id} // Avatar: {avatar} // W/D: {wins}/{defeats} // Finished: {finished}')
 
             x, y = AVATAR_POS[idx]
             x += start_x
@@ -2597,7 +2595,7 @@ class App():
             Text(self.screen, 'LUDO CLUB (Chat)',(20, 32), GREY)
 
             y = self.height - 60
-            for idx, msg in enumerate(game.messages[:30]):
+            for msg in game.messages[:30]:
                 Text(self.screen, f'# {msg[2]} // {msg[0]} // {msg[1]}', (20, y), GREY, text_size=20)
                 y -= 20
 
