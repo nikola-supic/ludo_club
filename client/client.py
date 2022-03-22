@@ -1869,8 +1869,8 @@ class App():
 
             Button(self.screen, 'PLAYER LEFT', (x+255, y+6), (100, 25), YELLOW, text_color=WHITE).draw()
             Text(self.screen, f'GAME TIME: {timedelta(seconds=duration)}', (x+25, y+50), GREY, text_size=20)
-            Text(self.screen, f'WINS: {game.user[self.player].wins}', (x+25, y+70), GREY, text_size=20)
-            Text(self.screen, f'DEFEATS: {game.user[self.player].defeats}', (x+25, y+90), GREY, text_size=20)
+            Text(self.screen, f'WINS: {game.users[self.player].wins}', (x+25, y+70), GREY, text_size=20)
+            Text(self.screen, f'DEFEATS: {game.users[self.player].defeats}', (x+25, y+90), GREY, text_size=20)
             Text(self.screen, 'GAME BY: SULE', (self.width-25, self.height-25), GREY, text_size=14, right=True)
 
             click = False
@@ -2332,6 +2332,7 @@ class App():
 
 
     def move_pawn(self, your_pawns, game, run):
+        mx, my = pygame.mouse.get_pos()
         for pawn_idx, pawn in enumerate(your_pawns):
             if pawn.button.click((mx, my)):
                 if pawn.pos < 0 and game.dice == 6:
@@ -2460,15 +2461,6 @@ class App():
 
                 mx, my = pygame.mouse.get_pos()
                 if click:
-                    if chat_btn.click((mx, my)):
-                        self.chat_screen(game_id)
-
-                    elif emoji_btn.click((mx, my)):
-                        see_emoji = not see_emoji
-
-                    elif exit_btn.click((mx, my)):
-                        pass
-
                     if see_emoji:
                         for emoji_idx, emoji in enumerate(emoji_list):
                             if emoji.click((mx, my)):
@@ -2492,6 +2484,15 @@ class App():
                                 self.user.power -= 1
                                 self.user.update_sql('power', self.user.power)
 
+                    if chat_btn.click((mx, my)):
+                        self.chat_screen(game_id)
+
+                    elif emoji_btn.click((mx, my)):
+                        see_emoji = not see_emoji
+
+                    elif exit_btn.click((mx, my)):
+                        pass
+
                     if game.player_on_move == self.player:
                         if game.rolled_dice:
                             if next_btn.click((mx, my)):
@@ -2513,7 +2514,7 @@ class App():
 
                                 if power_value != 0:
                                     value = power_value
-                                    power_value = 0
+                                    # power_value = 0
 
                                 self.user.exp += value
                                 self.user.update_sql('exp', self.user.exp)

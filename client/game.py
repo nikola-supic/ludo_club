@@ -106,7 +106,7 @@ class Game():
 		pawn = self.pawn[player][move_idx]
 		if pawn.finish:
 			if pawn.pos+1 == 5:
-				del self.pawn[player][pawn_idx]
+				del self.pawn[player][move_idx]
 				self.pawns_finish[player] += 1
 				self.pawns_free[player] -= 1
 				self.give_finish_exp = True
@@ -150,15 +150,15 @@ class Game():
 
 
 	def give_win(self, player):
-		self.user[player].wins += 1
-		self.user[player].defeats -= 1
+		self.users[player].wins += 1
+		self.users[player].defeats -= 1
 
 		for user in self.users:
-			self.user.defeats += 1
+			self.users.defeats += 1
 
 
 	def update_users(self, user_id, user_name, avatar):
-		self.users.append(User(user_id, username, avatar))
+		self.users.append(User(user_id, user_name, avatar))
 
 
 	def send_msg(self, username, message):
