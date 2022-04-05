@@ -1,4 +1,7 @@
 # Ludo Club
+[![wakatime](https://wakatime.com/badge/user/f782b856-11e9-4e70-82f1-8abe237f786b/project/2e0e057d-e37e-4105-81fe-062f671f07f4.svg)](https://wakatime.com/badge/user/f782b856-11e9-4e70-82f1-8abe237f786b/project/2e0e057d-e37e-4105-81fe-062f671f07f4)
+
+------------
 
 ###### Login / Register
 [![](https://i.imgur.com/aeUdFL6.png)](https://i.imgur.com/aeUdFL6.png)
